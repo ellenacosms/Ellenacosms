@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Disable directory browsing when the hosting account points at this
+    # project root instead of Laravel's public directory.
+    Options -Indexes
+
+    # Block direct access to private Laravel application directories.
+    RewriteRule ^(?:app|bootstrap|config|database|node_modules|resources|routes|scripts|storage|tests|vendor)(?:/|$) - [F,L,NC]
+
+    # Block sensitive project files that must never be served publicly.
+    RewriteRule ^(?:\.env(?:\..*)?|artisan|composer\.(?:json|lock)|package(?:-lock)?\.json|phpunit\.xml|vite\.config\.[^/]+)$ - [F,L,NC]
+
+    # Avoid a rewrite loop after the request has entered public/.
+    RewriteRule ^public(?:/|$) - [L,NC]
+
+    # Internally route every public request into Laravel's real web root.
+    # The browser URL does not include /public.
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>

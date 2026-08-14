@@ -1,0 +1,1 @@
+var e=`UGX`,t=t=>{t&&(e=t.toUpperCase())},n=(t,n=e)=>new Intl.NumberFormat(`en-UG`,{style:`currency`,currency:n,currencyDisplay:`code`,maximumFractionDigits:0}).format(Number(t??0));export{t as n,n as t};
