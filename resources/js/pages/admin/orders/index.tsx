@@ -1,14 +1,18 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { money } from '@/lib/money';
 import type { Order, Pagination } from '@/types';
 
 export default function Orders({
     orders,
     status,
+    code,
 }: {
     orders: Pagination<Order>;
     status: string;
+    code: string;
 }) {
+    const lookup = useForm({ code: code ?? '' });
+
     return (
         <>
             <Head title="Orders" />
@@ -19,6 +23,39 @@ export default function Orders({
                     {orders.total} orders placed.
                 </p>
             </div>
+            <form
+                className="admin-card mt-8 flex flex-wrap items-end gap-3 p-5"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    lookup.get('/admin/orders');
+                }}
+            >
+                <label className="flex-1 text-sm">
+                    Find order by pickup code
+                    <input
+                        className="mt-2 block w-full border p-3"
+                        value={lookup.data.code}
+                        onChange={(event) =>
+                            lookup.setData('code', event.target.value)
+                        }
+                        placeholder="Enter the full order code"
+                    />
+                </label>
+                <button className="admin-button" disabled={lookup.processing}>
+                    Find order
+                </button>
+                {code && (
+                    <Link className="admin-secondary" href="/admin/orders">
+                        Clear
+                    </Link>
+                )}
+            </form>
+            {code && orders.data.length === 0 && (
+                <p role="status" className="mt-4">
+                    No order matches that code. Check the full code with the
+                    customer.
+                </p>
+            )}
             <section className="admin-card mt-9 p-0">
                 <div className="flex flex-wrap gap-2 border-b border-black/10 p-5">
                     {[

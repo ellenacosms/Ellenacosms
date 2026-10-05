@@ -16,6 +16,7 @@ class Order extends Model
         'payment_method', 'payment_provider', 'payment_reference', 'payment_merchant_reference',
         'payment_redirect_url', 'payment_confirmation_code', 'payment_status_message', 'paid_at',
         'expires_at', 'expired_at', 'resources_released_at', 'payment_checked_at', 'confirmation_sent_at',
+        'delivery_zone_id', 'delivery_area', 'delivery_fee_status', 'currency',
         'subtotal', 'discount_id', 'discount_code', 'discount_amount', 'shipping', 'total',
     ];
 

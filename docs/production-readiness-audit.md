@@ -1,3 +1,5 @@
+> Historical audit: this describes the application before the September 2026 payment migration. For the current payment and delivery implementation, see [D-Gateway and delivery setup](dgateway-delivery-setup.md).
+
 # Ellena Production Readiness Audit
 
 Audit date: 2026-08-10  

@@ -1,178 +1,150 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Check, LoaderCircle, PackageCheck } from 'lucide-react';
-import { useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import DGatewayPayment from '@/components/store/dgateway-payment';
 import { money } from '@/lib/money';
 import type { Order } from '@/types';
 
 export default function OrderSuccess({
     order,
-    pesapalReady,
+    gatewayReady,
+    cardsEnabled,
 }: {
     order: Order;
-    pesapalReady: boolean;
+    gatewayReady: boolean;
+    cardsEnabled: boolean;
 }) {
-    const { errors, flash } = usePage<{
-        errors: { payment?: string };
-        flash: { payment_message?: string };
-    }>().props;
-    const pesapalOrder = order.payment_method === 'pesapal';
-    const paymentComplete = order.payment_status === 'paid';
-    const paymentFailed = order.payment_status === 'failed';
-    const paymentPending = pesapalOrder && !paymentComplete && !paymentFailed;
-    const [openingPayment, setOpeningPayment] = useState(false);
-
-    const openPesapalInNewTab = async () => {
-        const paymentWindow = window.open('', 'pesapal-payment');
-
-        if (!paymentWindow) {
-            window.alert('Please allow pop-ups to open Pesapal securely.');
-
-            return;
-        }
-
-        paymentWindow.document.title = 'Opening secure payment…';
-        setOpeningPayment(true);
-
-        try {
-            const response = await fetch(
-                `/orders/${order.id}/payments/pesapal`,
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN':
-                            document
-                                .querySelector('meta[name="csrf-token"]')
-                                ?.getAttribute('content') ?? '',
-                    },
-                    body: '{}',
-                },
-            );
-            const payload = await response.json();
-
-            if (!response.ok || !payload.payment_url) {
-                throw new Error(
-                    payload.message ?? 'Pesapal could not be opened.',
-                );
-            }
-
-            paymentWindow.location.href = payload.payment_url;
-        } catch (error) {
-            paymentWindow.close();
-            window.alert(
-                error instanceof Error
-                    ? error.message
-                    : 'Pesapal could not be opened. Please try again.',
-            );
-        } finally {
-            setOpeningPayment(false);
-        }
-    };
+    const payAtShop = order.payment_method === 'pay_at_shop';
+    const pickup = order.delivery_method === 'pickup';
+    const paid = order.payment_status === 'paid';
+    const quoteRequired = order.delivery_fee_status !== 'confirmed';
+    const legacy = Boolean(
+        order.payment_provider && order.payment_provider !== 'dgateway',
+    );
 
     return (
         <>
-            <Head title="Order received" />
-            <section className="mx-auto max-w-3xl px-5 pt-40 pb-24 text-center md:pt-44 md:pb-32">
-                <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-black bg-white shadow-[0_12px_30px_rgba(45,37,28,.08)]">
-                    <Check size={25} />
-                </div>
-                <p className="eyebrow mt-8">Order {order.number}</p>
+            <Head title={paid ? 'Payment confirmed' : 'Order received'} />
+            <section className="mx-auto max-w-3xl px-5 pt-40 pb-24">
+                <p className="eyebrow">Order {order.number}</p>
                 <h1 className="display-heading mt-5">
-                    {paymentComplete
+                    {paid
                         ? 'Thank you for shopping with us.'
-                        : paymentFailed
-                          ? 'Sorry, your payment failed.'
-                          : paymentPending
-                            ? 'Your payment is pending.'
-                            : 'Your ritual is confirmed.'}
+                        : payAtShop
+                          ? 'Your pickup order is recorded.'
+                          : quoteRequired
+                            ? 'We will confirm your delivery fee.'
+                            : 'Your order is ready for payment.'}
                 </h1>
-                <p className="body-copy mx-auto mt-6 max-w-lg">
-                    Thank you, {order.customer_name}. We’ve received your order
-                    and will send updates to {order.email}.
+                <p className="mt-5 text-sm leading-7 text-stone-600">
+                    {paid
+                        ? 'Your payment is confirmed. We will keep you updated on your order.'
+                        : payAtShop
+                          ? 'Bring your order code to the shop and pay when collecting your items. No online payment is needed.'
+                          : quoteRequired
+                            ? 'Your order has been received. We will email a delivery quote and payment link. Nothing has been charged.'
+                            : 'Review your delivery details and total below before paying.'}
                 </p>
-                {pesapalOrder && (
-                    <p
-                        className={`mx-auto mt-5 w-fit px-4 py-2 text-[10px] font-semibold tracking-widest uppercase ${paymentComplete ? 'bg-emerald-100 text-emerald-800' : paymentFailed ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}`}
-                    >
-                        Payment {order.payment_status}
-                    </p>
-                )}
-                {flash.payment_message && (
-                    <p className="mx-auto mt-5 max-w-xl border border-black/10 bg-white/50 px-5 py-4 text-sm text-stone-600">
-                        {flash.payment_message}
-                    </p>
-                )}
-                {paymentFailed && order.payment_status_message && (
-                    <p className="mx-auto mt-5 max-w-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
-                        {order.payment_status_message} You can retry securely
-                        below.
-                    </p>
-                )}
-                {errors.payment && (
-                    <p className="mx-auto mt-5 max-w-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
-                        {errors.payment}
-                    </p>
-                )}
-                {order.estimated_delivery_date && (
-                    <p className="mx-auto mt-5 flex w-fit items-center gap-2 border border-black/10 bg-white/50 px-4 py-3 text-xs text-stone-600">
-                        <PackageCheck size={15} /> Estimated by{' '}
-                        {new Date(
-                            `${order.estimated_delivery_date}T12:00:00`,
-                        ).toLocaleDateString(undefined, {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </p>
-                )}
-                <div className="surface-card mt-10 p-6 text-left sm:p-8">
-                    {order.items?.map((item) => (
-                        <div
-                            key={item.id}
-                            className="flex justify-between border-b border-black/10 py-3 text-sm"
-                        >
-                            <span>
-                                {item.quantity} × {item.product_name}
-                            </span>
-                            <span>{money(item.total)}</span>
-                        </div>
-                    ))}
-                    {Number(order.discount_amount) > 0 && (
-                        <div className="flex justify-between pt-5 text-emerald-700">
-                            <span>
-                                Discount{' '}
-                                {order.discount_code &&
-                                    `(${order.discount_code})`}
-                            </span>
-                            <span>-{money(order.discount_amount)}</span>
-                        </div>
-                    )}
-                    <div className="flex justify-between pt-5 font-semibold">
-                        <span>Total</span>
-                        <span>{money(order.total)}</span>
-                    </div>
-                </div>
-                {pesapalOrder && !paymentComplete && pesapalReady && (
-                    <button
-                        type="button"
-                        disabled={openingPayment}
-                        onClick={openPesapalInNewTab}
-                        className="button-dark mt-9 gap-2 disabled:cursor-wait disabled:opacity-55"
-                    >
-                        {openingPayment && (
-                            <LoaderCircle size={15} className="animate-spin" />
+                {pickup && (
+                    <div className="surface-card mt-8 space-y-3 p-6">
+                        <h2 className="font-semibold">Your pickup code</h2>
+                        <p className="font-mono text-2xl font-bold tracking-wider break-all">
+                            {order.number}
+                        </p>
+                        <p className="text-sm">
+                            Save this code and show it to staff when collecting
+                            your order.
+                        </p>
+                        <p className="text-sm">
+                            Pickup location: {order.address}
+                        </p>
+                        {!paid && order.expires_at && (
+                            <p className="text-sm">
+                                Reserved until{' '}
+                                {new Date(order.expires_at).toLocaleString()}.
+                                Please contact the shop if you need more time.
+                            </p>
                         )}
-                        {openingPayment
-                            ? 'Opening Pesapal…'
-                            : paymentFailed
-                              ? 'Retry payment with Pesapal'
-                              : 'Pay securely with Pesapal'}
-                    </button>
+                        {order.status === 'cancelled' && (
+                            <p role="alert">
+                                This reservation has ended. Contact the shop
+                                before travelling.
+                            </p>
+                        )}
+                        {order.status === 'delivered' && (
+                            <p>Collection recorded.</p>
+                        )}
+                    </div>
                 )}
-                <Link href="/shop" className="button-dark mt-9 inline-block">
-                    Continue exploring
+                <div className="surface-card mt-8 space-y-4 p-6 text-sm">
+                    <p>
+                        {order.customer_name} · {order.email}
+                    </p>
+                    <p>
+                        {order.delivery_area}
+                        <br />
+                        {order.address}
+                        <br />
+                        {order.city}, {order.country}
+                    </p>
+                    <div className="space-y-2 border-t pt-4">
+                        {order.items?.map((item) => (
+                            <div
+                                className="flex justify-between gap-4"
+                                key={item.id}
+                            >
+                                <span>
+                                    {item.product_name} × {item.quantity}
+                                </span>
+                                <span>{money(item.total)}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Discounts</span>
+                        <span>
+                            −{money(order.discount_amount, order.currency)}
+                        </span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Delivery</span>
+                        <span>
+                            {quoteRequired
+                                ? 'To be confirmed'
+                                : money(order.shipping, order.currency)}
+                        </span>
+                    </div>
+                    <div className="flex justify-between border-t pt-4 font-semibold">
+                        <span>
+                            {quoteRequired ? 'Total before delivery' : 'Total'}
+                        </span>
+                        <span>{money(order.total, order.currency)}</span>
+                    </div>
+                    <p role="status">
+                        Payment: {order.payment_status}.{' '}
+                        {order.payment_status_message}
+                    </p>
+                </div>
+                {!paid &&
+                    !payAtShop &&
+                    !quoteRequired &&
+                    !legacy &&
+                    order.payment_status !== 'refunded' &&
+                    gatewayReady && (
+                        <DGatewayPayment
+                            order={order}
+                            cardsEnabled={cardsEnabled}
+                        />
+                    )}
+                {!paid &&
+                    !payAtShop &&
+                    !quoteRequired &&
+                    (!gatewayReady || legacy) && (
+                        <p className="mt-6 text-sm">
+                            Please contact Ellena for payment assistance. Your
+                            order and payment history are saved.
+                        </p>
+                    )}
+                <Link href="/shop" className="text-link mt-8">
+                    Continue shopping
                 </Link>
             </section>
         </>

@@ -14,7 +14,7 @@ import type {
     ShopFilters,
 } from '@/components/store/shop-filter-drawer';
 import StoreImage from '@/components/store/store-image';
-import type { Category, Pagination, Product } from '@/types';
+import type { Category, MerchandisingEdit, Pagination, Product } from '@/types';
 
 const categoryConcerns: Record<string, Concern[]> = {
     'hair-care': [
@@ -51,7 +51,19 @@ const categoryConcerns: Record<string, Concern[]> = {
             description: 'Polish and cleanse without stripping the skin.',
         },
     ],
-    rituals: [
+    'baby-care': [
+        {
+            slug: 'hydration',
+            label: 'Softness',
+            description: 'Comfort delicate skin with simple daily moisture.',
+        },
+        {
+            slug: 'cleansing',
+            label: 'Bath-time care',
+            description: 'Keep cleansing mild, reassuring, and easy to rinse.',
+        },
+    ],
+    fragrance: [
         {
             slug: 'aromatic-care',
             label: 'Aromatic care',
@@ -74,10 +86,14 @@ export default function Shop({
     products,
     categories,
     filters,
+    edits,
+    activeEdit,
 }: {
     products: Pagination<Product>;
     categories: Category[];
     filters: ShopFilters;
+    edits: MerchandisingEdit[];
+    activeEdit?: MerchandisingEdit | null;
 }) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [isNavigating, setIsNavigating] = useState(false);
@@ -85,20 +101,30 @@ export default function Shop({
     const activeCategory = categories.find(
         (category) => category.slug === filters.category,
     );
-    const pageTitle = activeCategory?.name ?? 'Shop all';
+    const allConcerns = Object.values(categoryConcerns)
+        .flat()
+        .filter(
+            (concern, index, values) =>
+                values.findIndex((item) => item.slug === concern.slug) ===
+                index,
+        );
+    const pageTitle = activeEdit?.title ?? activeCategory?.name ?? 'Shop all';
     const pageDescription =
+        activeEdit?.description ??
         activeCategory?.description ??
         'Thoughtful hair, body, and beauty essentials composed for the rituals you return to every day.';
-    const seoTitle = activeCategory
-        ? `${activeCategory.name} Products in Uganda`
-        : 'Beauty Products Online in Uganda';
+    const seoTitle = activeEdit
+        ? `${activeEdit.title} | Curated Beauty Products`
+        : activeCategory
+          ? `${activeCategory.name} Products in Uganda`
+          : 'Beauty Products Online in Uganda';
     const seoDescription =
         `${pageDescription} Shop online with Ellena Beauty in Uganda.`
             .replace(/\s+/g, ' ')
             .slice(0, 160);
     const concerns = activeCategory
         ? (categoryConcerns[activeCategory.slug] ?? [])
-        : [];
+        : allConcerns;
     const activeConcern = concerns.find(
         (concern) => concern.slug === filters.concern,
     );
@@ -106,6 +132,7 @@ export default function Shop({
         filters.category,
         filters.concern,
         filters.search,
+        filters.edit,
     ].filter(Boolean).length;
     const submit = (event: FormEvent) => {
         event.preventDefault();
@@ -143,14 +170,20 @@ export default function Shop({
                 title={seoTitle}
                 description={seoDescription}
                 canonicalPath={
-                    activeCategory
-                        ? `/shop?category=${activeCategory.slug}`
-                        : '/shop'
+                    activeEdit
+                        ? `/shop?edit=${activeEdit.slug}`
+                        : activeCategory
+                          ? `/shop?category=${activeCategory.slug}`
+                          : '/shop'
                 }
+                image={activeCategory?.image}
+                imageAlt={activeCategory ? `${activeCategory.name} products from Ellena Beauty` : undefined}
                 noIndex={Boolean(
                     filters.search ||
                     filters.concern ||
-                    (filters.sort && filters.sort !== 'featured'),
+                    (filters.sort &&
+                        filters.sort !== 'featured' &&
+                        !activeEdit),
                 )}
                 structuredData={{
                     '@context': 'https://schema.org',
@@ -201,15 +234,98 @@ export default function Shop({
                         </div>
                     </div>
                 </section>
+            ) : activeEdit ? (
+                <section className="pt-[108px]">
+                    <div className="grid min-h-[560px] bg-brand-rose text-white lg:grid-cols-[1fr_1.05fr]">
+                        <div className="flex items-center px-6 py-20 md:px-14 lg:px-20">
+                            <div className="max-w-xl">
+                                <Link
+                                    href="/discover"
+                                    className="eyebrow text-brand-gold"
+                                >
+                                    The discovery room / {activeEdit.eyebrow}
+                                </Link>
+                                <h1 className="display-heading mt-6 text-white">
+                                    {activeEdit.title}
+                                </h1>
+                                <p className="mt-7 max-w-lg text-base leading-8 text-white/75">
+                                    {activeEdit.description}
+                                </p>
+                                <div className="mt-9 flex items-center gap-6 text-[10px] font-semibold tracking-[.16em] text-white/60 uppercase">
+                                    <span>
+                                        {activeEdit.products_count}{' '}
+                                        {activeEdit.products_count === 1
+                                            ? 'formula'
+                                            : 'formulas'}
+                                    </span>
+                                    <span className="h-px w-10 bg-brand-gold" />
+                                    <span>
+                                        Curated from the live collection
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="min-h-[380px] overflow-hidden lg:min-h-[560px]">
+                            <StoreImage
+                                src={activeEdit.image}
+                                alt={`${activeEdit.title} curated products`}
+                                className="h-full w-full object-cover transition duration-[1800ms] ease-out hover:scale-[1.025]"
+                                wrapperClassName="h-full"
+                                loading="eager"
+                                decoding="async"
+                            />
+                        </div>
+                    </div>
+                </section>
             ) : (
                 <section className="bg-brand-blush px-5 pt-40 pb-20 text-center md:pt-44 md:pb-24">
-                    <p className="eyebrow">The Ellena edit</p>
+                    <p className="eyebrow">Ellena products</p>
                     <h1 className="display-heading mt-5">{pageTitle}</h1>
                     <p className="body-copy mx-auto mt-5 max-w-xl">
                         {pageDescription}
                     </p>
                 </section>
             )}
+            <section className="border-b border-brand-pink bg-brand-white px-5 py-5">
+                <div className="mx-auto grid max-w-[1280px] grid-cols-[auto_minmax(0,1fr)] items-center gap-3 lg:flex lg:gap-2">
+                    <Link
+                        href="/discover"
+                        className="shrink-0 text-[9px] font-semibold tracking-[.14em] text-stone-500 uppercase lg:mr-3"
+                    >
+                        Curated products
+                    </Link>
+                    <div className="curated-edits-viewport min-w-0 lg:flex-1 lg:overflow-visible">
+                        <div className="curated-edits-marquee flex w-max items-center lg:w-full">
+                            <div className="flex shrink-0 items-center gap-2 pr-2 lg:min-w-0 lg:flex-1 lg:shrink lg:flex-wrap lg:pr-0">
+                                {edits.map((edit) => (
+                                    <Link
+                                        key={edit.slug}
+                                        href={edit.href}
+                                        className={`shrink-0 rounded-full border px-4 py-2.5 text-[9px] font-semibold tracking-[.11em] uppercase transition ${filters.edit === edit.slug ? 'border-brand-rose bg-brand-rose text-white' : 'border-brand-pink bg-brand-blush hover:border-brand-gold'}`}
+                                    >
+                                        {edit.title} · {edit.products_count}
+                                    </Link>
+                                ))}
+                            </div>
+                            <div
+                                aria-hidden="true"
+                                className="flex shrink-0 items-center gap-2 pr-2 lg:hidden"
+                            >
+                                {edits.map((edit) => (
+                                    <Link
+                                        key={`${edit.slug}-loop`}
+                                        href={edit.href}
+                                        tabIndex={-1}
+                                        className={`shrink-0 rounded-full border px-4 py-2.5 text-[9px] font-semibold tracking-[.11em] uppercase ${filters.edit === edit.slug ? 'border-brand-rose bg-brand-rose text-white' : 'border-brand-pink bg-brand-blush'}`}
+                                    >
+                                        {edit.title} · {edit.products_count}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
             {activeCategory && concerns.length > 0 && (
                 <section className="bg-ivory hidden border-b border-black/10 px-5 py-16 md:block md:px-10">
                     <div className="mx-auto max-w-[1280px]">
@@ -234,7 +350,7 @@ export default function Shop({
                                 href={shopUrl(filters, { concern: null })}
                                 className={`group min-h-32 border p-5 transition-all duration-300 ${!filters.concern ? 'border-brand-rose bg-brand-rose text-white shadow-lg' : 'border-brand-pink bg-white/55 hover:-translate-y-1 hover:border-brand-gold hover:bg-white'}`}
                             >
-                                <p className="eyebrow">Complete edit</p>
+                                <p className="eyebrow">All products</p>
                                 <p className="mt-3 text-sm leading-6 opacity-70">
                                     Explore every formula in this collection.
                                 </p>
@@ -264,6 +380,7 @@ export default function Shop({
                             href={shopUrl(filters, {
                                 category: null,
                                 concern: null,
+                                edit: null,
                             })}
                             className={`filter-link ${!filters.category ? 'active' : ''}`}
                             aria-current={
@@ -278,6 +395,7 @@ export default function Shop({
                                 href={shopUrl(filters, {
                                     category: category.slug,
                                     concern: null,
+                                    edit: null,
                                 })}
                                 className={`filter-link ${filters.category === category.slug ? 'active' : ''}`}
                                 aria-current={
@@ -373,6 +491,14 @@ export default function Shop({
                                 {activeCategory.name} <X size={12} />
                             </Link>
                         )}
+                        {activeEdit && (
+                            <Link
+                                href={shopUrl(filters, { edit: null })}
+                                className="inline-flex items-center gap-2 border border-black/10 bg-white/55 px-3 py-2 text-[9px] font-semibold tracking-[.1em] uppercase"
+                            >
+                                {activeEdit.title} <X size={12} />
+                            </Link>
+                        )}
                         {activeConcern && (
                             <Link
                                 href={shopUrl(filters, { concern: null })}
@@ -386,6 +512,7 @@ export default function Shop({
                                 category: null,
                                 concern: null,
                                 search: null,
+                                edit: null,
                             })}
                             className="ml-1 text-[9px] font-semibold tracking-[.1em] text-stone-500 uppercase underline underline-offset-4"
                         >
@@ -395,7 +522,7 @@ export default function Shop({
                 )}
                 {products.data.length || isNavigating ? (
                     <div
-                        className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-3 xl:grid-cols-4"
+                        className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5 xl:gap-6 2xl:grid-cols-6"
                         aria-busy={isNavigating}
                         aria-label={
                             isNavigating ? 'Loading products' : undefined
@@ -449,6 +576,7 @@ export default function Shop({
                 open={filtersOpen}
                 onOpenChange={setFiltersOpen}
                 categories={categories}
+                edits={edits}
                 concerns={concerns}
                 filters={filters}
                 total={products.total}

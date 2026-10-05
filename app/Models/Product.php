@@ -92,6 +92,15 @@ class Product extends Model
     }
 
     /**
+     * @return BelongsToMany<BeautyGuide, $this>
+     */
+    public function beautyGuides(): BelongsToMany
+    {
+        return $this->belongsToMany(BeautyGuide::class)
+            ->withPivot(['sort_order', 'note']);
+    }
+
+    /**
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
@@ -133,6 +142,10 @@ class Product extends Model
                 ->orWhere('subtitle', 'like', $pattern)
                 ->orWhere('description', 'like', $pattern)
                 ->orWhere('ingredients', 'like', $pattern)
+                ->orWhere('usage', 'like', $pattern)
+                ->orWhere('benefits', 'like', $pattern)
+                ->orWhere('concerns', 'like', $pattern)
+                ->orWhere('ritual_steps', 'like', $pattern)
                 ->orWhere('sku', 'like', $pattern)
                 ->orWhereHas('category', fn (Builder $category) => $category->where('name', 'like', $pattern))
             );

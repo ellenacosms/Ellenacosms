@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-Bh1tDfsg.js";import{d as t}from"./jsx-runtime-BCEQAWw8.js";var n=e(t(),1),r=(0,n.createContext)({openCartDrawer:()=>void 0});function i(){return(0,n.useContext)(r)}export{i as n,r as t};

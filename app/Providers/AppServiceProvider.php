@@ -7,6 +7,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Fortify\Contracts\LoginResponse;
@@ -44,6 +45,12 @@ class AppServiceProvider extends ServiceProvider
 
         if (app()->isProduction() && config('app.force_https', true)) {
             URL::forceScheme('https');
+        }
+
+        // Never allow an accidentally deployed Vite dev-server marker to make
+        // production pages load assets from 127.0.0.1.
+        if (app()->isProduction()) {
+            Vite::useHotFile(storage_path('framework/vite.hot'));
         }
 
         Password::defaults(fn (): ?Password => app()->isProduction()

@@ -15,6 +15,7 @@ class NewsletterSubscriber extends Model
 
     protected $fillable = [
         'email',
+        'whatsapp_phone',
         'status',
         'source',
         'confirmation_token_hash',
@@ -22,6 +23,9 @@ class NewsletterSubscriber extends Model
         'consent_at',
         'confirmed_at',
         'unsubscribed_at',
+        'whatsapp_marketing_opted_in_at',
+        'whatsapp_marketing_opted_out_at',
+        'whatsapp_marketing_opt_in_source',
         'mailchimp_synced_at',
         'mailchimp_sync_error',
     ];
@@ -32,6 +36,8 @@ class NewsletterSubscriber extends Model
             'consent_at' => 'datetime',
             'confirmed_at' => 'datetime',
             'unsubscribed_at' => 'datetime',
+            'whatsapp_marketing_opted_in_at' => 'datetime',
+            'whatsapp_marketing_opted_out_at' => 'datetime',
             'mailchimp_synced_at' => 'datetime',
         ];
     }

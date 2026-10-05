@@ -270,5 +270,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(CommerceManagementSeeder::class);
         $this->call(RitualSeeder::class);
+        $this->call(BeautyGuideSeeder::class);
     }
 }

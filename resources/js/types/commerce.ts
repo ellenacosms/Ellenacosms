@@ -16,6 +16,9 @@ export type Product = {
     slug: string;
     sku: string;
     subtitle?: string;
+    color?: string;
+    size?: string;
+    stock_status?: string;
     description: string;
     ingredients?: string;
     usage?: string;
@@ -31,9 +34,59 @@ export type Product = {
     reviews_avg_rating?: string | number | null;
     reviews_count?: number;
     pivot?: {
-        step_order: number;
+        step_order?: number;
         instruction?: string;
+        sort_order?: number;
+        note?: string;
     };
+};
+
+export type BeautyGuide = {
+    id: number;
+    title: string;
+    slug: string;
+    category: string;
+    category_label: string;
+    eyebrow?: string;
+    excerpt: string;
+    body: string;
+    hero_image?: string;
+    sections?: Array<{ heading: string; body: string }>;
+    steps?: string[];
+    faqs?: Array<{ question: string; answer: string }>;
+    seo_title?: string;
+    seo_description?: string;
+    read_minutes: number;
+    sort_order: number;
+    is_featured: boolean;
+    is_published: boolean;
+    published_at?: string;
+    products_count?: number;
+    products?: Product[];
+};
+
+export type MerchandisingEdit = {
+    slug: string;
+    eyebrow: string;
+    title: string;
+    description: string;
+    image: string;
+    href: string;
+    products_count: number;
+};
+
+export type ContactSubmission = {
+    id: number;
+    name: string;
+    email: string;
+    phone?: string | null;
+    topic: string;
+    order_number?: string | null;
+    preferred_contact_method: string;
+    message: string;
+    read_at?: string | null;
+    created_at: string;
+    updated_at: string;
 };
 
 export type Ritual = {
@@ -83,6 +136,9 @@ export type OrderPaymentEvent = {
 };
 
 export type Order = {
+    delivery_fee_status: string;
+    delivery_area?: string;
+    currency?: string;
     id: number;
     number: string;
     status: string;
@@ -160,11 +216,14 @@ export type Review = {
 export type NewsletterSubscriber = {
     id: number;
     email: string;
+    whatsapp_phone?: string | null;
     status: 'pending' | 'confirmed' | 'unsubscribed';
     source: string;
     consent_at: string;
     confirmed_at?: string | null;
     unsubscribed_at?: string | null;
+    whatsapp_marketing_opted_in_at?: string | null;
+    whatsapp_marketing_opted_out_at?: string | null;
     mailchimp_synced_at?: string | null;
     mailchimp_sync_error?: string | null;
     created_at: string;

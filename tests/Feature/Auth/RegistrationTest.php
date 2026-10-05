@@ -24,6 +24,19 @@ class RegistrationTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_registration_screen_exposes_google_sign_in_when_configured(): void
+    {
+        config([
+            'services.google.client_id' => 'google-client-id',
+            'services.google.client_secret' => 'google-client-secret',
+            'services.google.redirect' => 'https://example.com/auth/google/callback',
+        ]);
+
+        $this->get(route('register'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('googleEnabled', true));
+    }
+
     public function test_new_users_can_register()
     {
         $response = $this->post(route('register.store'), [

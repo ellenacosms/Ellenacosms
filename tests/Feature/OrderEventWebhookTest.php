@@ -20,7 +20,7 @@ class OrderEventWebhookTest extends TestCase
             'services.n8n.order_webhook_url' => 'https://n8n.example.test/webhook/orders',
             'services.n8n.order_webhook_secret' => 'shared-test-secret',
             'services.n8n.order_webhook_hosts' => ['n8n.example.test'],
-            'services.pesapal.currency' => 'UGX',
+            'services.dgateway.currency' => 'UGX',
         ]);
         Http::fake(['https://n8n.example.test/*' => Http::response(['ok' => true])]);
 
@@ -32,7 +32,7 @@ class OrderEventWebhookTest extends TestCase
             'address' => '1 Test Street',
             'city' => 'Kampala',
             'country' => 'Uganda',
-            'payment_method' => 'pesapal',
+            'payment_method' => 'dgateway',
             'payment_status' => 'paid',
             'subtotal' => 5000,
             'discount_amount' => 0,

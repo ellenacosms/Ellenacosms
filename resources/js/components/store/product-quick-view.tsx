@@ -86,13 +86,13 @@ export default function ProductQuickView({
                     </Dialog.Close>
 
                     <div className="grid md:max-h-[88vh] md:grid-cols-[1.05fr_.95fr]">
-                        <div className="relative min-h-[390px] overflow-hidden bg-[#eee8df] sm:min-h-[520px] md:h-[88vh] md:min-h-0">
+                        <div className="relative min-h-[390px] bg-[#faf9f7] sm:min-h-[520px] md:h-[88vh] md:min-h-0">
                             {images.length > 0 ? (
                                 <StoreImage
                                     key={images[activeImage]}
                                     src={images[activeImage]}
                                     alt={`${product.name}, view ${activeImage + 1}`}
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-contain object-center p-8 mix-blend-multiply sm:p-12"
                                     wrapperClassName="absolute inset-0"
                                 />
                             ) : (
@@ -103,7 +103,7 @@ export default function ProductQuickView({
 
                             {images.length > 1 && (
                                 <>
-                                    <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-4">
+                                    <div className="absolute right-4 bottom-4 left-4 z-20 flex items-end justify-between gap-4">
                                         <div className="flex gap-2">
                                             {images
                                                 .slice(0, 5)
@@ -116,7 +116,7 @@ export default function ProductQuickView({
                                                                 index,
                                                             )
                                                         }
-                                                        className={`h-14 w-11 overflow-hidden border bg-white transition sm:h-16 sm:w-13 ${activeImage === index ? 'border-black' : 'border-white/70 opacity-75 hover:opacity-100'}`}
+                                                        className={`h-14 w-11 border bg-[#faf9f7] transition sm:h-16 sm:w-13 ${activeImage === index ? 'border-black' : 'border-white/70 opacity-75 hover:opacity-100'}`}
                                                         aria-label={`Show image ${index + 1}`}
                                                         aria-current={
                                                             activeImage ===
@@ -126,7 +126,7 @@ export default function ProductQuickView({
                                                         <img
                                                             src={image}
                                                             alt=""
-                                                            className="h-full w-full object-cover"
+                                                            className="h-full w-full object-contain object-center p-1 mix-blend-multiply"
                                                         />
                                                     </button>
                                                 ))}

@@ -225,7 +225,7 @@ function AccountProductCard({ product }: { product: Product }) {
 
     return (
         <article className="group min-w-0">
-            <div className="relative aspect-[3/4] overflow-hidden bg-stone-100">
+            <div className="relative aspect-[3/4] overflow-hidden bg-[#faf9f7]">
                 <Link
                     href={`/products/${product.slug}`}
                     className="block h-full"
@@ -234,7 +234,7 @@ function AccountProductCard({ product }: { product: Product }) {
                         <StoreImage
                             src={image}
                             alt={product.name}
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="object-contain object-center p-6 mix-blend-multiply sm:p-8"
                         />
                     ) : (
                         <span className="grid h-full place-items-center font-serif text-xl text-stone-400 sm:text-3xl">
@@ -312,7 +312,7 @@ function OrderCard({ order }: { order: Order }) {
                                 key={`${image}-${index}`}
                                 src={image}
                                 alt=""
-                                className="h-16 w-14 border-2 border-white object-cover"
+                                className="h-16 w-14 border-2 border-white bg-[#faf9f7] object-contain object-center p-1 mix-blend-multiply"
                             />
                         ))}
                     </div>

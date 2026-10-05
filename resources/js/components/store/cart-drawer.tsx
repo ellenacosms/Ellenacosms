@@ -22,13 +22,6 @@ export default function CartDrawer({
     onOpenChange: (open: boolean) => void;
 }) {
     const [updatingProduct, setUpdatingProduct] = useState<number | null>(null);
-    const remainingForDelivery = Math.max(
-        0,
-        cart.free_shipping_threshold - cart.subtotal,
-    );
-    const deliveryProgress = cart.free_shipping_threshold
-        ? Math.min(100, (cart.subtotal / cart.free_shipping_threshold) * 100)
-        : 100;
 
     const updateQuantity = (productId: number, quantity: number) => {
         router.patch(
@@ -72,16 +65,8 @@ export default function CartDrawer({
                     <>
                         <div className="border-b border-black/10 px-6 py-5 sm:px-8">
                             <p className="text-[10px] font-semibold tracking-[.13em] uppercase">
-                                {remainingForDelivery > 0
-                                    ? `${money(remainingForDelivery)} away from complimentary delivery`
-                                    : 'Complimentary delivery unlocked'}
+                                Delivery calculated at checkout
                             </p>
-                            <div className="mt-3 h-1 overflow-hidden bg-black/10">
-                                <div
-                                    className="h-full bg-brand-gold transition-[width] duration-700 ease-out"
-                                    style={{ width: `${deliveryProgress}%` }}
-                                />
-                            </div>
                         </div>
 
                         <div className="min-h-0 flex-1 overflow-y-auto px-6 sm:px-8">
@@ -107,8 +92,8 @@ export default function CartDrawer({
                                                             product.images?.[0]
                                                         }
                                                         alt={product.name}
-                                                        className="object-cover"
-                                                        wrapperClassName="aspect-[3/4] bg-stone-100"
+                                                        className="object-contain object-center p-2 mix-blend-multiply"
+                                                        wrapperClassName="aspect-[3/4] bg-[#faf9f7]"
                                                     />
                                                 </Link>
                                                 <div className="flex min-w-0 flex-col">

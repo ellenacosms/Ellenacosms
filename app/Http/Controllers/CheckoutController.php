@@ -9,12 +9,12 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\StoreSetting;
 use App\Models\User;
-use App\Services\Payments\PesapalPaymentService;
+use App\Services\DeliveryPricing;
+use App\Services\Payments\DGatewayPaymentService;
 use App\Services\StoreCart;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -22,13 +22,12 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
-use Throwable;
 
 class CheckoutController extends Controller
 {
     public function __construct(
         private StoreCart $cart,
-        private PesapalPaymentService $pesapal,
+        private DGatewayPaymentService $payments,
     ) {}
 
     public function access(Request $request): HttpResponse|RedirectResponse
@@ -89,7 +88,7 @@ class CheckoutController extends Controller
             'checkoutToken' => $checkoutToken,
             'deliveryOptions' => $this->deliveryOptions($details),
             'paymentOptions' => $this->paymentOptions(),
-            'defaultPaymentMethod' => $this->pesapal->ready() ? 'pesapal' : 'manual_confirmation',
+            'defaultPaymentMethod' => $this->payments->ready() ? 'dgateway' : 'manual_confirmation',
         ]);
     }
 
@@ -100,22 +99,25 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:190'],
-            'city' => ['required', 'string', 'max:100'],
-            'country' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:30'],
+            'address' => ['required_unless:delivery_method,pickup', 'nullable', 'string', 'max:190'],
+            'city' => ['required_unless:delivery_method,pickup', 'nullable', 'string', 'max:100'],
+            'country' => ['required_unless:delivery_method,pickup', 'nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'delivery_method' => ['required', Rule::in(array_keys(config('checkout.delivery_methods', [])))],
+            'delivery_method' => ['required', 'string', 'max:50'],
             'checkout_token' => ['required', 'uuid'],
-            'payment_method' => ['required', Rule::in(['pesapal', 'manual_confirmation'])],
+            'payment_method' => ['required', Rule::in(['dgateway', 'manual_confirmation', 'pay_at_shop'])],
         ]);
+        if ($validated['payment_method'] === 'pay_at_shop' && $validated['delivery_method'] !== 'pickup') {
+            throw ValidationException::withMessages(['payment_method' => 'Pay at shop requires store pickup.']);
+        }
         if ($user) {
             $validated['email'] = $user->email;
         }
 
-        if ($validated['payment_method'] === 'pesapal' && ! $this->pesapal->ready()) {
+        if ($validated['payment_method'] === 'dgateway' && ! $this->payments->ready()) {
             throw ValidationException::withMessages([
-                'payment_method' => 'Pesapal is not available yet. Choose confirmation payment or try again later.',
+                'payment_method' => 'D-Gateway is not available yet. Choose confirmation payment or try again later.',
             ]);
         }
 
@@ -177,24 +179,33 @@ class CheckoutController extends Controller
             $codeDiscountAmount = $discount?->amountFor($discountableSubtotal) ?? 0;
             $discountAmount = round((float) ($bundleDiscount['amount'] ?? 0) + $codeDiscountAmount, 2);
             $discountedSubtotal = round(max(0, $subtotal - $discountAmount), 2);
-            $freeShippingThreshold = StoreSetting::freeShippingThreshold();
-            $delivery = $this->deliveryOption(
-                $validated['delivery_method'],
-                $discountedSubtotal,
-                $freeShippingThreshold,
-            );
-            $shipping = $delivery['fee'];
+            $delivery = app(DeliveryPricing::class)->resolve($validated['delivery_method'], $discountedSubtotal);
+            $shipping = $delivery['fee'] ?? 0;
+            if ($validated['delivery_method'] === 'pickup') {
+                if (mb_strlen((string) $delivery['description']) > 255) {
+                    throw ValidationException::withMessages(['delivery_method' => 'Please contact the shop to confirm pickup instructions.']);
+                }
+                $validated['address'] = $delivery['description'];
+                $validated['city'] = '';
+                $validated['country'] = '';
+            }
+            if ($delivery['zone_id']) {
+                $validated['city'] = $delivery['district'];
+                $validated['country'] = $delivery['country'];
+            }
             $prefix = StoreSetting::orderPrefix();
             $order = Order::create([
                 ...$validated,
                 'user_id' => $user?->id,
                 'number' => $prefix.'-'.now()->format('ymd').'-'.Str::upper(Str::random(6)),
                 'estimated_delivery_date' => $delivery['estimatedDeliveryDate'],
+                'delivery_zone_id' => $delivery['zone_id'],
+                'delivery_area' => $delivery['label'],
+                'delivery_fee_status' => $delivery['fee'] === null ? 'awaiting_quote' : 'confirmed',
+                'currency' => StoreSetting::currency(),
                 'payment_method' => $validated['payment_method'],
-                'payment_provider' => $validated['payment_method'] === 'pesapal' ? 'pesapal' : null,
-                'expires_at' => $validated['payment_method'] === 'pesapal'
-                    ? now()->addMinutes((int) config('checkout.unpaid_order_expiry_minutes', 30))
-                    : null,
+                'payment_provider' => $validated['payment_method'] === 'dgateway' ? 'dgateway' : null,
+                'expires_at' => now()->addHours(48),
                 'subtotal' => $subtotal,
                 'discount_id' => $discount?->id,
                 'discount_code' => collect([
@@ -258,20 +269,20 @@ class CheckoutController extends Controller
 
         return Inertia::render('storefront/order-success', [
             'order' => $order->load('items'),
-            'pesapalReady' => $this->pesapal->ready(),
-            'pesapalUrl' => $this->pesapal->paymentUrl($order),
-            'openPesapal' => false,
+            'gatewayReady' => $this->payments->ready(),
+            'cardsEnabled' => (bool) config('services.dgateway.cards_enabled'),
         ]);
     }
 
+    /** @return list<array{id: string, label: string, description: string, enabled: bool}> */
     private function paymentOptions(): array
     {
         return [
             [
-                'id' => 'pesapal',
-                'label' => 'Pesapal',
+                'id' => 'dgateway',
+                'label' => 'D-Gateway',
                 'description' => 'Pay securely with mobile money or card.',
-                'enabled' => $this->pesapal->ready(),
+                'enabled' => $this->payments->ready(),
             ],
             [
                 'id' => 'manual_confirmation',
@@ -279,69 +290,23 @@ class CheckoutController extends Controller
                 'description' => 'Place the order now and receive payment instructions from Ellena.',
                 'enabled' => true,
             ],
+            [
+                'id' => 'pay_at_shop',
+                'label' => 'Pay at shop',
+                'description' => 'Reserve your items and pay when you collect them. Bring your order code within 48 hours.',
+                'enabled' => StoreSetting::getValue('pickup_enabled', '0') === '1',
+            ],
         ];
     }
 
-    private function pesapalErrorMessage(Throwable $exception): string
-    {
-        if (str_contains($exception->getMessage(), 'Transaction amount exceeds limit')) {
-            return 'Your order is safe, but its amount exceeds the limit configured for our Pesapal account. Please contact us or choose another payment method.';
-        }
-
-        return 'Your order is safe, but Pesapal could not be opened. Try payment again below.';
-    }
-
-    /** @param array<string, mixed> $details */
+    /** @param array<string, mixed> $details
+     * @return list<array<string, mixed>>
+     */
     private function deliveryOptions(array $details): array
     {
-        $discountedSubtotal = max(
-            0,
-            (float) $details['subtotal']
-                - (float) ($details['bundle_discount']['amount'] ?? 0)
-                - (float) ($details['discount']['amount'] ?? 0),
-        );
+        $subtotal = max(0, (float) $details['subtotal'] - (float) ($details['bundle_discount']['amount'] ?? 0) - (float) ($details['discount']['amount'] ?? 0));
 
-        return collect(config('checkout.delivery_methods', []))
-            ->map(function (array $method, string $id) use ($discountedSubtotal): array {
-                $delivery = $this->deliveryOption(
-                    $id,
-                    $discountedSubtotal,
-                    StoreSetting::freeShippingThreshold(),
-                );
-
-                return [
-                    'id' => $id,
-                    'label' => $method['label'],
-                    'description' => $method['description'],
-                    'fee' => $delivery['fee'],
-                    'estimate' => $delivery['estimate'],
-                    'estimatedDeliveryDate' => $delivery['estimatedDeliveryDate'],
-                ];
-            })
-            ->values()
-            ->all();
-    }
-
-    /** @return array{fee: float, estimate: string, estimatedDeliveryDate: string} */
-    private function deliveryOption(string $id, float $subtotal, float $freeShippingThreshold): array
-    {
-        $method = config("checkout.delivery_methods.{$id}");
-        abort_unless(is_array($method), 422, 'Please select a valid delivery method.');
-
-        $fee = (float) $method['fee'];
-
-        if (($method['free_shipping_eligible'] ?? false) && $subtotal >= $freeShippingThreshold) {
-            $fee = 0;
-        }
-
-        $minimumDate = now()->addWeekdays((int) $method['minimum_business_days']);
-        $maximumDate = now()->addWeekdays((int) $method['maximum_business_days']);
-
-        return [
-            'fee' => $fee,
-            'estimate' => $minimumDate->format('j M').' – '.$maximumDate->format('j M'),
-            'estimatedDeliveryDate' => $maximumDate->toDateString(),
-        ];
+        return app(DeliveryPricing::class)->options($subtotal);
     }
 
     private function googleCallbackOrigin(): ?string

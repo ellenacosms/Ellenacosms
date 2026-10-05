@@ -25,7 +25,7 @@ class CategoryController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120', 'unique:categories,name'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'url'],
+            'image' => $this->imageRules(),
         ]);
         Category::create([...$data, 'slug' => $this->uniqueSlug($data['name'])]);
 
@@ -37,7 +37,7 @@ class CategoryController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120', Rule::unique('categories', 'name')->ignore($category)],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'url'],
+            'image' => $this->imageRules(),
             'is_active' => ['boolean'],
         ]);
         $category->update([...$data, 'slug' => $this->uniqueSlug($data['name'], $category)]);
@@ -66,5 +66,30 @@ class CategoryController extends Controller
         }
 
         return $slug;
+    }
+
+    /** @return array<int, mixed> */
+    private function imageRules(): array
+    {
+        return [
+            'nullable',
+            'string',
+            'max:2048',
+            function (string $attribute, mixed $value, \Closure $fail): void {
+                if ($value === null || $value === '') {
+                    return;
+                }
+
+                $image = (string) $value;
+                $isLocalAsset = str_starts_with($image, '/') && ! str_starts_with($image, '//');
+                $scheme = parse_url($image, PHP_URL_SCHEME);
+                $isHttpUrl = filter_var($image, FILTER_VALIDATE_URL)
+                    && in_array($scheme, ['http', 'https'], true);
+
+                if (! $isLocalAsset && ! $isHttpUrl) {
+                    $fail('The '.$attribute.' must be a local path beginning with / or a valid http(s) URL.');
+                }
+            },
+        ];
     }
 }

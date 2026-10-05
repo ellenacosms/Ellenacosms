@@ -1,0 +1,3921 @@
+{
+  "workflows": [
+    {
+      "id": "LVRpBltRzbWYeUhi",
+      "name": "Ellena B2B WhatsApp Follow-up",
+      "active": false,
+      "isArchived": false,
+      "versionId": "2b06f047-4028-46b7-96d1-4ecdb3747522",
+      "activeVersionId": null,
+      "triggerCount": 0,
+      "nodeCount": 6,
+      "createdAt": "2026-09-09T07:10:29.057Z",
+      "updatedAt": "2026-09-11T10:28:46.450Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true,
+        "timezone": "Africa/Kampala",
+        "binaryMode": "separate"
+      },
+      "tags": [],
+      "parentFolderId": null,
+      "description": "Receives selected rows from Ellena B2B Follow-up Queue, rechecks consent and contact permission, sends the existing WhatsApp follow-up template, and records accepted sends in the campaign queue and prospects.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Receive Follow-up Queue results": {
+          "main": [
+            [
+              {
+                "node": "Recheck selected queue row",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Recheck selected queue row": {
+          "main": [
+            [
+              {
+                "node": "Check prospect contact permission",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Check prospect contact permission": {
+          "main": [
+            [
+              {
+                "node": "Send approved B2B WhatsApp follow-up",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send approved B2B WhatsApp follow-up": {
+          "main": [
+            [
+              {
+                "node": "Mark queue follow-up sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark queue follow-up sent": {
+          "main": [
+            [
+              {
+                "node": "Mark prospect follow-up sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {
+            "phoneNumberId": "={{ \"1243298008866780\" }}",
+            "recipientPhoneNumber": "={{ String($(\"Recheck selected queue row\").item.json.phone_number || \"\").replace(/\\D/g, \"\") }}",
+            "template": "={{ \"b2b_wholesale_follow_up|en\" }}",
+            "components": {
+              "component": [
+                {
+                  "bodyParameters": {
+                    "parameter": [
+                      {
+                        "text": "={{ $(\"Recheck selected queue row\").item.json.business_name }}"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "id": "72a0401a-8683-44ab-afea-9aa77f5486f0",
+          "name": "Send approved B2B WhatsApp follow-up",
+          "type": "n8n-nodes-base.whatsApp",
+          "typeVersion": 1.1,
+          "position": [
+            672,
+            96
+          ],
+          "webhookId": "06784130-fc84-40dc-bdc3-4a4c051de0f1",
+          "credentials": {
+            "whatsAppApi": {
+              "id": "fo749YJXJIBtpHwi",
+              "name": "WhatsApp account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $(\"Recheck selected queue row\").item.json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "followed_up",
+                "last_contacted_at": "={{ $now.toISO() }}",
+                "notes": "={{ ($(\"Check prospect contact permission\").item.json.notes || \"\") + \"\\nWhatsApp follow-up accepted by Meta at \" + $now.toISO() }}"
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_type",
+                  "displayName": "business_type",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "city",
+                  "displayName": "city",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_phone",
+                  "displayName": "public_phone",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_email",
+                  "displayName": "public_email",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website",
+                  "displayName": "website",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_name",
+                  "displayName": "source_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_url",
+                  "displayName": "source_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "captured_at",
+                  "displayName": "captured_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "wholesale_potential",
+                  "displayName": "wholesale_potential",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_status",
+                  "displayName": "review_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_consent",
+                  "displayName": "outreach_consent",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_status",
+                  "displayName": "outreach_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "do_not_contact",
+                  "displayName": "do_not_contact",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "boolean",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "last_contacted_at",
+                  "displayName": "last_contacted_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "notes",
+                  "displayName": "notes",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "e2836bcd-a2d9-43ee-a2d5-dbf48a5aaf45",
+          "name": "Mark prospect follow-up sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1120,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "inputSource": "passthrough"
+          },
+          "id": "e12e92d1-ebcb-4c1c-b980-f11549086d9c",
+          "name": "Receive Follow-up Queue results",
+          "type": "n8n-nodes-base.executeWorkflowTrigger",
+          "typeVersion": 1.2,
+          "position": [
+            0,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "sent"
+                },
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "phone_number",
+                  "condition": "isNotEmpty"
+                },
+                {
+                  "keyName": "sent_at",
+                  "condition": "lte",
+                  "keyValue": "={{ $now.minus({ days: 4 }).toISO() }}"
+                }
+              ]
+            },
+            "returnAll": true
+          },
+          "id": "56150821-3632-4cf3-b24c-46d52556b951",
+          "name": "Recheck selected queue row",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            224,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.prospect_id }}"
+                },
+                {
+                  "keyName": "do_not_contact",
+                  "condition": "isFalse"
+                }
+              ]
+            },
+            "returnAll": true
+          },
+          "id": "63cc0213-8a85-4484-8f8c-2f4da53217da",
+          "name": "Check prospect contact permission",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            448,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $(\"Recheck selected queue row\").item.json.id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "followed_up",
+                "review_note": "={{ ($(\"Recheck selected queue row\").item.json.review_note || \"\") + \"\\nFollow-up template accepted by Meta at \" + $now.toISO() + \"; message ID: \" + $json.messages[0].id }}",
+                "prospect_id": 0
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "prospect_id",
+                  "displayName": "prospect_id",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "number",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "phone_number",
+                  "displayName": "phone_number",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_name",
+                  "displayName": "template_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_variable_1",
+                  "displayName": "template_variable_1",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website_url",
+                  "displayName": "website_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "consent_status",
+                  "displayName": "consent_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "queue_status",
+                  "displayName": "queue_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "created_at",
+                  "displayName": "created_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_note",
+                  "displayName": "review_note",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "sent_at",
+                  "displayName": "sent_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "789bd46f-34d8-494d-bff9-22ce8d3ee629",
+          "name": "Mark queue follow-up sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            896,
+            96
+          ]
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": null,
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    },
+    {
+      "id": "sZbyCPgCTFjETThR",
+      "name": "Ellena B2B WhatsApp Sender",
+      "active": false,
+      "isArchived": false,
+      "versionId": "f49598d4-ead7-4f2c-b052-8561b7362b55",
+      "activeVersionId": null,
+      "triggerCount": 0,
+      "nodeCount": 11,
+      "createdAt": "2026-08-26T07:38:54.297Z",
+      "updatedAt": "2026-09-23T07:02:51.456Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true,
+        "binaryMode": "separate",
+        "saveExecutionProgress": true,
+        "saveManualExecutions": true,
+        "saveDataErrorExecution": "all"
+      },
+      "tags": [
+        {
+          "id": "RcJsvlMxArxVGHSo",
+          "name": "B2B Outreach"
+        }
+      ],
+      "parentFolderId": null,
+      "description": "Manual approved outreach: deduplicates phone numbers within each campaign, reserves each row, sends one recipient at a time, retries database updates, and retains Meta message IDs. Sending rows require reconciliation after an interrupted send.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Send only after manual final approval": {
+          "main": [
+            [
+              {
+                "node": "Load approved B2B campaign rows",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark B2B campaign row sent": {
+          "main": [
+            [
+              {
+                "node": "Mark original B2B prospect contacted",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load approved B2B campaign rows": {
+          "main": [
+            [
+              {
+                "node": "Load campaign history",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load campaign history": {
+          "main": [
+            [
+              {
+                "node": "Load current prospect permissions",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load current prospect permissions": {
+          "main": [
+            [
+              {
+                "node": "Choose unique consented recipients",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Choose unique consented recipients": {
+          "main": [
+            [
+              {
+                "node": "Send one recipient at a time",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send one recipient at a time": {
+          "main": [
+            null,
+            [
+              {
+                "node": "Reserve campaign row before sending",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Reserve campaign row before sending": {
+          "main": [
+            [
+              {
+                "node": "Send approved B2B WhatsApp template",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send approved B2B WhatsApp template": {
+          "main": [
+            [
+              {
+                "node": "Prepare accepted campaign updates",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Prepare accepted campaign updates": {
+          "main": [
+            [
+              {
+                "node": "Mark B2B campaign row sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark original B2B prospect contacted": {
+          "main": [
+            [
+              {
+                "node": "Send one recipient at a time",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {},
+          "id": "c029a03e-f26d-4b35-862b-7c9a8d788b30",
+          "name": "Send only after manual final approval",
+          "type": "n8n-nodes-base.manualTrigger",
+          "typeVersion": 1,
+          "position": [
+            -304,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "approved_to_send"
+                },
+                {
+                  "keyName": "phone_number",
+                  "condition": "isNotEmpty"
+                }
+              ]
+            },
+            "returnAll": true,
+            "orderBy": true,
+            "orderByColumn": "business_name",
+            "orderByDirection": "ASC"
+          },
+          "id": "1c22cf39-f787-414d-a2c5-8c4e6496bf73",
+          "name": "Load approved B2B campaign rows",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            -32,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "phoneNumberId": "={{ \"1243298008866780\" }}",
+            "recipientPhoneNumber": "={{ $('Send one recipient at a time').item.json.phone_number }}",
+            "template": "={{ \"b2b_wholesale_intro|en\" }}",
+            "components": {
+              "component": [
+                {
+                  "bodyParameters": {
+                    "parameter": [
+                      {
+                        "text": "={{ $json.template_variable_1 }}"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "id": "5da61638-e7c2-4ea3-b839-16493aa0fb58",
+          "name": "Send approved B2B WhatsApp template",
+          "type": "n8n-nodes-base.whatsApp",
+          "typeVersion": 1.1,
+          "position": [
+            1312,
+            416
+          ],
+          "webhookId": "0d6be224-0225-43b8-aad8-fb2d1a9c9cfd",
+          "retryOnFail": false,
+          "credentials": {
+            "whatsAppApi": {
+              "id": "fo749YJXJIBtpHwi",
+              "name": "WhatsApp account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "={{ $json.queue_status }}",
+                "sent_at": "={{ $json.sent_at }}",
+                "review_note": "={{ $json.review_note }}",
+                "prospect_id": 0
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "prospect_id",
+                  "displayName": "prospect_id",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "number",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "phone_number",
+                  "displayName": "phone_number",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_name",
+                  "displayName": "template_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_variable_1",
+                  "displayName": "template_variable_1",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website_url",
+                  "displayName": "website_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "consent_status",
+                  "displayName": "consent_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "queue_status",
+                  "displayName": "queue_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "created_at",
+                  "displayName": "created_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_note",
+                  "displayName": "review_note",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "sent_at",
+                  "displayName": "sent_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_cycle",
+                  "displayName": "outreach_cycle",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "304d7caf-ba89-40aa-b12a-80637fa182cd",
+          "name": "Mark B2B campaign row sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            912,
+            -128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "contacted",
+                "last_contacted_at": "={{ $json.sent_at }}",
+                "notes": "={{ $('Prepare accepted campaign updates').item.json.prospect_note }}"
+              },
+              "schema": []
+            },
+            "options": {}
+          },
+          "id": "mark-original-prospect-contacted",
+          "name": "Mark original B2B prospect contacted",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1216,
+            -128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "returnAll": true
+          },
+          "id": "3df3f6d9-8117-483e-bb5b-45ea4bb15aeb",
+          "name": "Load campaign history",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            256,
+            112
+          ],
+          "executeOnce": true
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "returnAll": true
+          },
+          "id": "c026d6bf-20ef-499c-84ef-13fbd56860d3",
+          "name": "Load current prospect permissions",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            544,
+            112
+          ],
+          "executeOnce": true
+        },
+        {
+          "parameters": {
+            "jsCode": "function normalizePhone(v){let p=String(v||'').replace(/\\D/g,'');if(p.startsWith('00'))p=p.slice(2);if(/^0\\d{9}$/.test(p))p='256'+p.slice(1);return p;}\nconst history=$('Load campaign history').all().map(x=>x.json);\nconst prospects=new Map($input.all().map(x=>[x.json.id,x.json]));\nconst key=r=>(r.outreach_cycle||'legacy')+'|'+normalizePhone(r.phone_number);\nconst blocked=new Set(history.filter(r=>['sent','sent_duplicate','followed_up','replied','sending','skipped_duplicate'].includes(r.queue_status)).map(key));\nconst groups=new Map();\nfor(const item of $('Load approved B2B campaign rows').all()){\n const r=item.json,p=prospects.get(r.prospect_id),phone=normalizePhone(r.phone_number);\n if(!p||p.do_not_contact||p.outreach_consent!=='granted'||p.review_status!=='approved'||!/^[1-9]\\d{7,14}$/.test(phone)||blocked.has(key(r)))continue;\n const g=groups.get(key(r))||[];\n g.push({...r,phone_number:phone,prospect_note:p.notes||''});\n groups.set(key(r),g);\n}\nreturn [...groups.values()].map(rows=>({json:{...rows[0],related_rows:rows}}));"
+          },
+          "id": "524684ce-fc64-45d6-8d7e-050a7fd6c903",
+          "name": "Choose unique consented recipients",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            864,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "options": {}
+          },
+          "id": "8bcd4979-3753-46a8-84dd-fa1881670983",
+          "name": "Send one recipient at a time",
+          "type": "n8n-nodes-base.splitInBatches",
+          "typeVersion": 3,
+          "position": [
+            1472,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "approved_to_send"
+                },
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "sending"
+              },
+              "schema": []
+            },
+            "options": {}
+          },
+          "id": "3649144c-59ae-45ec-94fc-9a2a269331ba",
+          "name": "Reserve campaign row before sending",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1792,
+            128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "jsCode": "const response=$input.first().json;\nif(!response.messages?.[0]?.id||response.messages[0].message_status!=='accepted')throw new Error('Meta acceptance not confirmed; leave sending row for manual reconciliation.');\nconst group=$('Send one recipient at a time').item.json;\nconst at=new Date().toISOString(),messageId=response.messages[0].id;\nreturn group.related_rows.map((r,i)=>({json:{id:r.id,prospect_id:r.prospect_id,expected_status:i===0?'sending':'approved_to_send',queue_status:i===0?'sent':'skipped_duplicate',sent_at:at,review_note:(r.review_note||'')+'\\n'+(i===0?'Meta accepted intro':'Duplicate suppressed; intro accepted for campaign row '+group.id)+' at '+at+'; message ID: '+messageId+'. Delivery not confirmed.',prospect_note:(r.prospect_note||'')+'\\nIntro accepted by Meta at '+at+'; message ID: '+messageId+'. Delivery not confirmed.'},pairedItem:{item:0}}));"
+          },
+          "id": "bbb081de-8d45-4b37-9573-1787e2ab836f",
+          "name": "Prepare accepted campaign updates",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            640,
+            -128
+          ]
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": null,
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    },
+    {
+      "id": "4vxMW8mgfAJkieoL",
+      "name": "Ellena B2B WhatsApp Draft Queue",
+      "active": false,
+      "isArchived": false,
+      "versionId": "c240d325-cdaf-4a81-b5ee-ba483d20d862",
+      "activeVersionId": null,
+      "triggerCount": 0,
+      "nodeCount": 7,
+      "createdAt": "2026-08-21T07:18:39.529Z",
+      "updatedAt": "2026-09-16T11:46:24.866Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true,
+        "binaryMode": "separate"
+      },
+      "tags": [
+        {
+          "id": "RcJsvlMxArxVGHSo",
+          "name": "B2B Outreach"
+        }
+      ],
+      "parentFolderId": null,
+      "description": "Creates a review queue for the approved, consented B2B wholesale-introduction template. It never sends a WhatsApp message.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Create B2B outreach drafts": {
+          "main": [
+            [
+              {
+                "node": "Load consented B2B prospects",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load consented B2B prospects": {
+          "main": [
+            [
+              {
+                "node": "Prepare B2B template draft",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Skip prospects already queued": {
+          "main": [
+            [
+              {
+                "node": "Save WhatsApp outreach draft",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Save WhatsApp outreach draft": {
+          "main": [
+            [
+              {
+                "node": "Mark prospect queued for approval",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Prepare B2B template draft": {
+          "main": [
+            [
+              {
+                "node": "Keep drafts with a phone number",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Keep drafts with a phone number": {
+          "main": [
+            [
+              {
+                "node": "Skip prospects already queued",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {},
+          "id": "d25e66a2-5c2c-4957-a2fd-e7a384dd1810",
+          "name": "Create B2B outreach drafts",
+          "type": "n8n-nodes-base.manualTrigger",
+          "typeVersion": 1,
+          "position": [
+            0,
+            0
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "outreach_consent",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "outreach_status",
+                  "keyValue": "approved_for_draft"
+                },
+                {
+                  "keyName": "do_not_contact",
+                  "condition": "isFalse"
+                },
+                {
+                  "keyName": "public_phone",
+                  "condition": "isNotEmpty"
+                }
+              ]
+            },
+            "returnAll": true,
+            "orderBy": true,
+            "orderByColumn": "business_name",
+            "orderByDirection": "ASC"
+          },
+          "id": "cfd7a0f6-e9aa-4793-9750-db5cc30a26a3",
+          "name": "Load consented B2B prospects",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            224,
+            0
+          ]
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "prospect-id",
+                  "name": "prospect_id",
+                  "value": "={{ $json.id }}",
+                  "type": "number"
+                },
+                {
+                  "id": "business-name",
+                  "name": "business_name",
+                  "value": "={{ $json.business_name }}",
+                  "type": "string"
+                },
+                {
+                  "id": "phone-number",
+                  "name": "phone_number",
+                  "value": "={{ String($json.public_phone || \"\").replace(/\\D/g, \"\") }}",
+                  "type": "string"
+                },
+                {
+                  "id": "template-name",
+                  "name": "template_name",
+                  "value": "b2b_wholesale_intro",
+                  "type": "string"
+                },
+                {
+                  "id": "template-var-1",
+                  "name": "template_variable_1",
+                  "value": "={{ $json.business_name }}",
+                  "type": "string"
+                },
+                {
+                  "id": "website-url",
+                  "name": "website_url",
+                  "value": "https://ellenacosms.com",
+                  "type": "string"
+                },
+                {
+                  "id": "consent-status",
+                  "name": "consent_status",
+                  "value": "granted",
+                  "type": "string"
+                },
+                {
+                  "id": "queue-status",
+                  "name": "queue_status",
+                  "value": "awaiting_final_approval",
+                  "type": "string"
+                },
+                {
+                  "id": "created-at",
+                  "name": "created_at",
+                  "value": "={{ $now.toISO() }}",
+                  "type": "string"
+                },
+                {
+                  "id": "review-note",
+                  "name": "review_note",
+                  "value": "Prepared from approved B2B prospect. No message has been sent.",
+                  "type": "string"
+                }
+              ]
+            },
+            "includeOtherFields": true,
+            "options": {}
+          },
+          "id": "5884e0cb-d6c1-42de-b25b-3b3b32d7134f",
+          "name": "Prepare B2B template draft",
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            400,
+            -64
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "rowNotExists",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "prospect_id",
+                  "keyValue": "={{ $json.prospect_id }}"
+                },
+                {
+                  "keyName": "outreach_cycle",
+                  "keyValue": "restart_20260916"
+                }
+              ]
+            }
+          },
+          "id": "cfd7cd6a-94f9-4b18-8d8e-d81e9f1150c4",
+          "name": "Skip prospects already queued",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            704,
+            -64
+          ]
+        },
+        {
+          "parameters": {
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "prospect_id": "={{ $json.prospect_id }}",
+                "business_name": "={{ $json.business_name }}",
+                "phone_number": "={{ $json.phone_number }}",
+                "template_name": "={{ $json.template_name }}",
+                "template_variable_1": "={{ $json.template_variable_1 }}",
+                "website_url": "={{ $json.website_url }}",
+                "consent_status": "={{ $json.consent_status }}",
+                "queue_status": "={{ $json.queue_status }}",
+                "created_at": "={{ $json.created_at }}",
+                "review_note": "={{ $json.review_note }}",
+                "outreach_cycle": "restart_20260916"
+              },
+              "schema": []
+            },
+            "options": {
+              "optimizeBulk": false
+            }
+          },
+          "id": "888fdf83-1611-482f-80d2-7ee6dcf70f13",
+          "name": "Save WhatsApp outreach draft",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            896,
+            0
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $(\"Prepare B2B template draft\").item.json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "queued_for_final_approval",
+                "notes": "={{ \"Queued for final WhatsApp template approval: \" + $now.toISO() }}"
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_type",
+                  "displayName": "business_type",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "city",
+                  "displayName": "city",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_phone",
+                  "displayName": "public_phone",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_email",
+                  "displayName": "public_email",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website",
+                  "displayName": "website",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_name",
+                  "displayName": "source_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_url",
+                  "displayName": "source_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "captured_at",
+                  "displayName": "captured_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "wholesale_potential",
+                  "displayName": "wholesale_potential",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_status",
+                  "displayName": "review_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_consent",
+                  "displayName": "outreach_consent",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_status",
+                  "displayName": "outreach_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "do_not_contact",
+                  "displayName": "do_not_contact",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "boolean",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "last_contacted_at",
+                  "displayName": "last_contacted_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "notes",
+                  "displayName": "notes",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "b1350717-8aa5-4a80-bf30-3726028a69fe",
+          "name": "Mark prospect queued for approval",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1120,
+            0
+          ]
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "leftValue": "={{ $json.phone_number }}",
+                  "rightValue": "",
+                  "operator": {
+                    "type": "string",
+                    "operation": "notEmpty"
+                  },
+                  "id": "a6f4d978-8bea-45f7-aed2-32416835d166"
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "id": "filter-phone-before-final-approval",
+          "name": "Keep drafts with a phone number",
+          "type": "n8n-nodes-base.filter",
+          "typeVersion": 2.3,
+          "position": [
+            560,
+            128
+          ]
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": null,
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    },
+    {
+      "id": "psgvcGFuRP3q3e9S",
+      "name": "Ellena B2B Campaign Final Approval",
+      "active": true,
+      "isArchived": false,
+      "versionId": "4210c73c-bbb4-4350-896a-5785e313d1bd",
+      "activeVersionId": "4210c73c-bbb4-4350-896a-5785e313d1bd",
+      "triggerCount": 1,
+      "nodeCount": 9,
+      "createdAt": "2026-08-26T07:44:31.698Z",
+      "updatedAt": "2026-08-28T06:38:41.608Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true
+      },
+      "tags": [
+        {
+          "id": "RcJsvlMxArxVGHSo",
+          "name": "B2B Outreach"
+        }
+      ],
+      "parentFolderId": null,
+      "description": "Internal n8n-authenticated form that gives final approve-to-send or do-not-send decisions for explicitly consented B2B WhatsApp campaign drafts. It never sends messages.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "B2B campaign final approval form": {
+          "main": [
+            [
+              {
+                "node": "Load campaign drafts awaiting approval",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load campaign drafts awaiting approval": {
+          "main": [
+            [
+              {
+                "node": "Build campaign approval selector",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Build campaign approval selector": {
+          "main": [
+            [
+              {
+                "node": "Check for campaign drafts",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Check for campaign drafts": {
+          "main": [
+            [
+              {
+                "node": "Choose campaign decision",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "No campaign drafts awaiting approval",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Choose campaign decision": {
+          "main": [
+            [
+              {
+                "node": "Extract selected campaign row",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Extract selected campaign row": {
+          "main": [
+            [
+              {
+                "node": "Save final campaign decision",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Save final campaign decision": {
+          "main": [
+            [
+              {
+                "node": "Return to campaign approval list",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "id": "336c9539-8b7b-4ed4-a178-638795c28c1b",
+          "name": "B2B campaign final approval form",
+          "type": "n8n-nodes-base.formTrigger",
+          "typeVersion": 2.6,
+          "position": [
+            0,
+            96
+          ],
+          "parameters": {
+            "authentication": "n8nUserAuth",
+            "formTitle": "Ellena B2B Campaign Approval",
+            "formDescription": "Load the consented B2B campaign drafts awaiting your final decision. This page never sends a WhatsApp message.",
+            "formFields": {
+              "values": [
+                {
+                  "fieldType": "html",
+                  "elementName": "instructions",
+                  "html": "<p>Select <strong>Load campaigns</strong> to review the current queue.</p>"
+                }
+              ]
+            },
+            "responseMode": "lastNode",
+            "options": {
+              "appendAttribution": false,
+              "buttonLabel": "Load campaigns",
+              "path": "ellena-b2b-campaign-approval"
+            }
+          },
+          "webhookId": "1c8e5141-5f9c-4654-aa45-c2325f87dc1d"
+        },
+        {
+          "id": "80ec7925-af6e-4090-afea-cd171a6ee208",
+          "name": "Load campaign drafts awaiting approval",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            224,
+            96
+          ],
+          "parameters": {
+            "resource": "row",
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "consent_status",
+                  "condition": "eq",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "queue_status",
+                  "condition": "eq",
+                  "keyValue": "awaiting_final_approval"
+                },
+                {
+                  "keyName": "phone_number",
+                  "condition": "isNotEmpty"
+                }
+              ]
+            },
+            "returnAll": true,
+            "orderBy": true,
+            "orderByColumn": "business_name",
+            "orderByDirection": "ASC"
+          },
+          "alwaysOutputData": true
+        },
+        {
+          "id": "38a18dfc-20e3-4fe2-833f-1a6b9cdb57f6",
+          "name": "Build campaign approval selector",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            448,
+            96
+          ],
+          "parameters": {
+            "mode": "runOnceForAllItems",
+            "language": "javaScript",
+            "jsCode": "const rows = $input.all()\n  .map((item) => item.json)\n  .filter((row) => Number.isInteger(row.id) && row.consent_status === 'granted' && row.queue_status === 'awaiting_final_approval' && row.phone_number)\n  .sort((first, second) => String(first.business_name || '').localeCompare(String(second.business_name || '')));\n\nconst options = rows.map((row) => ({\n  option: `${row.id} — ${row.business_name || 'Unnamed business'} (${row.phone_number})`,\n}));\n\nreturn [{\n  json: {\n    hasCampaignDrafts: rows.length > 0,\n    formFields: [\n      { fieldName: 'campaign_selection', fieldLabel: 'Choose a campaign draft', fieldType: 'dropdown', fieldOptions: { values: options }, requiredField: true },\n      { fieldName: 'final_decision', fieldLabel: 'Final decision', fieldType: 'radio', fieldOptions: { values: [{ option: 'approved_to_send' }, { option: 'do_not_send' }] }, requiredField: true },\n      { fieldName: 'notes', fieldLabel: 'Decision note', fieldType: 'textarea', placeholder: 'Optional reason for the decision', requiredField: false },\n    ],\n  },\n}];"
+          }
+        },
+        {
+          "id": "a913a68c-d776-4c93-b8a3-3ec97fb57664",
+          "name": "Check for campaign drafts",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "position": [
+            672,
+            96
+          ],
+          "parameters": {
+            "conditions": {
+              "combinator": "and",
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 2
+              },
+              "conditions": [
+                {
+                  "leftValue": "={{ $json.hasCampaignDrafts }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "true"
+                  }
+                }
+              ]
+            },
+            "options": {}
+          }
+        },
+        {
+          "id": "305e2775-8f85-4f96-9d75-8ce056e861b4",
+          "name": "Choose campaign decision",
+          "type": "n8n-nodes-base.form",
+          "typeVersion": 2.5,
+          "position": [
+            896,
+            0
+          ],
+          "parameters": {
+            "operation": "page",
+            "defineForm": "json",
+            "jsonOutput": "={{ JSON.stringify($json.formFields) }}",
+            "options": {
+              "formTitle": "Choose a campaign draft",
+              "formDescription": "Approve to make a draft eligible for the manual sender. Do not send keeps it out of outreach.",
+              "buttonLabel": "Save final decision"
+            }
+          },
+          "webhookId": "12cf3aae-8009-42c4-bb41-c264a8210613"
+        },
+        {
+          "id": "b39eff33-29c6-44e1-a5e5-1849dbb93a85",
+          "name": "Extract selected campaign row",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            1120,
+            0
+          ],
+          "parameters": {
+            "mode": "runOnceForEachItem",
+            "language": "javaScript",
+            "jsCode": "const selection = String($json.campaign_selection || '');\nconst match = selection.match(/^(\\d+)\\s+—/);\n\nif (!match) {\n  throw new Error('Please choose a valid campaign draft.');\n}\n\nif (!['approved_to_send', 'do_not_send'].includes($json.final_decision)) {\n  throw new Error('Please choose a valid final decision.');\n}\n\nreturn {\n  json: {\n    ...$json,\n    campaign_row_id: Number(match[1]),\n  },\n};"
+          }
+        },
+        {
+          "id": "c555916c-b817-4129-9e11-804495ee5aa4",
+          "name": "Save final campaign decision",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1344,
+            0
+          ],
+          "parameters": {
+            "resource": "row",
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "id",
+                  "condition": "eq",
+                  "keyValue": "={{ $json.campaign_row_id }}"
+                },
+                {
+                  "keyName": "consent_status",
+                  "condition": "eq",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "queue_status",
+                  "condition": "eq",
+                  "keyValue": "awaiting_final_approval"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "={{ $json.final_decision }}",
+                "review_note": "={{ \"Final decision: \" + $json.final_decision + \" | \" + ($json.notes || \"No note supplied\") + \" | Reviewed: \" + $now.toISO() }}"
+              },
+              "schema": []
+            }
+          }
+        },
+        {
+          "id": "59b17136-4ebf-49ca-8d40-a7cd1e3938b8",
+          "name": "Return to campaign approval list",
+          "type": "n8n-nodes-base.form",
+          "typeVersion": 2.5,
+          "position": [
+            1568,
+            0
+          ],
+          "parameters": {
+            "operation": "completion",
+            "respondWith": "redirect",
+            "redirectUrl": "https://n8n.ellenacosms.com/form/ellena-b2b-campaign-approval",
+            "options": {}
+          },
+          "webhookId": "14b08e0f-5d79-4c47-b532-a5208f64b22a"
+        },
+        {
+          "id": "649944db-3531-4bd9-ab82-d94574ea5088",
+          "name": "No campaign drafts awaiting approval",
+          "type": "n8n-nodes-base.form",
+          "typeVersion": 2.5,
+          "position": [
+            896,
+            192
+          ],
+          "parameters": {
+            "operation": "completion",
+            "respondWith": "text",
+            "completionTitle": "Campaign review complete",
+            "completionMessage": "There are no consented campaign drafts awaiting final approval. No WhatsApp messages have been sent.",
+            "options": {}
+          },
+          "webhookId": "cf385621-f53d-4e00-b315-85f5295a50fe"
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": {
+        "sameAsDraft": true
+      },
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "executionId": "4571",
+      "runData": {
+        "Prepare accepted campaign updates": [
+          {
+            "startTime": 1790418471750,
+            "executionIndex": 8,
+            "source": [
+              {
+                "previousNode": "Send approved B2B WhatsApp template",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 113,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "id": 380,
+                      "prospect_id": 227,
+                      "expected_status": "sending",
+                      "queue_status": "sent",
+                      "sent_at": "2026-09-26T10:27:51.859Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:50:48.300-04:00\nMeta accepted intro at 2026-09-26T10:27:51.859Z; message ID: wamid.HBgMMjU2Nzg4NjU2MDA1FQIAERgSRTc5RTQ4QjYyQzU4RUY3M0YyAA==. Delivery not confirmed.",
+                      "prospect_note": "Queued for final WhatsApp template approval: 2026-09-25T03:49:36.057-04:00\nIntro accepted by Meta at 2026-09-26T10:27:51.859Z; message ID: wamid.HBgMMjU2Nzg4NjU2MDA1FQIAERgSRTc5RTQ4QjYyQzU4RUY3M0YyAA==. Delivery not confirmed."
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Load approved B2B campaign rows": [
+          {
+            "startTime": 1790418467147,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Send only after manual final approval",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 15,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "prospect_id": 227,
+                      "business_name": "Cj beauty lounge nyendo, masaka, Uganda",
+                      "phone_number": "256788656005",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Cj beauty lounge nyendo, masaka, Uganda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.464Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:50:48.300-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 380,
+                      "createdAt": "2026-09-25T07:49:36.034Z",
+                      "updatedAt": "2026-09-25T07:50:48.313Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 233,
+                      "business_name": "G,T nails care",
+                      "phone_number": "256755246360",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "G,T nails care",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.478Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:51:12.737-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 381,
+                      "createdAt": "2026-09-25T07:49:36.035Z",
+                      "updatedAt": "2026-09-25T07:51:12.751Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 221,
+                      "business_name": "Glean Beauty Salon",
+                      "phone_number": "256757072533",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Glean Beauty Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.487Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:51:33.907-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 382,
+                      "createdAt": "2026-09-25T07:49:36.036Z",
+                      "updatedAt": "2026-09-25T07:51:33.955Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 222,
+                      "business_name": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "phone_number": "256754303470",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.516Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:52:19.558-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 383,
+                      "createdAt": "2026-09-25T07:49:36.037Z",
+                      "updatedAt": "2026-09-25T07:52:19.590Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 220,
+                      "business_name": "Maama Yona Beauty Saloon",
+                      "phone_number": "256753984129",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Maama Yona Beauty Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.596Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:52:51.355-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 384,
+                      "createdAt": "2026-09-25T07:49:36.038Z",
+                      "updatedAt": "2026-09-25T07:52:51.371Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 229,
+                      "business_name": "Nexus Hair Salon",
+                      "phone_number": "256754829423",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Nexus Hair Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.628Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:21.635-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 385,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:21.666Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 234,
+                      "business_name": "Salimah Bridals and Beauty Parlor",
+                      "phone_number": "256702655362",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Salimah Bridals and Beauty Parlor",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.654Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:59.617-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 386,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:59.635Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 225,
+                      "business_name": "Stella Beauty Saloon &Training Centre Masaka",
+                      "phone_number": "256758751916",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Stella Beauty Saloon &Training Centre Masaka",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.680Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:55:13.051-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 387,
+                      "createdAt": "2026-09-25T07:49:36.040Z",
+                      "updatedAt": "2026-09-25T07:55:13.064Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 232,
+                      "business_name": "The Nail Bar UG",
+                      "phone_number": "256772054361",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Nail Bar UG",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.705Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:56:08.070-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 388,
+                      "createdAt": "2026-09-25T07:49:36.043Z",
+                      "updatedAt": "2026-09-25T07:56:08.407Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 231,
+                      "business_name": "Vegaazi Saloon",
+                      "phone_number": "256705129782",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Vegaazi Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.709Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:56:46.552-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 389,
+                      "createdAt": "2026-09-25T07:49:36.045Z",
+                      "updatedAt": "2026-09-25T07:56:46.586Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 224,
+                      "business_name": "Z hills Salon Nakayiba near club Dorris",
+                      "phone_number": "256749364871",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Z hills Salon Nakayiba near club Dorris",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.715Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:57:30.964-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 390,
+                      "createdAt": "2026-09-25T07:49:36.046Z",
+                      "updatedAt": "2026-09-25T07:57:31.013Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "executionId": "4768",
+      "runData": {
+        "Prepare accepted campaign updates": [
+          {
+            "startTime": 1790580813822,
+            "executionIndex": 8,
+            "source": [
+              {
+                "previousNode": "Send approved B2B WhatsApp template",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 386,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "id": 382,
+                      "prospect_id": 221,
+                      "expected_status": "sending",
+                      "queue_status": "sent",
+                      "sent_at": "2026-09-28T07:33:34.200Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:51:33.907-04:00\nMeta accepted intro at 2026-09-28T07:33:34.200Z; message ID: wamid.HBgMMjU2NzU3MDcyNTMzFQIAERgSOEZGOERDMzk1RTUxOEM0MkMwAA==. Delivery not confirmed.",
+                      "prospect_note": "Queued for final WhatsApp template approval: 2026-09-25T03:49:36.104-04:00\nIntro accepted by Meta at 2026-09-28T07:33:34.200Z; message ID: wamid.HBgMMjU2NzU3MDcyNTMzFQIAERgSOEZGOERDMzk1RTUxOEM0MkMwAA==. Delivery not confirmed."
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Load approved B2B campaign rows": [
+          {
+            "startTime": 1790580807460,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Send only after manual final approval",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 18,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "prospect_id": 235,
+                      "business_name": "AFROS & MO NATURAL HAIR",
+                      "phone_number": "256392002537",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "AFROS & MO NATURAL HAIR",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.506Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:26:32.258-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 391,
+                      "createdAt": "2026-09-28T07:25:12.162Z",
+                      "updatedAt": "2026-09-28T07:26:32.280Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 244,
+                      "business_name": "BLUNT HAIR STUDIO",
+                      "phone_number": "256708000049",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "BLUNT HAIR STUDIO",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.520Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:27:09.483-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 392,
+                      "createdAt": "2026-09-28T07:25:12.164Z",
+                      "updatedAt": "2026-09-28T07:27:09.498Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 233,
+                      "business_name": "G,T nails care",
+                      "phone_number": "256755246360",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "G,T nails care",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.478Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:51:12.737-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 381,
+                      "createdAt": "2026-09-25T07:49:36.035Z",
+                      "updatedAt": "2026-09-25T07:51:12.751Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 221,
+                      "business_name": "Glean Beauty Salon",
+                      "phone_number": "256757072533",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Glean Beauty Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.487Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:51:33.907-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 382,
+                      "createdAt": "2026-09-25T07:49:36.036Z",
+                      "updatedAt": "2026-09-25T07:51:33.955Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 241,
+                      "business_name": "Hair By Clipperz Salon",
+                      "phone_number": "256788129315",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Hair By Clipperz Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.525Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:27:26.171-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 393,
+                      "createdAt": "2026-09-28T07:25:12.165Z",
+                      "updatedAt": "2026-09-28T07:27:26.192Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 222,
+                      "business_name": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "phone_number": "256754303470",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.516Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:52:19.558-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 383,
+                      "createdAt": "2026-09-25T07:49:36.037Z",
+                      "updatedAt": "2026-09-25T07:52:19.590Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 236,
+                      "business_name": "Livara Family and Natural Hair Salon, Ntinda",
+                      "phone_number": "256756964656",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Livara Family and Natural Hair Salon, Ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.554Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:28:00.881-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 394,
+                      "createdAt": "2026-09-28T07:25:12.166Z",
+                      "updatedAt": "2026-09-28T07:28:00.895Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 220,
+                      "business_name": "Maama Yona Beauty Saloon",
+                      "phone_number": "256753984129",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Maama Yona Beauty Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.596Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:52:51.355-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 384,
+                      "createdAt": "2026-09-25T07:49:36.038Z",
+                      "updatedAt": "2026-09-25T07:52:51.371Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 240,
+                      "business_name": "Mystique Beauty Unisex Salon",
+                      "phone_number": "256714651850",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Mystique Beauty Unisex Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.597Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:28:36.398-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 395,
+                      "createdAt": "2026-09-28T07:25:12.167Z",
+                      "updatedAt": "2026-09-28T07:28:36.410Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 229,
+                      "business_name": "Nexus Hair Salon",
+                      "phone_number": "256754829423",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Nexus Hair Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.628Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:21.635-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 385,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:21.666Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 238,
+                      "business_name": "Posh Junction Salon",
+                      "phone_number": "256393225520",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Posh Junction Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.621Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:28:51.841-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 396,
+                      "createdAt": "2026-09-28T07:25:12.168Z",
+                      "updatedAt": "2026-09-28T07:28:51.858Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 234,
+                      "business_name": "Salimah Bridals and Beauty Parlor",
+                      "phone_number": "256702655362",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Salimah Bridals and Beauty Parlor",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.654Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:59.617-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 386,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:59.635Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 239,
+                      "business_name": "Salon Iremia - Hair & Nails",
+                      "phone_number": "256785499163",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Salon Iremia - Hair & Nails",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.635Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:29:23.604-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 397,
+                      "createdAt": "2026-09-28T07:25:12.169Z",
+                      "updatedAt": "2026-09-28T07:29:23.617Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 242,
+                      "business_name": "Sparkles Salon Acacia Mall",
+                      "phone_number": "256200906417",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sparkles Salon Acacia Mall",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.663Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:29:39.445-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 398,
+                      "createdAt": "2026-09-28T07:25:12.170Z",
+                      "updatedAt": "2026-09-28T07:29:39.456Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 246,
+                      "business_name": "Sparkles Salon Garden City",
+                      "phone_number": "256200906414",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sparkles Salon Garden City",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.668Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:29:56.295-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 399,
+                      "createdAt": "2026-09-28T07:25:12.171Z",
+                      "updatedAt": "2026-09-28T07:29:56.324Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 225,
+                      "business_name": "Stella Beauty Saloon &Training Centre Masaka",
+                      "phone_number": "256758751916",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Stella Beauty Saloon &Training Centre Masaka",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.680Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:55:13.051-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 387,
+                      "createdAt": "2026-09-25T07:49:36.040Z",
+                      "updatedAt": "2026-09-25T07:55:13.064Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 245,
+                      "business_name": "Sunny Hair Masters Unisex Salon",
+                      "phone_number": "256751170931",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sunny Hair Masters Unisex Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.672Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:30:18.310-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 400,
+                      "createdAt": "2026-09-28T07:25:12.172Z",
+                      "updatedAt": "2026-09-28T07:30:18.389Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 248,
+                      "business_name": "Swisscut",
+                      "phone_number": "256772505750",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Swisscut",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.678Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:30:43.798-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 401,
+                      "createdAt": "2026-09-28T07:25:12.173Z",
+                      "updatedAt": "2026-09-28T07:30:43.820Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 237,
+                      "business_name": "The Makeover Place, Kyambogo",
+                      "phone_number": "256786350615",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Makeover Place, Kyambogo",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.682Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:31:04.590-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 402,
+                      "createdAt": "2026-09-28T07:25:12.174Z",
+                      "updatedAt": "2026-09-28T07:31:04.670Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 249,
+                      "business_name": "The Makeover Place, Ntinda",
+                      "phone_number": "256709728691",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Makeover Place, Ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.687Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:31:32.137-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 403,
+                      "createdAt": "2026-09-28T07:25:12.175Z",
+                      "updatedAt": "2026-09-28T07:31:32.227Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 232,
+                      "business_name": "The Nail Bar UG",
+                      "phone_number": "256772054361",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Nail Bar UG",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.705Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:56:08.070-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 388,
+                      "createdAt": "2026-09-25T07:49:36.043Z",
+                      "updatedAt": "2026-09-25T07:56:08.407Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 247,
+                      "business_name": "Uzuri Natural Hair salon ntinda",
+                      "phone_number": "256776880042",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Uzuri Natural Hair salon ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.691Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:31:53.639-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 404,
+                      "createdAt": "2026-09-28T07:25:12.176Z",
+                      "updatedAt": "2026-09-28T07:31:53.691Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 231,
+                      "business_name": "Vegaazi Saloon",
+                      "phone_number": "256705129782",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Vegaazi Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.709Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:56:46.552-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 389,
+                      "createdAt": "2026-09-25T07:49:36.045Z",
+                      "updatedAt": "2026-09-25T07:56:46.586Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 224,
+                      "business_name": "Z hills Salon Nakayiba near club Dorris",
+                      "phone_number": "256749364871",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Z hills Salon Nakayiba near club Dorris",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.715Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:57:30.964-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 390,
+                      "createdAt": "2026-09-25T07:49:36.046Z",
+                      "updatedAt": "2026-09-25T07:57:31.013Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 243,
+                      "business_name": "Zziwa Hair Studio",
+                      "phone_number": "256200923956",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Zziwa Hair Studio",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.697Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:32:33.229-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 405,
+                      "createdAt": "2026-09-28T07:25:12.177Z",
+                      "updatedAt": "2026-09-28T07:32:33.241Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "executionId": "5105",
+      "runData": {
+        "Prepare accepted campaign updates": [
+          {
+            "startTime": 1790839775465,
+            "executionIndex": 8,
+            "source": [
+              {
+                "previousNode": "Send approved B2B WhatsApp template",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 820,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "id": 407,
+                      "prospect_id": 254,
+                      "expected_status": "sending",
+                      "queue_status": "sent",
+                      "sent_at": "2026-10-01T07:29:36.276Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-10-01T03:20:21.010-04:00\nMeta accepted intro at 2026-10-01T07:29:36.276Z; message ID: wamid.HBgMMjU2MzI2MzMzMDAwFQIAERgSNTVFQ0I5MzkwQzZFQzEwOERBAA==. Delivery not confirmed.",
+                      "prospect_note": "Queued for final WhatsApp template approval: 2026-10-01T03:19:25.389-04:00\nIntro accepted by Meta at 2026-10-01T07:29:36.276Z; message ID: wamid.HBgMMjU2MzI2MzMzMDAwFQIAERgSNTVFQ0I5MzkwQzZFQzEwOERBAA==. Delivery not confirmed."
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Load approved B2B campaign rows": [
+          {
+            "startTime": 1790839767828,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Send only after manual final approval",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 36,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "prospect_id": 235,
+                      "business_name": "AFROS & MO NATURAL HAIR",
+                      "phone_number": "256392002537",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "AFROS & MO NATURAL HAIR",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.506Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:26:32.258-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 391,
+                      "createdAt": "2026-09-28T07:25:12.162Z",
+                      "updatedAt": "2026-09-28T07:26:32.280Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 262,
+                      "business_name": "Anna beauty salon",
+                      "phone_number": "256751539606",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Anna beauty salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.630Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-10-01T03:20:03.995-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 406,
+                      "createdAt": "2026-10-01T07:19:25.261Z",
+                      "updatedAt": "2026-10-01T07:20:04.032Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 244,
+                      "business_name": "BLUNT HAIR STUDIO",
+                      "phone_number": "256708000049",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "BLUNT HAIR STUDIO",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.520Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:27:09.483-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 392,
+                      "createdAt": "2026-09-28T07:25:12.164Z",
+                      "updatedAt": "2026-09-28T07:27:09.498Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 254,
+                      "business_name": "Bravado Spa",
+                      "phone_number": "256326333000",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Bravado Spa",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.636Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-10-01T03:20:21.010-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 407,
+                      "createdAt": "2026-10-01T07:19:25.263Z",
+                      "updatedAt": "2026-10-01T07:20:21.024Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 250,
+                      "business_name": "ClawsUg",
+                      "phone_number": "256702019010",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "ClawsUg",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.640Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:20:38.910-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 408,
+                      "createdAt": "2026-10-01T07:19:25.264Z",
+                      "updatedAt": "2026-10-01T07:20:38.930Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 252,
+                      "business_name": "Elegant Unisex Salon",
+                      "phone_number": "256785121010",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Elegant Unisex Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.645Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-10-01T03:21:16.918-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 409,
+                      "createdAt": "2026-10-01T07:19:25.265Z",
+                      "updatedAt": "2026-10-01T07:21:16.931Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 233,
+                      "business_name": "G,T nails care",
+                      "phone_number": "256755246360",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "G,T nails care",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.478Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:51:12.737-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 381,
+                      "createdAt": "2026-09-25T07:49:36.035Z",
+                      "updatedAt": "2026-09-25T07:51:12.751Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 258,
+                      "business_name": "Glam Salon & Barber Entebbe",
+                      "phone_number": "256752345511",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Glam Salon & Barber Entebbe",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.649Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:25:20.725-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 410,
+                      "createdAt": "2026-10-01T07:19:25.266Z",
+                      "updatedAt": "2026-10-01T07:25:20.740Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 241,
+                      "business_name": "Hair By Clipperz Salon",
+                      "phone_number": "256788129315",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Hair By Clipperz Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.525Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:27:26.171-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 393,
+                      "createdAt": "2026-09-28T07:25:12.165Z",
+                      "updatedAt": "2026-09-28T07:27:26.192Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 222,
+                      "business_name": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "phone_number": "256754303470",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.516Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:52:19.558-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 383,
+                      "createdAt": "2026-09-25T07:49:36.037Z",
+                      "updatedAt": "2026-09-25T07:52:19.590Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 259,
+                      "business_name": "Linora beauty studio",
+                      "phone_number": "256742177455",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Linora beauty studio",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.676Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:26:04.280-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 411,
+                      "createdAt": "2026-10-01T07:19:25.267Z",
+                      "updatedAt": "2026-10-01T07:26:04.364Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 236,
+                      "business_name": "Livara Family and Natural Hair Salon, Ntinda",
+                      "phone_number": "256756964656",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Livara Family and Natural Hair Salon, Ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.554Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:28:00.881-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 394,
+                      "createdAt": "2026-09-28T07:25:12.166Z",
+                      "updatedAt": "2026-09-28T07:28:00.895Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 263,
+                      "business_name": "Lux Airbase spa Entebbe",
+                      "phone_number": "256774733579",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Lux Airbase spa Entebbe",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.680Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:26:29.118-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 412,
+                      "createdAt": "2026-10-01T07:19:25.268Z",
+                      "updatedAt": "2026-10-01T07:26:29.133Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 220,
+                      "business_name": "Maama Yona Beauty Saloon",
+                      "phone_number": "256753984129",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Maama Yona Beauty Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.596Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:52:51.355-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 384,
+                      "createdAt": "2026-09-25T07:49:36.038Z",
+                      "updatedAt": "2026-09-25T07:52:51.371Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 240,
+                      "business_name": "Mystique Beauty Unisex Salon",
+                      "phone_number": "256714651850",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Mystique Beauty Unisex Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.597Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:28:36.398-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 395,
+                      "createdAt": "2026-09-28T07:25:12.167Z",
+                      "updatedAt": "2026-09-28T07:28:36.410Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 260,
+                      "business_name": "Nail spark",
+                      "phone_number": "256784762182",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Nail spark",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.706Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:26:59.611-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 413,
+                      "createdAt": "2026-10-01T07:19:25.269Z",
+                      "updatedAt": "2026-10-01T07:26:59.622Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 253,
+                      "business_name": "Neelams Nail hub",
+                      "phone_number": "256785212820",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Neelams Nail hub",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.716Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:27:29.163-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 414,
+                      "createdAt": "2026-10-01T07:19:25.270Z",
+                      "updatedAt": "2026-10-01T07:27:29.180Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 229,
+                      "business_name": "Nexus Hair Salon",
+                      "phone_number": "256754829423",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Nexus Hair Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.628Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:21.635-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 385,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:21.666Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 238,
+                      "business_name": "Posh Junction Salon",
+                      "phone_number": "256393225520",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Posh Junction Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.621Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:28:51.841-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 396,
+                      "createdAt": "2026-09-28T07:25:12.168Z",
+                      "updatedAt": "2026-09-28T07:28:51.858Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 234,
+                      "business_name": "Salimah Bridals and Beauty Parlor",
+                      "phone_number": "256702655362",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Salimah Bridals and Beauty Parlor",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.654Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:53:59.617-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 386,
+                      "createdAt": "2026-09-25T07:49:36.039Z",
+                      "updatedAt": "2026-09-25T07:53:59.635Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 239,
+                      "business_name": "Salon Iremia - Hair & Nails",
+                      "phone_number": "256785499163",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Salon Iremia - Hair & Nails",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.635Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:29:23.604-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 397,
+                      "createdAt": "2026-09-28T07:25:12.169Z",
+                      "updatedAt": "2026-09-28T07:29:23.617Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 251,
+                      "business_name": "Soft Hands Mobile Spa and Nails",
+                      "phone_number": "23057347118",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Soft Hands Mobile Spa and Nails",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.794Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-10-01T03:27:52.641-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 415,
+                      "createdAt": "2026-10-01T07:19:25.271Z",
+                      "updatedAt": "2026-10-01T07:27:52.658Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 257,
+                      "business_name": "Soul Beauty Salon and Spa",
+                      "phone_number": "256752397878",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Soul Beauty Salon and Spa",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.827Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:28:11.780-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 416,
+                      "createdAt": "2026-10-01T07:19:25.272Z",
+                      "updatedAt": "2026-10-01T07:28:11.793Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 242,
+                      "business_name": "Sparkles Salon Acacia Mall",
+                      "phone_number": "256200906417",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sparkles Salon Acacia Mall",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.663Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:29:39.445-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 398,
+                      "createdAt": "2026-09-28T07:25:12.170Z",
+                      "updatedAt": "2026-09-28T07:29:39.456Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 246,
+                      "business_name": "Sparkles Salon Garden City",
+                      "phone_number": "256200906414",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sparkles Salon Garden City",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.668Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:29:56.295-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 399,
+                      "createdAt": "2026-09-28T07:25:12.171Z",
+                      "updatedAt": "2026-09-28T07:29:56.324Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 225,
+                      "business_name": "Stella Beauty Saloon &Training Centre Masaka",
+                      "phone_number": "256758751916",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Stella Beauty Saloon &Training Centre Masaka",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.680Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:55:13.051-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 387,
+                      "createdAt": "2026-09-25T07:49:36.040Z",
+                      "updatedAt": "2026-09-25T07:55:13.064Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 245,
+                      "business_name": "Sunny Hair Masters Unisex Salon",
+                      "phone_number": "256751170931",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Sunny Hair Masters Unisex Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.672Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:30:18.310-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 400,
+                      "createdAt": "2026-09-28T07:25:12.172Z",
+                      "updatedAt": "2026-09-28T07:30:18.389Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 248,
+                      "business_name": "Swisscut",
+                      "phone_number": "256772505750",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Swisscut",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.678Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:30:43.798-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 401,
+                      "createdAt": "2026-09-28T07:25:12.173Z",
+                      "updatedAt": "2026-09-28T07:30:43.820Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 237,
+                      "business_name": "The Makeover Place, Kyambogo",
+                      "phone_number": "256786350615",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Makeover Place, Kyambogo",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.682Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:31:04.590-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 402,
+                      "createdAt": "2026-09-28T07:25:12.174Z",
+                      "updatedAt": "2026-09-28T07:31:04.670Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 249,
+                      "business_name": "The Makeover Place, Ntinda",
+                      "phone_number": "256709728691",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Makeover Place, Ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.687Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-28T03:31:32.137-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 403,
+                      "createdAt": "2026-09-28T07:25:12.175Z",
+                      "updatedAt": "2026-09-28T07:31:32.227Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 232,
+                      "business_name": "The Nail Bar UG",
+                      "phone_number": "256772054361",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "The Nail Bar UG",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.705Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:56:08.070-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 388,
+                      "createdAt": "2026-09-25T07:49:36.043Z",
+                      "updatedAt": "2026-09-25T07:56:08.407Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 264,
+                      "business_name": "Three Guyz Master Nails & Hair Styling",
+                      "phone_number": "256754829764",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Three Guyz Master Nails & Hair Styling",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.833Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:28:30.994-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 417,
+                      "createdAt": "2026-10-01T07:19:25.274Z",
+                      "updatedAt": "2026-10-01T07:28:31.029Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 255,
+                      "business_name": "Tom's Nails & Salon",
+                      "phone_number": "256703024187",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Tom's Nails & Salon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-10-01T07:19:24.838Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-10-01T03:28:47.634-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 418,
+                      "createdAt": "2026-10-01T07:19:25.275Z",
+                      "updatedAt": "2026-10-01T07:28:47.648Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 247,
+                      "business_name": "Uzuri Natural Hair salon ntinda",
+                      "phone_number": "256776880042",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Uzuri Natural Hair salon ntinda",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.691Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:31:53.639-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 404,
+                      "createdAt": "2026-09-28T07:25:12.176Z",
+                      "updatedAt": "2026-09-28T07:31:53.691Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 231,
+                      "business_name": "Vegaazi Saloon",
+                      "phone_number": "256705129782",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Vegaazi Saloon",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.709Z",
+                      "review_note": "Final decision: approved_to_send | Accepted | Reviewed: 2026-09-25T03:56:46.552-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 389,
+                      "createdAt": "2026-09-25T07:49:36.045Z",
+                      "updatedAt": "2026-09-25T07:56:46.586Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 224,
+                      "business_name": "Z hills Salon Nakayiba near club Dorris",
+                      "phone_number": "256749364871",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Z hills Salon Nakayiba near club Dorris",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-25T07:49:35.715Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-25T03:57:30.964-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 390,
+                      "createdAt": "2026-09-25T07:49:36.046Z",
+                      "updatedAt": "2026-09-25T07:57:31.013Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  },
+                  {
+                    "json": {
+                      "prospect_id": 243,
+                      "business_name": "Zziwa Hair Studio",
+                      "phone_number": "256200923956",
+                      "template_name": "b2b_wholesale_intro",
+                      "template_variable_1": "Zziwa Hair Studio",
+                      "website_url": "https://ellenacosms.com",
+                      "consent_status": "granted",
+                      "queue_status": "approved_to_send",
+                      "created_at": "2026-09-28T07:25:11.697Z",
+                      "review_note": "Final decision: approved_to_send | Approved | Reviewed: 2026-09-28T03:32:33.229-04:00",
+                      "sent_at": null,
+                      "outreach_cycle": "restart_20260916",
+                      "id": 405,
+                      "createdAt": "2026-09-28T07:25:12.177Z",
+                      "updatedAt": "2026-09-28T07:32:33.241Z"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

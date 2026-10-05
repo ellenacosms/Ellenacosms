@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BeautyGuide;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Response;
@@ -13,7 +14,8 @@ class SitemapController extends Controller
         return response()
             ->view('sitemap', [
                 'categories' => Category::query()->where('is_active', true)->get(['slug', 'updated_at']),
-                'products' => Product::available()->get(['slug', 'updated_at']),
+                'products' => Product::available()->get(['slug', 'images', 'updated_at']),
+                'beautyGuides' => BeautyGuide::published()->get(['slug', 'updated_at']),
             ])
             ->header('Content-Type', 'application/xml; charset=UTF-8');
     }

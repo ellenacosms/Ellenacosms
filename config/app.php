@@ -54,6 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'admin_domain' => env('ADMIN_DOMAIN', 'admin.ellenacosms.com'),
+
+    'admin_url' => env('ADMIN_URL', 'https://admin.ellenacosms.com'),
+
     'force_https' => env('APP_FORCE_HTTPS', true),
 
     /*

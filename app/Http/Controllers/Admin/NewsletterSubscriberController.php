@@ -67,12 +67,14 @@ class NewsletterSubscriberController extends Controller
     {
         return response()->streamDownload(function () {
             $output = fopen('php://output', 'w');
-            fputcsv($output, ['Email', 'Status', 'Source', 'Consent date', 'Confirmed date', 'Unsubscribed date']);
+            fputcsv($output, ['Email', 'WhatsApp phone', 'WhatsApp consent date', 'Status', 'Source', 'Consent date', 'Confirmed date', 'Unsubscribed date']);
 
             NewsletterSubscriber::query()->latest()->chunk(500, function ($subscribers) use ($output) {
                 foreach ($subscribers as $subscriber) {
                     fputcsv($output, [
                         $subscriber->email,
+                        $subscriber->whatsapp_phone,
+                        $subscriber->whatsapp_marketing_opted_in_at?->toIso8601String(),
                         $subscriber->status,
                         $subscriber->source,
                         $subscriber->consent_at?->toIso8601String(),

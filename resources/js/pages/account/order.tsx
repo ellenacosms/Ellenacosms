@@ -18,6 +18,14 @@ export default function OrderDetail({ order }: { order: Order }) {
     return (
         <>
             <Head title={`Order ${order.number}`} />
+            {order.payment_status !== 'paid' && (
+                <Link
+                    className="button-dark mx-4 mt-4"
+                    href={`/order/${order.id}/success`}
+                >
+                    Review delivery and payment
+                </Link>
+            )}
             <div className="flex flex-1 flex-col gap-6 overflow-x-auto p-4 md:p-7">
                 <div>
                     <Link
@@ -97,7 +105,7 @@ export default function OrderDetail({ order }: { order: Order }) {
                                     <img
                                         src={item.product?.images?.[0]}
                                         alt={item.product_name}
-                                        className="h-24 w-20 shrink-0 object-cover"
+                                        className="h-24 w-20 shrink-0 bg-[#faf9f7] object-contain object-center p-1 mix-blend-multiply"
                                     />
                                     <div className="flex flex-1 flex-col justify-between gap-3 sm:flex-row">
                                         <div>
@@ -124,16 +132,24 @@ export default function OrderDetail({ order }: { order: Order }) {
                                 <span className="text-muted-foreground">
                                     Subtotal
                                 </span>
-                                <span>{money(order.subtotal)}</span>
+                                <span>
+                                    {money(order.subtotal, order.currency)}
+                                </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">
                                     Delivery
                                 </span>
                                 <span>
-                                    {Number(order.shipping)
-                                        ? money(order.shipping)
-                                        : 'Complimentary'}
+                                    {order.delivery_fee_status ===
+                                    'awaiting_quote'
+                                        ? 'To be confirmed'
+                                        : Number(order.shipping)
+                                          ? money(
+                                                order.shipping,
+                                                order.currency,
+                                            )
+                                          : 'Complimentary'}
                                 </span>
                             </div>
                             {Number(order.discount_amount) > 0 && (
@@ -143,12 +159,20 @@ export default function OrderDetail({ order }: { order: Order }) {
                                         {order.discount_code &&
                                             `(${order.discount_code})`}
                                     </span>
-                                    <span>-{money(order.discount_amount)}</span>
+                                    <span>
+                                        -
+                                        {money(
+                                            order.discount_amount,
+                                            order.currency,
+                                        )}
+                                    </span>
                                 </div>
                             )}
                             <div className="flex justify-between border-t border-sidebar-border/70 pt-4 text-base font-semibold">
                                 <span>Total</span>
-                                <span>{money(order.total)}</span>
+                                <span>
+                                    {money(order.total, order.currency)}
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -198,7 +222,7 @@ export default function OrderDetail({ order }: { order: Order }) {
                                 number for delivery or return support.
                             </p>
                             <a
-                                href="mailto:concierge@ellena.com"
+                                href="mailto:ellenacosms@gmail.com"
                                 className="mt-4 inline-block text-[10px] font-semibold tracking-widest uppercase underline underline-offset-4"
                             >
                                 Contact concierge

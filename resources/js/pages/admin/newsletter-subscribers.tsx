@@ -112,6 +112,7 @@ export default function NewsletterSubscribers({
                         <thead>
                             <tr>
                                 <th>Email</th>
+                                <th>WhatsApp</th>
                                 <th>Status</th>
                                 <th>Source</th>
                                 <th>Consent date</th>
@@ -124,6 +125,17 @@ export default function NewsletterSubscribers({
                                 <tr key={subscriber.id}>
                                     <td className="font-medium">
                                         {subscriber.email}
+                                    </td>
+                                    <td>
+                                        {subscriber.whatsapp_marketing_opted_in_at ? (
+                                            <span className="text-emerald-700">
+                                                Opted in
+                                            </span>
+                                        ) : (
+                                            <span className="text-stone-400">
+                                                —
+                                            </span>
+                                        )}
                                     </td>
                                     <td>
                                         <span

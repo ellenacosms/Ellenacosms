@@ -57,8 +57,9 @@ export default function Rituals({ rituals }: { rituals: Ritual[] }) {
                         </h1>
                         <p className="mt-7 max-w-xl text-base leading-8 text-white/75">
                             Guided combinations for hair and body, arranged in
-                            the order they work best. Add the complete edit in
-                            one step and receive automatic ritual savings.
+                            the order they work best. Add the complete product
+                            set in one step and receive automatic ritual
+                            savings.
                         </p>
                         <a
                             href="#ritual-edits"
@@ -86,7 +87,7 @@ export default function Rituals({ rituals }: { rituals: Ritual[] }) {
                         [
                             '03',
                             'Flexible care',
-                            'Use the complete edit or revisit individual formulas whenever you need.',
+                            'Use the complete product set or revisit individual formulas whenever you need.',
                         ],
                     ].map(([number, title, copy]) => (
                         <div key={number} className="flex gap-5">
@@ -161,8 +162,8 @@ export default function Rituals({ rituals }: { rituals: Ritual[] }) {
                                                 <StoreImage
                                                     src={product.images?.[0]}
                                                     alt=""
-                                                    className="object-cover"
-                                                    wrapperClassName="aspect-[3/4] bg-stone-100"
+                                                    className="object-contain object-center p-1 mix-blend-multiply"
+                                                    wrapperClassName="aspect-[3/4] bg-[#faf9f7]"
                                                 />
                                                 <div className="min-w-0">
                                                     <Link
@@ -210,7 +211,7 @@ export default function Rituals({ rituals }: { rituals: Ritual[] }) {
                                         <div>
                                             <p className="eyebrow text-emerald-700">
                                                 Save {money(ritual.savings)} as
-                                                a complete edit
+                                                a complete product set
                                             </p>
                                             <div className="mt-3 flex items-center gap-3">
                                                 <span className="font-serif text-3xl">

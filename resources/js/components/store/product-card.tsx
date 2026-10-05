@@ -23,9 +23,22 @@ export default function ProductCard({ product }: { product: Product }) {
     const averageRating = Number(product.reviews_avg_rating ?? 0);
     const lowStock = product.stock > 0 && product.stock <= 5;
 
+    const addToCart = () => {
+        router.post(
+            `/cart/${product.id}`,
+            { quantity: 1 },
+            {
+                preserveScroll: true,
+                onStart: () => setIsAdding(true),
+                onSuccess: openCartDrawer,
+                onFinish: () => setIsAdding(false),
+            },
+        );
+    };
+
     return (
         <article
-            className={`product-card group h-full ${secondaryImage ? 'has-secondary' : ''}`}
+            className={`product-card group flex h-full flex-col overflow-hidden rounded-[5px] border border-black/10 bg-white shadow-[0_2px_7px_rgba(45,37,28,.12)] transition-shadow duration-300 hover:shadow-[0_8px_22px_rgba(45,37,28,.16)] ${secondaryImage ? 'has-secondary' : ''}`}
         >
             <div className="product-card__image">
                 <Link
@@ -40,7 +53,7 @@ export default function ProductCard({ product }: { product: Product }) {
                                 alt={product.name}
                                 loading="lazy"
                                 decoding="async"
-                                className="object-cover"
+                                className="object-contain object-center"
                                 wrapperClassName="product-card__primary-image"
                             />
                             {secondaryImage && (
@@ -50,7 +63,7 @@ export default function ProductCard({ product }: { product: Product }) {
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
-                                    className="object-cover"
+                                    className="object-contain object-center"
                                     wrapperClassName="product-card__secondary-image"
                                 />
                             )}
@@ -101,19 +114,8 @@ export default function ProductCard({ product }: { product: Product }) {
                 <button
                     type="button"
                     disabled={product.stock < 1 || isAdding}
-                    onClick={() =>
-                        router.post(
-                            `/cart/${product.id}`,
-                            { quantity: 1 },
-                            {
-                                preserveScroll: true,
-                                onStart: () => setIsAdding(true),
-                                onSuccess: openCartDrawer,
-                                onFinish: () => setIsAdding(false),
-                            },
-                        )
-                    }
-                    className="product-card__cart"
+                    onClick={addToCart}
+                    className="product-card__cart hidden md:flex"
                     aria-label={`${product.stock > 0 ? 'Add' : 'Unavailable'} ${product.name}`}
                 >
                     {isAdding ? (
@@ -128,59 +130,78 @@ export default function ProductCard({ product }: { product: Product }) {
                           : 'Unavailable'}
                 </button>
             </div>
-            <div className="mt-5 px-0.5">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-stone-500">
-                    {product.category?.name && (
-                        <p className="eyebrow">{product.category.name}</p>
-                    )}
-                    {reviewCount > 0 ? (
-                        <p
-                            className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[.08em]"
-                            aria-label={`${averageRating.toFixed(1)} out of 5 stars from ${reviewCount} reviews`}
-                        >
-                            <Star
-                                size={11}
-                                fill="currentColor"
-                                aria-hidden="true"
-                            />
-                            {averageRating.toFixed(1)} ({reviewCount})
-                        </p>
-                    ) : (
-                        <p className="text-[9px] font-semibold tracking-[.14em] uppercase">
-                            New formula
+            <div className="flex flex-1 flex-col p-4 sm:p-5">
+                {product.category?.name && (
+                    <p className="eyebrow text-stone-500">
+                        {product.category.name}
+                    </p>
+                )}
+                <Link href={`/products/${product.slug}`} className="mt-2">
+                    <h3 className="line-clamp-2 min-h-[2.45em] font-serif text-base leading-[1.2] font-semibold text-black hover:text-stone-600 sm:text-lg">
+                        {product.name}
+                    </h3>
+                </Link>
+                {product.subtitle && (
+                    <p className="mt-2 line-clamp-1 text-xs leading-4 text-stone-600">
+                        {product.subtitle}
+                    </p>
+                )}
+                <div className="mt-4 flex items-end gap-2">
+                    <p
+                        className={`text-base font-bold tracking-[-.01em] ${isOnSale ? 'text-brand-rose' : 'text-black'}`}
+                    >
+                        {money(product.price)}
+                    </p>
+                    {isOnSale && (
+                        <p className="text-xs text-stone-400 line-through">
+                            {money(product.compare_price!)}
                         </p>
                     )}
                 </div>
-                <div className="mt-3 flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                        <Link href={`/products/${product.slug}`}>
-                            <h3 className="card-heading hover:text-stone-500">
-                                {product.name}
-                            </h3>
-                        </Link>
-                        {product.subtitle && (
-                            <p className="meta-text mt-2 line-clamp-2">
-                                {product.subtitle}
-                            </p>
-                        )}
-                        {product.concerns?.[0] && (
-                            <p className="mt-3 text-[9px] font-semibold tracking-[.12em] text-stone-500 uppercase">
-                                Best for {product.concerns[0]}
-                            </p>
-                        )}
-                    </div>
-                    <div className="shrink-0 text-right">
+                <button
+                    type="button"
+                    disabled={product.stock < 1 || isAdding}
+                    onClick={addToCart}
+                    className="product-card__cart--mobile md:hidden"
+                    aria-label={`${product.stock > 0 ? 'Add' : 'Unavailable'} ${product.name}`}
+                >
+                    {isAdding ? (
+                        <LoaderCircle className="animate-spin" size={15} />
+                    ) : (
+                        <ShoppingBag size={15} />
+                    )}
+                    {isAdding
+                        ? 'Adding…'
+                        : product.stock > 0
+                          ? 'Add to bag'
+                          : 'Unavailable'}
+                </button>
+                <div className="mt-3 flex min-h-4 flex-wrap items-center gap-x-2 gap-y-1 text-stone-600">
+                    {reviewCount > 0 ? (
                         <p
-                            className={`price-text ${isOnSale ? '!text-brand-rose' : ''}`}
+                            className="inline-flex items-center gap-1 text-[11px]"
+                            aria-label={`${averageRating.toFixed(1)} out of 5 stars from ${reviewCount} reviews`}
                         >
-                            {money(product.price)}
+                            <Star
+                                size={13}
+                                fill="currentColor"
+                                aria-hidden="true"
+                            />
+                            <span className="font-semibold">
+                                {averageRating.toFixed(1)}
+                            </span>
+                            <span>({reviewCount})</span>
                         </p>
-                        {isOnSale && (
-                            <p className="mt-1 text-xs text-stone-400 line-through">
-                                {money(product.compare_price!)}
-                            </p>
-                        )}
-                    </div>
+                    ) : (
+                        <p className="text-[9px] font-semibold tracking-[.12em] uppercase">
+                            New formula
+                        </p>
+                    )}
+                    {product.concerns?.[0] && (
+                        <p className="text-[9px] font-semibold tracking-[.1em] text-stone-500 uppercase">
+                            Best for {product.concerns[0]}
+                        </p>
+                    )}
                 </div>
             </div>
         </article>

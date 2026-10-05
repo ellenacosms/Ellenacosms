@@ -80,15 +80,10 @@ export default function StoreSettings({ settings }: { settings: Settings }) {
                                 )
                             }
                         />
-                        <Field
-                            label="Free shipping threshold"
-                            type="number"
-                            value={form.data.free_shipping_threshold}
-                            error={form.errors.free_shipping_threshold}
-                            onChange={(value) =>
-                                form.setData('free_shipping_threshold', value)
-                            }
-                        />
+                        <a href="/admin/delivery" className="text-sm underline">
+                            Manage delivery fees and free-delivery thresholds by
+                            area
+                        </a>
                         <Field
                             label="Low stock threshold"
                             type="number"

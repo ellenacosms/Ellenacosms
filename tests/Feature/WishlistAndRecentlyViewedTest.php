@@ -64,7 +64,7 @@ class WishlistAndRecentlyViewedTest extends TestCase
         $product = $this->product('Body Veil', 'body-veil', 'BODY-001');
 
         $this->post("/wishlist/{$product->id}")
-            ->assertRedirect('/login');
+            ->assertRedirect('/register');
 
         $this->assertDatabaseCount('wishlists', 0);
     }

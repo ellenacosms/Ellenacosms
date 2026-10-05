@@ -1,0 +1,1887 @@
+{
+  "savedAt": "2026-10-02T07:06:06.194Z",
+  "workflows": [
+    {
+      "id": "EEqmUcyjr5oEFnjT",
+      "name": "Ellena B2B Reply Tracker",
+      "active": true,
+      "isArchived": false,
+      "versionId": "d1889011-ea9e-4291-80a8-d52c0b39bfa7",
+      "activeVersionId": "d1889011-ea9e-4291-80a8-d52c0b39bfa7",
+      "triggerCount": 0,
+      "nodeCount": 6,
+      "createdAt": "2026-08-31T07:29:13.293Z",
+      "updatedAt": "2026-08-31T07:30:12.972Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true
+      },
+      "tags": [
+        {
+          "id": "RcJsvlMxArxVGHSo",
+          "name": "B2B Outreach"
+        },
+        {
+          "id": "YvzVZE29B5FF8niA",
+          "name": "Customer Enquiries"
+        }
+      ],
+      "parentFolderId": null,
+      "description": "Matches incoming WhatsApp replies to sent B2B campaigns, records the reply, and alerts the Ellena team. It never sends customer messages.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Receive inbound WhatsApp message": {
+          "main": [
+            [
+              {
+                "node": "Load sent B2B campaigns",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load sent B2B campaigns": {
+          "main": [
+            [
+              {
+                "node": "Match B2B reply by phone",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Match B2B reply by phone": {
+          "main": [
+            [
+              {
+                "node": "Mark B2B campaign replied",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark B2B campaign replied": {
+          "main": [
+            [
+              {
+                "node": "Mark B2B prospect replied",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark B2B prospect replied": {
+          "main": [
+            [
+              {
+                "node": "Notify team about B2B reply",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "id": "42211a87-b906-48e1-8066-207c8c1a0da6",
+          "name": "Receive inbound WhatsApp message",
+          "type": "n8n-nodes-base.executeWorkflowTrigger",
+          "typeVersion": 1.2,
+          "position": [
+            0,
+            0
+          ],
+          "parameters": {
+            "inputSource": "passthrough"
+          }
+        },
+        {
+          "id": "45983b0a-0acc-4113-9e4e-cd73be394b0b",
+          "name": "Load sent B2B campaigns",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            224,
+            0
+          ],
+          "parameters": {
+            "resource": "row",
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "queue_status",
+                  "condition": "eq",
+                  "keyValue": "sent"
+                }
+              ]
+            },
+            "returnAll": true
+          }
+        },
+        {
+          "id": "6a39f89f-3c33-4ca3-83bb-934af3ddda5c",
+          "name": "Match B2B reply by phone",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            448,
+            0
+          ],
+          "parameters": {
+            "mode": "runOnceForAllItems",
+            "language": "javaScript",
+            "jsCode": "const inbound = $('Receive inbound WhatsApp message').first().json;\nconst digits = (value) => String(value || '').replace(/\\D/g, '');\nconst samePhone = (left, right) => { const a = digits(left); const b = digits(right); return a.length >= 9 && b.length >= 9 && a.slice(-9) === b.slice(-9); };\nconst sender = inbound.sender_number || inbound.phone_number || '';\nconst match = $input.all().map((item) => item.json).find((row) => samePhone(row.phone_number, sender));\nif (!match) return [];\nreturn [{ json: { ...inbound, campaign_id: match.id, prospect_id: match.prospect_id, business_name: match.business_name, campaign_note: match.review_note || '', reply_text: inbound.message_text || '', reply_received_at: new Date().toISOString() } }];"
+          }
+        },
+        {
+          "id": "819d0c78-1a34-40d8-b7a6-d67edf1fa69d",
+          "name": "Mark B2B campaign replied",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            672,
+            0
+          ],
+          "parameters": {
+            "resource": "row",
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "id",
+                  "condition": "eq",
+                  "keyValue": "={{ $json.campaign_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "replied",
+                "review_note": "={{ $json.campaign_note + \" | Reply received \" + $json.reply_received_at + \": \" + $json.reply_text }}"
+              },
+              "schema": []
+            },
+            "options": {}
+          }
+        },
+        {
+          "id": "202afb94-2541-4ce8-b926-e9dc7878d4c0",
+          "name": "Mark B2B prospect replied",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            896,
+            0
+          ],
+          "parameters": {
+            "resource": "row",
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "id",
+                  "condition": "eq",
+                  "keyValue": "={{ $(\"Match B2B reply by phone\").item.json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "replied",
+                "last_contacted_at": "={{ $(\"Match B2B reply by phone\").item.json.reply_received_at }}",
+                "notes": "={{ \"Inbound WhatsApp reply received: \" + $(\"Match B2B reply by phone\").item.json.reply_text }}"
+              },
+              "schema": []
+            },
+            "options": {}
+          }
+        },
+        {
+          "id": "70f69b5a-3dea-4d7a-ad43-97459a432f64",
+          "name": "Notify team about B2B reply",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.2,
+          "position": [
+            1120,
+            0
+          ],
+          "parameters": {
+            "resource": "message",
+            "operation": "send",
+            "authentication": "oAuth2",
+            "sendTo": "ellenateam01@gmail.com",
+            "subject": "={{ \"B2B reply received — \" + $(\"Match B2B reply by phone\").item.json.business_name }}",
+            "emailType": "html",
+            "message": "={{ \"<p><strong>\" + $(\"Match B2B reply by phone\").item.json.business_name + \"</strong> replied to the Ellena wholesale introduction.</p><p><strong>Reply:</strong><br>\" + $(\"Match B2B reply by phone\").item.json.reply_text + \"</p><p>Review the WhatsApp conversation and decide the next step: share the catalogue, share pricing, arrange a call, or mark not interested.</p>\" }}",
+            "options": {
+              "appendAttribution": false
+            }
+          },
+          "webhookId": "1fe6b278-990b-4aff-80d7-082d1803f844",
+          "credentials": {
+            "gmailOAuth2": {
+              "id": "C8s1dli8XgG5bDXU",
+              "name": "Gmail account"
+            }
+          }
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": {
+        "sameAsDraft": true
+      },
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    },
+    {
+      "id": "h04141E51PxnGpt9",
+      "name": "Ellena Customer Enquiries — WhatsApp & Gmail",
+      "active": true,
+      "isArchived": false,
+      "versionId": "b679465a-7a44-43e3-8c9d-ad16ba138142",
+      "activeVersionId": "b679465a-7a44-43e3-8c9d-ad16ba138142",
+      "triggerCount": 2,
+      "nodeCount": 39,
+      "createdAt": "2026-08-03T11:42:18.271Z",
+      "updatedAt": "2026-08-31T07:29:41.086Z",
+      "settings": {
+        "executionOrder": "v1",
+        "binaryMode": "separate",
+        "availableInMCP": true,
+        "timeSavedMode": "fixed",
+        "callerPolicy": "workflowsFromSameOwner"
+      },
+      "tags": [
+        {
+          "id": "YvzVZE29B5FF8niA",
+          "name": "Customer Enquiries"
+        }
+      ],
+      "parentFolderId": null,
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Webhook": {
+          "main": [
+            [
+              {
+                "node": "Is Verification (GET)",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Is Verification (GET)",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Is Verification (GET)": {
+          "main": [
+            [
+              {
+                "node": "Respond Challenge",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Is Message",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Is Message": {
+          "main": [
+            [
+              {
+                "node": "Extract Fields",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Respond 200 (Other)",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Extract Fields": {
+          "main": [
+            [
+              {
+                "node": "Execute a SQL query",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Track matching B2B replies",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Extract Lead Info": {
+          "main": [
+            [
+              {
+                "node": "Merge",
+                "type": "main",
+                "index": 1
+              }
+            ]
+          ]
+        },
+        "Build Lead Record": {
+          "main": [
+            [
+              {
+                "node": "If",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Insert Lead (MySQL)": {
+          "main": [
+            [
+              {
+                "node": "Send WhatsApp Reply",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Needs Human?",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send WhatsApp Reply": {
+          "main": [
+            [
+              {
+                "node": "Respond 200 OK",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Needs Human?": {
+          "main": [
+            [
+              {
+                "node": "Notify Team (Email)",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Insert or update rows in a table",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Gmail Trigger": {
+          "main": [
+            [
+              {
+                "node": "Edit Fields",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Edit Fields": {
+          "main": [
+            [
+              {
+                "node": "Select rows from a table",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "If": {
+          "main": [
+            [
+              {
+                "node": "Insert Lead (MySQL)",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Reply to a message",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Simple Memory": {
+          "ai_memory": [
+            [
+              {
+                "node": "AI Agent",
+                "type": "ai_memory",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "AI Agent": {
+          "main": [
+            [
+              {
+                "node": "Code in JavaScript1",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Merge": {
+          "main": [
+            [
+              {
+                "node": "Build Lead Record",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Select rows from a table": {
+          "main": [
+            [
+              {
+                "node": "Extract Lead Info",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Parse Catalog to Structured Products",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "If1": {
+          "main": [
+            [
+              {
+                "node": "Execute a SQL query1",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Select rows from a table",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Execute a SQL query": {
+          "main": [
+            [
+              {
+                "node": "If1",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Execute a SQL query1": {
+          "main": [
+            [
+              {
+                "node": "Respond 200 (Other)1",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Parse Catalog to Structured Products": {
+          "main": [
+            [
+              {
+                "node": "Filter Relevant Products",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Code in JavaScript1": {
+          "main": [
+            [
+              {
+                "node": "Has Checkout Request?",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Has Checkout Request?": {
+          "main": [
+            [
+              {
+                "node": "Sign Checkout Request",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Merge",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Create Website Checkout Session": {
+          "main": [
+            [
+              {
+                "node": "Build Checkout Link Reply",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Build Checkout Link Reply": {
+          "main": [
+            [
+              {
+                "node": "Merge",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Gemini Chat Model": {
+          "ai_languageModel": [
+            []
+          ]
+        },
+        "Groq Chat Model": {
+          "ai_languageModel": [
+            [
+              {
+                "node": "AI Agent",
+                "type": "ai_languageModel",
+                "index": 0
+              },
+              {
+                "node": "Extract Lead Info",
+                "type": "ai_languageModel",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Sign Checkout Request": {
+          "main": [
+            [
+              {
+                "node": "Create Website Checkout Session",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Filter Relevant Products": {
+          "main": [
+            [
+              {
+                "node": "Keep Catalog for Order Follow-up",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Keep Catalog for Order Follow-up": {
+          "main": [
+            [
+              {
+                "node": "AI Agent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {
+            "multipleMethods": true,
+            "path": "watsapp-webhook",
+            "responseMode": "responseNode",
+            "options": {}
+          },
+          "id": "04a43059-1ef9-46c2-b83c-92ad23393d65",
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2.1,
+          "position": [
+            -3728,
+            496
+          ],
+          "webhookId": "a21ba177-ddd3-4a5c-95e7-26a8225d057b"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 2
+              },
+              "conditions": [
+                {
+                  "id": "has-challenge",
+                  "leftValue": "={{ $json.query[\"hub.challenge\"] }}",
+                  "rightValue": "",
+                  "operator": {
+                    "type": "string",
+                    "operation": "exists",
+                    "singleValue": true
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "id": "3c771875-54a4-4dff-aaaa-03712f14f1dd",
+          "name": "Is Verification (GET)",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "position": [
+            -3088,
+            528
+          ]
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "={{ $json.query[\"hub.challenge\"] }}",
+            "options": {}
+          },
+          "id": "ecf29960-59e2-404e-913c-593784dc67bd",
+          "name": "Respond Challenge",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1.5,
+          "position": [
+            -2544,
+            -672
+          ]
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 2
+              },
+              "conditions": [
+                {
+                  "id": "field-messages",
+                  "leftValue": "={{ $json.body.entry[0].changes[0].field }}",
+                  "rightValue": "messages",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                },
+                {
+                  "id": "has-text",
+                  "leftValue": "={{ $json.body.entry[0].changes[0].value.messages[0].text.body }}",
+                  "rightValue": "",
+                  "operator": {
+                    "type": "string",
+                    "operation": "exists",
+                    "singleValue": true
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "id": "757ae5f8-711e-4e55-89ed-efaa02764206",
+          "name": "Is Message",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "position": [
+            -2704,
+            752
+          ]
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "sender-number",
+                  "name": "sender_number",
+                  "value": "={{ $json.body.entry[0].changes[0].value.messages[0].from }}",
+                  "type": "string"
+                },
+                {
+                  "id": "message-text",
+                  "name": "message_text",
+                  "value": "={{ $json.body.entry[0].changes[0].value.messages[0].text.body }}",
+                  "type": "string"
+                },
+                {
+                  "id": "sender-name",
+                  "name": "sender_name",
+                  "value": "={{ $json.body.entry[0].changes[0].value.contacts[0].profile.name }}",
+                  "type": "string"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "id": "22aa5d24-9759-43a2-8017-7e2aaa911507",
+          "name": "Extract Fields",
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            -2480,
+            64
+          ]
+        },
+        {
+          "parameters": {
+            "text": "=Customer name: {{ $('Extract Fields').isExecuted ? $('Extract Fields').item.json.sender_name : $('Edit Fields').item.json.sender }}\nChannel: {{ $('Extract Fields').isExecuted ? 'WhatsApp' : $('Edit Fields').item.json.channel }}\nMessage: {{ $('Extract Fields').isExecuted ? $('Extract Fields').item.json.message_text : $('Edit Fields').item.json.message_text }}\n",
+            "attributes": {
+              "attributes": [
+                {
+                  "name": "name",
+                  "description": "Customer's name if mentioned in the message or known from the WhatsApp profile, else empty"
+                },
+                {
+                  "name": "requirement",
+                  "description": "What the customer wants or needs — be specific and concise"
+                },
+                {
+                  "name": "category",
+                  "description": "Type of inquiry. One of: product, service, quote, support, complaint"
+                },
+                {
+                  "name": "budget",
+                  "description": "Budget or price mentioned, verbatim (e.g. \"around $5000\"). Empty if none mentioned."
+                },
+                {
+                  "name": "timeline",
+                  "description": "When they need it / deadline (e.g. \"3 weeks\", \"ASAP\"). Empty if none mentioned."
+                },
+                {
+                  "name": "location",
+                  "description": "Customer's location if mentioned, else empty"
+                },
+                {
+                  "name": "urgency",
+                  "description": "How urgent the request sounds, based on tone/language. One of: low, medium, high"
+                },
+                {
+                  "name": "sentiment",
+                  "description": "Overall tone of the message. One of: positive, neutral, negative, frustrated"
+                },
+                {
+                  "name": "lead_quality",
+                  "description": "How ready-to-buy the customer sounds. One of: cold, warm, hot"
+                },
+                {
+                  "name": "language",
+                  "description": "The language the customer wrote in (e.g. English, Luganda, Runyankole, Swahili)"
+                },
+                {
+                  "name": "needs_human",
+                  "type": "boolean",
+                  "description": "true if the query is complex, a complaint, or the request is unclear/uncertain how to handle; otherwise false"
+                },
+                {
+                  "name": "message_id",
+                  "description": "={{ $json.id }}"
+                },
+                {
+                  "name": "=thread_id",
+                  "description": "={{ $json.threadId }}"
+                },
+                {
+                  "name": "phone_number",
+                  "description": "={{ $json.sender_number || $json.sender }}"
+                },
+                {
+                  "name": "channel",
+                  "description": "={{ $json.channel }}"
+                },
+                {
+                  "name": "notes",
+                  "description": "={{ $json.notes }}"
+                },
+                {
+                  "name": "buyer_type",
+                  "description": "Whether the customer is a retail (individual) or wholesale/bulk buyer, based on the conversation. Use \"unclear\" if not yet determined"
+                }
+              ]
+            },
+            "options": {
+              "systemPromptTemplate": "Extract the following structured lead information from this conversation \nas JSON: name, requirement, category, budget, timeline, location, urgency, \nsentiment, lead_quality, language, needs_human, notes.\n\nBase this on the full conversation, not just the latest message alone, \nsince earlier details (like budget or timeline) may not repeat in later \nmessages.\n\nIf a field isn't mentioned or can't be determined, leave it as an empty \nstring (or false for needs_human, unless there's a clear reason to \nescalate to a human).\n\nAlso determine:\n- buyer_type: \"retail\" or \"wholesale\" — based on what the customer \n  said or implied (e.g. mentions of bulk quantities, reselling, \n  salon use = wholesale; personal use or no indication = retail)\n\nIf the customer hasn't clarified yet, set buyer_type to \"unclear\"."
+            }
+          },
+          "id": "ac254a5f-2469-46ef-b685-ca7a115856a1",
+          "name": "Extract Lead Info",
+          "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+          "typeVersion": 1.2,
+          "position": [
+            0,
+            944
+          ],
+          "retryOnFail": true,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "name",
+                  "name": "name",
+                  "value": "={{ $json.output.name }}",
+                  "type": "string"
+                },
+                {
+                  "id": "phone",
+                  "name": "phone_number",
+                  "value": "={{ $('Extract Fields').isExecuted ? $('Extract Fields').item.json.sender_number : $('Edit Fields').item.json.sender }}",
+                  "type": "string"
+                },
+                {
+                  "id": "channel",
+                  "name": "=channel",
+                  "value": "={{ $('Extract Fields').isExecuted ? 'WhatsApp' : $('Edit Fields').item.json.channel }}",
+                  "type": "string"
+                },
+                {
+                  "id": "requirement",
+                  "name": "requirement",
+                  "value": "={{ $json.output.requirement }}",
+                  "type": "string"
+                },
+                {
+                  "id": "category",
+                  "name": "category",
+                  "value": "={{ $json.output.category }}",
+                  "type": "string"
+                },
+                {
+                  "id": "budget",
+                  "name": "budget",
+                  "value": "={{ $json.output.budget }}",
+                  "type": "string"
+                },
+                {
+                  "id": "timeline",
+                  "name": "timeline",
+                  "value": "={{ $json.output.timeline }}",
+                  "type": "string"
+                },
+                {
+                  "id": "location",
+                  "name": "location",
+                  "value": "={{ $json.output.location }}",
+                  "type": "string"
+                },
+                {
+                  "id": "urgency",
+                  "name": "urgency",
+                  "value": "={{ $json.output.urgency }}",
+                  "type": "string"
+                },
+                {
+                  "id": "sentiment",
+                  "name": "sentiment",
+                  "value": "={{ $json.output.sentiment }}",
+                  "type": "string"
+                },
+                {
+                  "id": "lead-quality",
+                  "name": "lead_quality",
+                  "value": "={{ $json.output.lead_quality }}",
+                  "type": "string"
+                },
+                {
+                  "id": "language",
+                  "name": "language",
+                  "value": "={{ $json.output.language }}",
+                  "type": "string"
+                },
+                {
+                  "id": "needs-human",
+                  "name": "needs_human",
+                  "value": "={{ $json.output.needs_human }}",
+                  "type": "boolean"
+                },
+                {
+                  "id": "reply-message",
+                  "name": "reply_message",
+                  "value": "={{ $json.reply_message || 'Sorry, I could not complete that request. Please try again shortly.' }}",
+                  "type": "string"
+                },
+                {
+                  "id": "notes",
+                  "name": "notes",
+                  "value": "={{ $json.output.notes }}",
+                  "type": "string"
+                },
+                {
+                  "id": "f4edda1e-791a-40d5-b02a-77b71f750f54",
+                  "name": "=message_id",
+                  "value": "={{ $(\"Edit Fields\").isExecuted ? $(\"Edit Fields\").item.json.message_id : '' }}",
+                  "type": "string"
+                },
+                {
+                  "id": "909a26f4-714c-48fd-9ee3-d04b2e2fbcb0",
+                  "name": "=thread_id",
+                  "value": "={{ $(\"Edit Fields\").isExecuted ? $(\"Edit Fields\").item.json.thread_id : '' }}",
+                  "type": "string"
+                },
+                {
+                  "id": "22fd7f48-3457-4aeb-afc8-36ff70d3ce42",
+                  "name": "=buyer_type",
+                  "value": "={{ $('Extract Lead Info').item.json.output.buyer_type }}",
+                  "type": "string"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "id": "b1599b1b-cf10-4046-a409-f927f5e644d9",
+          "name": "Build Lead Record",
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            2176,
+            -960
+          ]
+        },
+        {
+          "parameters": {
+            "table": {
+              "__rl": true,
+              "mode": "name",
+              "value": "leads"
+            },
+            "dataMode": "defineBelow",
+            "valuesToSend": {
+              "values": [
+                {
+                  "column": "name",
+                  "value": "={{ $json.name }}"
+                },
+                {
+                  "column": "phone_number",
+                  "value": "={{ $json.phone_number }}"
+                },
+                {
+                  "column": "channel",
+                  "value": "={{ $json.channel }}"
+                },
+                {
+                  "column": "requirement",
+                  "value": "={{ $json.requirement }}"
+                },
+                {
+                  "column": "category",
+                  "value": "={{ $json.category }}"
+                },
+                {
+                  "column": "budget",
+                  "value": "={{ $json.budget }}"
+                },
+                {
+                  "column": "timeline",
+                  "value": "={{ $json.timeline }}"
+                },
+                {
+                  "column": "location",
+                  "value": "={{ $json.location }}"
+                },
+                {
+                  "column": "urgency",
+                  "value": "={{ $json.urgency }}"
+                },
+                {
+                  "column": "sentiment",
+                  "value": "={{ $json.sentiment }}"
+                },
+                {
+                  "column": "lead_quality",
+                  "value": "={{ $json.lead_quality }}"
+                },
+                {
+                  "column": "language",
+                  "value": "={{ $json.language }}"
+                },
+                {
+                  "column": "needs_human",
+                  "value": "={{ $json.needs_human }}"
+                },
+                {
+                  "column": "reply_message",
+                  "value": "={{ $json.reply_message }}"
+                },
+                {
+                  "column": "notes",
+                  "value": "={{ $json.notes }}"
+                },
+                {
+                  "column": "buyer_type",
+                  "value": "={{ $json.buyer_type }}"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "id": "9d970063-abb9-4abb-beec-bfdb5ae0f4d4",
+          "name": "Insert Lead (MySQL)",
+          "type": "n8n-nodes-base.mySql",
+          "typeVersion": 2.5,
+          "position": [
+            320,
+            -1824
+          ],
+          "credentials": {
+            "mySql": {
+              "id": "bq4mFGpI70W22UaY",
+              "name": "MySQL account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "send",
+            "phoneNumberId": "={{ $('Webhook').isExecuted ? $('Webhook').item.json.body.entry[0].changes[0].value.metadata.phone_number_id : '' }}",
+            "recipientPhoneNumber": "={{ $('Build Lead Record').item.json.phone_number }}",
+            "textBody": "={{ $('Build Lead Record').item.json.reply_message || 'Sorry, I could not complete that request. Please try again shortly.' }}",
+            "additionalFields": {}
+          },
+          "id": "45b2a828-f99c-4918-9159-ce1ba1cd5ab4",
+          "name": "Send WhatsApp Reply",
+          "type": "n8n-nodes-base.whatsApp",
+          "typeVersion": 1.1,
+          "position": [
+            1040,
+            -1168
+          ],
+          "webhookId": "e42c4d80-bf47-4473-9221-bfb29ece9ca3",
+          "credentials": {
+            "whatsAppApi": {
+              "id": "fo749YJXJIBtpHwi",
+              "name": "WhatsApp account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "EVENT_RECEIVED",
+            "options": {
+              "responseCode": 200
+            }
+          },
+          "id": "8a989955-8986-458f-9d2c-a326291a01e3",
+          "name": "Respond 200 OK",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1.5,
+          "position": [
+            1504,
+            -1184
+          ]
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "EVENT_RECEIVED",
+            "options": {
+              "responseCode": 200
+            }
+          },
+          "id": "8e18e688-0f25-41b0-81ed-e8450d204474",
+          "name": "Respond 200 (Other)",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1.5,
+          "position": [
+            -2112,
+            752
+          ]
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 2
+              },
+              "conditions": [
+                {
+                  "id": "needs-human-true",
+                  "leftValue": "={{ $('Build Lead Record').item.json.needs_human }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "true",
+                    "singleValue": true
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "id": "17465f5c-3473-49fe-96b5-a4b99a92e40e",
+          "name": "Needs Human?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "position": [
+            992,
+            -2048
+          ]
+        },
+        {
+          "parameters": {
+            "sendTo": "ellenateam01@gmail.com",
+            "subject": "=New WhatsApp lead needs human attention — {{ $('Build Lead Record').item.json.name }} ({{ $('Build Lead Record').item.json.category }})",
+            "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);\">\n  \n  <div style=\"background-color: #d9534f; color: white; padding: 20px 24px;\">\n    <h2 style=\"margin: 0; font-size: 19px;\">⚠️ Lead Needs Human Attention</h2>\n    <p style=\"margin: 6px 0 0; font-size: 13px; opacity: 0.9;\">{{ $('Build Lead Record').item.json.channel }} — {{ new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }}</p>\n  </div>\n\n  <div style=\"padding: 24px;\">\n    <table style=\"width: 100%; border-collapse: collapse;\">\n      <tr><td style=\"padding: 6px 0; color: #666; width: 140px;\">Name</td><td style=\"padding: 6px 0; font-weight: bold;\">{{ $('Build Lead Record').item.json.name || 'N/A' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Phone</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.phone_number || 'N/A' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Channel</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.channel }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Category</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.category || 'N/A' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Urgency</td>\n        <td style=\"padding: 6px 0;\">\n          <span style=\"background: {{ $('Build Lead Record').item.json.urgency === 'high' ? '#d9534f' : $('Build Lead Record').item.json.urgency === 'medium' ? '#f0ad4e' : '#5cb85c' }}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;\">\n            {{ $('Build Lead Record').item.json.urgency.toUpperCase() }}\n          </span>\n        </td>\n      </tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Sentiment</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.sentiment || 'N/A' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Lead Quality</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.lead_quality || 'N/A' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Budget</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.budget || 'Not specified' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Timeline</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.timeline || 'Not specified' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Location</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.location || 'Not specified' }}</td></tr>\n      <tr><td style=\"padding: 6px 0; color: #666;\">Language</td><td style=\"padding: 6px 0;\">{{ $('Build Lead Record').item.json.language || 'N/A' }}</td></tr>\n    </table>\n\n    <div style=\"margin-top: 20px; padding: 16px; background: #f7f7f7; border-radius: 6px;\">\n      <div style=\"color: #666; font-size: 13px; margin-bottom: 4px;\">Requirement</div>\n      <div>{{ $('Build Lead Record').item.json.requirement || 'N/A' }}</div>\n    </div>\n\n    <div style=\"margin-top: 16px; padding: 16px; background: #f7f7f7; border-radius: 6px;\">\n      <div style=\"color: #666; font-size: 13px; margin-bottom: 4px;\">Original Message</div>\n      <div style=\"font-style: italic;\">\"{{ $('Build Lead Record').item.json.message_text }}\"</div>\n    </div>\n\n    <div style=\"margin-top: 16px; padding: 16px; background: #eef6ff; border-radius: 6px; border-left: 3px solid #337ab7;\">\n      <div style=\"color: #666; font-size: 13px; margin-bottom: 4px;\">Draft Reply Sent to Customer</div>\n      <div>{{ $('Build Lead Record').item.json.reply_message }}</div>\n    </div>\n\n    <div style=\"margin-top: 28px; padding-top: 20px; border-top: 1px solid #eee; text-align: center;\">\n      {{ $('Build Lead Record').item.json.channel === 'WhatsApp' && $('Build Lead Record').item.json.phone_number ? `\n        <p style=\"margin: 0 0 12px; color: #666; font-size: 13px;\">This lead came in via WhatsApp — jump straight into the conversation:</p>\n        <a href=\"https://wa.me/${$('Build Lead Record').item.json.phone_number}\" \n           style=\"display:inline-block; background:#25D366; color:white; padding:13px 32px; border-radius:24px; text-decoration:none; font-weight:bold; font-size:14px; box-shadow: 0 2px 6px rgba(37,211,102,0.35);\">\n          💬 Open in WhatsApp\n        </a>\n      ` : $('Build Lead Record').item.json.channel === 'Gmail' ? `\n        <p style=\"margin: 0 0 12px; color: #666; font-size: 13px;\">This lead came in via Email — reply directly:</p>\n        <a href=\"mailto:${$('Build Lead Record').item.json.sender || ''}?subject=Re: ${encodeURIComponent($('Build Lead Record').item.json.original_subject || 'Your enquiry')}\" \n           style=\"display:inline-block; background:#4285F4; color:white; padding:13px 32px; border-radius:24px; text-decoration:none; font-weight:bold; font-size:14px; box-shadow: 0 2px 6px rgba(66,133,244,0.35);\">\n          ✉️ Reply via Email\n        </a>\n        ${$('Build Lead Record').item.json.phone_number ? `\n        <div style=\"margin-top: 14px;\">\n          <a href=\"https://wa.me/${$('Build Lead Record').item.json.phone_number}\" \n             style=\"display:inline-block; background:#25D366; color:white; padding:10px 24px; border-radius:20px; text-decoration:none; font-weight:bold; font-size:13px; box-shadow: 0 2px 6px rgba(37,211,102,0.35);\">\n            💬 Also on WhatsApp\n          </a>\n        </div>\n        ` : ''}\n      ` : '' }}\n    </div>\n\n  </div>\n</div>",
+            "options": {
+              "appendAttribution": false
+            }
+          },
+          "id": "c23fa933-0783-47e9-87f5-669b8d1fc15c",
+          "name": "Notify Team (Email)",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.2,
+          "position": [
+            2096,
+            -1744
+          ],
+          "webhookId": "e1af7370-38cd-4697-bb64-9d1e982bc263",
+          "credentials": {
+            "gmailOAuth2": {
+              "id": "C8s1dli8XgG5bDXU",
+              "name": "Gmail account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "pollTimes": {
+              "item": [
+                {
+                  "mode": "everyMinute"
+                }
+              ]
+            },
+            "filters": {
+              "labelIds": [
+                "UNREAD"
+              ],
+              "q": "-category:promotions -category:social -category:updates -category:forums -from:(noreply OR no-reply OR notification OR notifications OR mailer-daemon)",
+              "readStatus": "unread"
+            }
+          },
+          "type": "n8n-nodes-base.gmailTrigger",
+          "typeVersion": 1.4,
+          "position": [
+            -1696,
+            1648
+          ],
+          "id": "a5f6c291-9427-4838-aacb-36e61b94c395",
+          "name": "Gmail Trigger",
+          "credentials": {
+            "gmailOAuth2": {
+              "id": "C8s1dli8XgG5bDXU",
+              "name": "Gmail account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "686dd395-3f88-4ba9-82c8-7d46fda15ee5",
+                  "name": "message_text",
+                  "value": "={{ $json.snippet }}",
+                  "type": "string"
+                },
+                {
+                  "id": "6dc06c5d-12c5-40a2-a94e-81338651c97d",
+                  "name": "sender",
+                  "value": "={{ $json.From.match(/<(.+)>/)?.[1] || $json.From }}",
+                  "type": "string"
+                },
+                {
+                  "id": "e6f5a7c8-4cb2-48ee-ade8-1f905bff144e",
+                  "name": "channel",
+                  "value": "Gmail",
+                  "type": "string"
+                },
+                {
+                  "id": "e5dc4767-121e-4b65-8307-a5ec70a3d6d8",
+                  "name": "original_subject",
+                  "value": "={{ $json.Subject }}",
+                  "type": "string"
+                },
+                {
+                  "id": "4426e8a4-f960-4686-9241-8f08349d7928",
+                  "name": "=message_id",
+                  "value": "={{ $json.id }}",
+                  "type": "string"
+                },
+                {
+                  "id": "3dec18fa-559d-4db1-82e3-25a7c3d0fcf5",
+                  "name": "thread_id",
+                  "value": "={{ $json.threadId }}",
+                  "type": "string"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            -1232,
+            1648
+          ],
+          "id": "0dbda774-c02e-42fa-ab79-685860ed6951",
+          "name": "Edit Fields"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": false,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "b6070f6e-78f4-4efd-bb74-b5e8dd42c88f",
+                  "leftValue": "={{ $json.channel }}",
+                  "rightValue": "=WhatsApp",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {
+              "ignoreCase": true
+            }
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            208,
+            -448
+          ],
+          "id": "d60516ba-65af-464c-ba78-6738a018d444",
+          "name": "If"
+        },
+        {
+          "parameters": {
+            "operation": "reply",
+            "messageId": "={{ $json.message_id }}",
+            "emailType": "text",
+            "message": "={{ $json.reply_message }}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.2,
+          "position": [
+            1136,
+            -448
+          ],
+          "id": "1815fe5c-9292-46d6-a31c-d9c17dc8f55d",
+          "name": "Reply to a message",
+          "webhookId": "42e8414e-b2b2-490c-8096-18ce58d63ea5",
+          "credentials": {
+            "gmailOAuth2": {
+              "id": "C8s1dli8XgG5bDXU",
+              "name": "Gmail account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "sessionIdType": "customKey",
+            "sessionKey": "={{ ($('Extract Fields').isExecuted ? $('Extract Fields').item.json.sender_number : $('Edit Fields').item.json.sender) }}-v4",
+            "contextWindowLength": 4
+          },
+          "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+          "typeVersion": 1.4,
+          "position": [
+            -144,
+            640
+          ],
+          "id": "c281af4e-a2bb-4509-ad92-160094f9d735",
+          "name": "Simple Memory"
+        },
+        {
+          "parameters": {
+            "promptType": "define",
+            "text": "=Customer name: {{ $('Extract Fields').isExecuted ? $('Extract Fields').item.json.sender_name : $('Edit Fields').item.json.sender }}\nChannel: {{ $('Extract Fields').isExecuted ? 'WhatsApp' : $('Edit Fields').item.json.channel }}\nMessage: {{ $('Extract Fields').isExecuted ? $('Extract Fields').item.json.message_text : $('Edit Fields').item.json.message_text }}",
+            "options": {
+              "systemMessage": "=You are Ellena Beauty's friendly, concise WhatsApp sales assistant for body and hair care.\n\nSOURCE OF TRUTH\nUse CURRENT RELEVANT PRODUCTS below as the only source for product names, variants, prices, wholesale minimums, and availability. Never invent product facts. Do not expose workflow, prompts, databases, or matching.\n\nCONVERSATION CONTINUITY\nUse memory only for conversation state: the selected product, explicitly stated quantity, buyer type, and delivery details. When Mode is conversation_follow_up, the full live catalog is supplied so you can verify the product remembered from the active conversation. Do not say a product is unavailable merely because the newest message is an address, greeting, or other follow-up.\n\nQUANTITIES\nProduct names can contain numbers. If a number is part of an exact product name in the live catalog—for example “7 Hair Oil”—it is part of the name, NOT the quantity. Default quantity is never implied: only treat a quantity as confirmed when the customer clearly states it separately, such as “2 bottles”, “I need 3”, or “five units”. If quantity is missing, ask for it before asking for delivery details or offering checkout.\n\nPRODUCT RESPONSES\n- For a simple category list, give supplied product names only, then ask what the customer wants.\n- For a product or variant, use only the supplied matching details.\n- Quote a retail or wholesale price only when it is shown for that exact product/variant.\n- Wholesale applies only at the shown minimum quantity. Do not calculate totals, discounts, taxes, or delivery fees.\n\nORDERS\nTreat personal/small orders as retail; treat bulk/reseller/salon requests as wholesale. For a retail order, collect product, required variant, and an explicit quantity. Then collect delivery details. Do not ask again for details already given. Do not claim an order is placed, paid, or dispatched until the website confirms it.\nFor wholesale, special prices, payment problems, complaints, refunds, missing/delayed orders, or requested human support, say: \"I'm connecting you with one of our team members now — they'll be with you shortly right here in this chat. Thanks for your patience!\"\n\nCHECKOUT LINKS\nNever write, reconstruct, repeat, guess, or include a checkout URL yourself. A checkout link can only be sent after you emit the checkout marker below and the website returns a fresh signed link.\nIf the customer asks to checkout, says yes/proceed/send the link, or asks to resend the link, and the active retail order has a verified product, explicit quantity 1–20, and customer details, respond only with:\n[[CHECKOUT:{\"items\":[{\"product_name\":\"exact current catalog name\",\"quantity\":1}],\"customer\":{\"name\":\"known customer name\",\"phone\":\"known WhatsApp phone\"}}]]\nUse the actual confirmed quantity. Include every confirmed retail item, use exact names from CURRENT RELEVANT PRODUCTS, and no surrounding prose. A resend request must create a new marker; do not reuse a prior URL.\nIf an item, quantity, or necessary customer detail is still missing, ask one short question instead.\n\nSTYLE\nWarm, professional, concise, natural. Use plain WhatsApp text, single asterisks only when useful, no tables, and one useful question at a time.\n\nCURRENT RETRIEVAL\nMode: {{ $json.catalog_mode }}\nRequested size: {{ $json.requested_size || 'Not specified' }}\nProducts supplied: {{ $json.match_count }}\n\nCURRENT RELEVANT PRODUCTS\n{{ $json.catalog_text }}",
+              "maxIterations": 4
+            }
+          },
+          "type": "@n8n/n8n-nodes-langchain.agent",
+          "typeVersion": 3.1,
+          "position": [
+            -240,
+            160
+          ],
+          "id": "75e8aca8-4114-4db8-a288-d3b91de93346",
+          "name": "AI Agent",
+          "retryOnFail": false,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "mode": "combine",
+            "combineBy": "combineByPosition",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.merge",
+          "typeVersion": 3.2,
+          "position": [
+            2128,
+            144
+          ],
+          "id": "479f009f-6e18-492d-a187-a8ff18d27d9a",
+          "name": "Merge"
+        },
+        {
+          "parameters": {
+            "operation": "select",
+            "table": {
+              "__rl": true,
+              "value": "product_catalog_cache",
+              "mode": "name"
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.mySql",
+          "typeVersion": 2.5,
+          "position": [
+            -1120,
+            576
+          ],
+          "id": "5207ee70-b9c0-432f-82e6-e56d62f61967",
+          "name": "Select rows from a table",
+          "credentials": {
+            "mySql": {
+              "id": "bq4mFGpI70W22UaY",
+              "name": "MySQL account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "jsCode": "const message = ($json.message_text || '').toLowerCase();\nconst fullCatalog = $json.catalog_text;\n\n// Split catalog into product blocks (separated by blank lines)\nconst blocks = fullCatalog.split('\\n\\n');\n\nconst hairKeywords = ['hair', 'mousse', 'pomade', 'spray', 'oil'];\nconst bodyKeywords = ['body', 'lotion', 'jelly', 'wash', 'perfume', 'mosquito', 'baby'];\n\nlet mentionsHair = hairKeywords.some(k => message.includes(k));\nlet mentionsBody = bodyKeywords.some(k => message.includes(k));\n\nlet filtered;\nif (mentionsHair && !mentionsBody) {\n  filtered = blocks.filter(b => b.includes('(Hair)'));\n} else if (mentionsBody && !mentionsHair) {\n  filtered = blocks.filter(b => b.includes('(Body)'));\n} else {\n  // unclear intent, or general question — send everything\n  filtered = blocks;\n}\n\nreturn [{ json: { ...$json, catalog_text: filtered.join('\\n\\n') } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -1440,
+            -944
+          ],
+          "id": "6cb73efe-cf84-4a2d-8ebb-a7c83d98995e",
+          "name": "Code in JavaScript"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "09330e1c-b3a3-4505-b105-dd07343694d7",
+                  "leftValue": "={{ $json.paused }}",
+                  "rightValue": "1",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals",
+                    "name": "filter.operator.equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -1616,
+            528
+          ],
+          "id": "678f3a58-5ebf-4e2f-8347-c141cda79e1d",
+          "name": "If1"
+        },
+        {
+          "parameters": {
+            "operation": "upsert",
+            "table": {
+              "__rl": true,
+              "value": "conversation_state",
+              "mode": "name"
+            },
+            "dataMode": "defineBelow",
+            "columnToMatchOn": "phone_number",
+            "valueToMatchOn": "={{ $('Build Lead Record').item.json.phone_number }}",
+            "valuesToSend": {
+              "values": [
+                {
+                  "column": "paused",
+                  "value": "1"
+                },
+                {
+                  "column": "paused_at",
+                  "value": "={{ $now.toISO() }}"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.mySql",
+          "typeVersion": 2.5,
+          "position": [
+            2112,
+            -2512
+          ],
+          "id": "4c0147d4-ba9a-490d-ba0a-5ad1fe334b5b",
+          "name": "Insert or update rows in a table",
+          "credentials": {
+            "mySql": {
+              "id": "bq4mFGpI70W22UaY",
+              "name": "MySQL account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "EVENT_RECEIVED",
+            "options": {
+              "responseCode": 200
+            }
+          },
+          "id": "6d952fb0-d563-4ee5-96f8-f8f4e6a93808",
+          "name": "Respond 200 (Other)1",
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1.5,
+          "position": [
+            -752,
+            -544
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "executeQuery",
+            "query": "SELECT COALESCE(\n  (SELECT CASE WHEN paused = 1 AND paused_at > (NOW() - INTERVAL 10 MINUTE) THEN 1 ELSE 0 END \n   FROM conversation_state \n   WHERE phone_number = '{{ $json.sender_number }}'),\n  0\n) AS paused;",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.mySql",
+          "typeVersion": 2.5,
+          "position": [
+            -2064,
+            48
+          ],
+          "id": "35a8cdb4-f22d-433b-bfb7-7c7c4e106ffd",
+          "name": "Execute a SQL query",
+          "credentials": {
+            "mySql": {
+              "id": "bq4mFGpI70W22UaY",
+              "name": "MySQL account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "executeQuery",
+            "query": "UPDATE conversation_state \nSET paused_at = NOW() \nWHERE phone_number = '{{ $json.sender_number }}';",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.mySql",
+          "typeVersion": 2.5,
+          "position": [
+            -1408,
+            -528
+          ],
+          "id": "7adcdb8f-397e-4fb7-afce-80ef5b266887",
+          "name": "Execute a SQL query1",
+          "credentials": {
+            "mySql": {
+              "id": "bq4mFGpI70W22UaY",
+              "name": "MySQL account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "jsCode": "const reply = String($json.output || '').trim();\n\nconst marker = reply.match(/^\\[\\[CHECKOUT:(\\{[\\s\\S]*\\})\\]\\]$/);\nlet checkoutRequest = null;\n\nif (marker) {\n  try {\n    const candidate = JSON.parse(marker[1]);\n    if (Array.isArray(candidate.items) && candidate.items.length > 0) {\n      checkoutRequest = candidate;\n    }\n  } catch (error) {\n    checkoutRequest = null;\n  }\n}\n\nconst hasDollarSign = /\\$/.test(reply);\nconst hasUSD = /\\bUSD\\b/i.test(reply);\nconst hasOtherCurrency = /\\b(dollars?|euros?|EUR|GBP|pounds?)\\b/i.test(reply);\n\nreturn [{\n  json: {\n    ...$json,\n    reply_message: checkoutRequest\n      ? ''\n      : (hasDollarSign || hasUSD || hasOtherCurrency)\n        ? 'Let me confirm that exact pricing with our team and get right back to you! 🙏'\n        : (reply || 'Sorry, I could not complete that request. Please try again shortly.'),\n    checkout_request: checkoutRequest,\n  },\n}];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            416,
+            144
+          ],
+          "id": "e5e77d74-9578-4d41-a981-d7373bf15ba8",
+          "name": "Code in JavaScript1"
+        },
+        {
+          "parameters": {
+            "jsCode": "function levenshtein(a, b) {\n  a = a.toLowerCase(); b = b.toLowerCase();\n  const dp = [];\n  for (let i = 0; i <= a.length; i++) dp.push([i]);\n  for (let j = 0; j <= b.length; j++) dp[0][j] = j;\n  for (let i = 1; i <= a.length; i++) {\n    for (let j = 1; j <= b.length; j++) {\n      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);\n    }\n  }\n  return dp[a.length][b.length];\n}\n\nconst message = ($json.message_text || '').toLowerCase();\nconst catalog = $json.catalog_text || '';\nconst blocks = catalog.split('\\n\\n').filter(b => b.trim());\n\nconst products = blocks.map(b => {\n  const firstLine = b.split('\\n')[0];\n  const name = firstLine.split('—')[0].trim();\n  return { name, block: b };\n});\n\nconst messageWords = message.replace(/[^a-z0-9\\s]/g, ' ').split(/\\s+/).filter(w => w.length >= 3);\n\nfunction scoreProduct(product) {\n  const aliases = product.name.toLowerCase().split('/').map(s => s.trim()).filter(Boolean);\n  let best = 0;\n  for (const alias of aliases) {\n    if (message.includes(alias)) { best = Math.max(best, 0.95); continue; }\n    const aliasWords = alias.split(/\\s+/).filter(w => w.length >= 3);\n    for (const mw of messageWords) {\n      for (const aw of aliasWords) {\n        const dist = levenshtein(mw, aw);\n        const sim = 1 - dist / Math.max(mw.length, aw.length);\n        if (sim > best) best = sim;\n      }\n    }\n  }\n  return best;\n}\n\nconst scored = products\n  .map(p => ({ ...p, score: scoreProduct(p) }))\n  .filter(p => p.score >= 0.72)\n  .sort((a, b) => b.score - a.score);\n\nlet matchNote = '';\nif (scored.length === 1) {\n  matchNote = `\\n\\nMATCHED PRODUCT FOR THIS MESSAGE — this is the specific product the customer is asking about. Use this exact data (name, price, wholesale price, min qty) when answering. Do not use any other product's numbers:\\n${scored[0].block}\\n`;\n} else if (scored.length > 1) {\n  const uniqueNames = [...new Set(scored.map(p => p.name))];\n  if (uniqueNames.length > 1) {\n    matchNote = `\\n\\nPOSSIBLE MATCHES FOR THIS MESSAGE — these are genuinely different products. If the customer hasn't already specified which one, ask them to clarify before quoting a price:\\n${scored.map(p => p.block).join('\\n\\n')}\\n`;\n  } else {\n    matchNote = `\\n\\nMATCHED PRODUCT FOR THIS MESSAGE — this is the specific product the customer is asking about. Use this exact data when answering:\\n${scored[0].block}\\n`;\n  }\n}\n\nreturn [{ json: { ...$json, catalog_text: catalog + matchNote } }];"
+          },
+          "id": "e4808a20-0db7-4a66-bfcb-89ecb6fd1c59",
+          "name": "Product Matcher",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -832,
+            -1104
+          ]
+        },
+        {
+          "parameters": {
+            "jsCode": "// -------------------------------------------\n// CUSTOMER MESSAGE\n// -------------------------------------------\n\nconst message = (\n  (\n    $('Extract Fields').isExecuted\n      ? $('Extract Fields').item.json.message_text\n      : $('Edit Fields').item.json.message_text\n  ) || ''\n).toLowerCase().trim();\n\n\n// -------------------------------------------\n// GET STRUCTURED PRODUCT CATALOG\n// -------------------------------------------\n\nlet products = $json.products || [];\n\nif (typeof products === 'string') {\n  try {\n    products = JSON.parse(products);\n  } catch (error) {\n    products = [];\n  }\n}\n\nif (!Array.isArray(products)) {\n  products = [];\n}\n\n\n// -------------------------------------------\n// NORMALIZATION\n// -------------------------------------------\n\nfunction normalize(text = '') {\n  return String(text)\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s]/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nconst normalizedMessage = normalize(message);\n\nconst messageWords = normalizedMessage\n  .split(' ')\n  .filter(word => word.length >= 2);\n\n\n// -------------------------------------------\n// DETECT CATEGORY / LIST REQUESTS FIRST\n// -------------------------------------------\n\nconst listPatterns = [\n  /\\ball\\b/, /\\blist\\b/, /\\bshow\\b/, /\\bproducts\\b/, /\\bavailable\\b/,\n  /\\bwhat do you have\\b/, /\\bwhat products\\b/, /\\bwhich products\\b/\n];\n\nconst wantsList = listPatterns.some(pattern => pattern.test(normalizedMessage));\nconst wantsHairCategory = /\\bhair\\b/.test(normalizedMessage);\nconst wantsBodyCategory = /\\bbody\\b/.test(normalizedMessage);\n\nconst requestedProductCategory =\n  wantsHairCategory && !wantsBodyCategory ? 'hair' :\n  wantsBodyCategory && !wantsHairCategory ? 'body' : null;\n\n// Category terms constrain a product search; they create a list only if list intent exists.\nconst forceCategory = wantsList ? requestedProductCategory : null;\nconst wantsFullCatalog = wantsList || /^(all|everything|both)$/i.test(normalizedMessage);\n\n// A buyer-type follow-up (e.g. \"wholesale would be better\") needs the\n// live catalog so prices are never recovered from conversation memory.\nconst isPricingFollowUp =\n  /\\b(wholesale|retail|bulk|personal use)\\b/.test(normalizedMessage);\n\n// Quantity-only messages often follow a product and buyer-type selection,\n// e.g. “25 of each”. They must receive live prices, never memory-only data.\nconst isQuantityFollowUp =\n  /\\b\\d+\\s*(?:of\\s+each|each|units?|unit|pieces?|piece|pcs?)\\b/.test(normalizedMessage) ||\n  /^\\d+$/.test(normalizedMessage);\n\n// A short affirmative can be a confirmation of the checkout link offered in\n// the immediately preceding assistant message. Keep the live catalog available\n// so the agent can validate the remembered selection against it.\nconst isCheckoutConfirmation =\n  /^(?:yes|yeah|yep|yup|sure|okay|ok|go ahead|proceed|please do|do it|send it|send the link|continue)$/i\n    .test(normalizedMessage);\n\n// -------------------------------------------\n// LEVENSHTEIN\n// -------------------------------------------\n\nfunction levenshtein(a, b) {\n  a = normalize(a);\n  b = normalize(b);\n\n  const matrix = [];\n\n  for (let i = 0; i <= b.length; i++) {\n    matrix[i] = [i];\n  }\n\n  for (let j = 0; j <= a.length; j++) {\n    matrix[0][j] = j;\n  }\n\n  for (let i = 1; i <= b.length; i++) {\n    for (let j = 1; j <= a.length; j++) {\n\n      if (b[i - 1] === a[j - 1]) {\n        matrix[i][j] =\n          matrix[i - 1][j - 1];\n      } else {\n        matrix[i][j] = Math.min(\n          matrix[i - 1][j - 1] + 1,\n          matrix[i][j - 1] + 1,\n          matrix[i - 1][j] + 1\n        );\n      }\n    }\n  }\n\n  return matrix[b.length][a.length];\n}\n\n\nfunction similarity(a, b) {\n  a = normalize(a);\n  b = normalize(b);\n\n  if (!a || !b) return 0;\n\n  const distance = levenshtein(a, b);\n\n  return 1 - (\n    distance /\n    Math.max(a.length, b.length)\n  );\n}\n\n\n// -------------------------------------------\n// GENERIC WORDS\n// -------------------------------------------\n\nconst genericWords = new Set([\n  'hair',\n  'body',\n  'baby',\n  'oil',\n  'cream',\n  'spray',\n  'wash',\n  'white',\n  'blue',\n  'green',\n  'pink'\n]);\n\n\n// -------------------------------------------\n// DETECT SIZE\n// -------------------------------------------\n\nfunction extractSize(text) {\n  const compact = String(text)\n    .toLowerCase()\n    .replace(/\\s+/g, '');\n\n  const match = compact.match(\n    /(\\d+(?:\\.\\d+)?)(ml|g|kg|l|litre|liter|oz)\\b/i\n  );\n\n  return match\n    ? normalize(match[0]).replace(/\\s/g, '')\n    : null;\n}\n\nconst requestedSize = extractSize(message);\n\n\n// -------------------------------------------\n// DETECT COLOR\n// -------------------------------------------\n\nconst knownColors = [\n  'white',\n  'black',\n  'blue',\n  'green',\n  'pink',\n  'yellow',\n  'purple',\n  'gold',\n  'light'\n];\n\nconst requestedColors = knownColors.filter(\n  color => messageWords.includes(color)\n);\n\n\n// -------------------------------------------\n// PRODUCT SCORING\n// -------------------------------------------\n\nfunction scoreProduct(product) {\n\n  const name = normalize(product.name);\n  const category = normalize(product.category);\n\n  let score = 0;\n\n  const productWords = name\n    .split(' ')\n    .filter(word => word.length >= 2);\n\n\n  // Exact full product name\n  if (\n    name &&\n    normalizedMessage.includes(name)\n  ) {\n    score += 120;\n  }\n\n\n  // Individual product-name words\n  for (const productWord of productWords) {\n\n    const isGeneric =\n      genericWords.has(productWord);\n\n    if (messageWords.includes(productWord)) {\n      score += isGeneric ? 6 : 25;\n      continue;\n    }\n\n    for (const messageWord of messageWords) {\n\n      const sim = similarity(\n        productWord,\n        messageWord\n      );\n\n      if (sim >= 0.84) {\n        score += isGeneric ? 3 : 15;\n        break;\n      }\n    }\n  }\n\n\n  // Category contributes only a small score\n  if (\n    category &&\n    messageWords.includes(category)\n  ) {\n    score += 4;\n  }\n\n\n  // Variant details\n  for (const variant of product.variants || []) {\n\n    if (\n      variant.size &&\n      requestedSize &&\n      normalize(variant.size).replace(/\\s/g, '') === requestedSize\n    ) {\n      score += 35;\n    }\n\n    for (const color of variant.colors || []) {\n\n      if (\n        requestedColors.includes(\n          normalize(color)\n        )\n      ) {\n        score += 4;\n      }\n    }\n  }\n\n  return score;\n}\n\n\n// -------------------------------------------\n// SCORE ALL PRODUCTS\n// -------------------------------------------\n\nconst productCandidates = requestedProductCategory\n  ? products.filter(product => normalize(product.category) === requestedProductCategory)\n  : products;\n\nconst scoredProducts = productCandidates\n  .map(product => ({\n    ...product,\n    _score: scoreProduct(product)\n  }))\n  .filter(product => product._score > 0)\n  .sort((a, b) => b._score - a._score);\n\n\n// -------------------------------------------\n// CHOOSE RELEVANT PRODUCTS\n// -------------------------------------------\n\nlet relevantProducts = [];\nlet catalogMode = 'no_match';\n\n\n// CATEGORY LIST REQUEST HAS TOP PRIORITY\n\nif (wantsFullCatalog || isPricingFollowUp || isQuantityFollowUp || isCheckoutConfirmation) {\n  catalogMode = isCheckoutConfirmation\n    ? 'checkout_confirmation'\n    : (isPricingFollowUp || isQuantityFollowUp) && !wantsFullCatalog\n      ? 'pricing_follow_up'\n      : 'category_list';\n  relevantProducts = forceCategory\n    ? products.filter(product => normalize(product.category) === forceCategory)\n    : products;\n} else if (scoredProducts.length > 0) {\n  const bestScore = scoredProducts[0]._score;\n  catalogMode = requestedSize ? 'variant_match' : 'product_match';\n  const hasMultipleRequests = /\\band\\b|,/.test(normalizedMessage);\n\n  // Retain one plausible match per requested product.\n  if (hasMultipleRequests) {\n    relevantProducts = scoredProducts\n      .filter(product => product._score >= 20)\n      .slice(0, 5);\n  } else if (bestScore >= 60) {\n    relevantProducts = scoredProducts\n      .filter(product => product._score >= bestScore * 0.55)\n      .slice(0, 5);\n  } else {\n    relevantProducts = scoredProducts\n      .filter(product => product._score >= bestScore * 0.75)\n      .slice(0, 5);\n  }\n}\n\n\n// -------------------------------------------\n// CATEGORY FALLBACK\n// -------------------------------------------\n\nif (\n  relevantProducts.length === 0 &&\n  !forceCategory\n) {\n\n  const hairWords = [\n    'hair',\n    'mousse',\n    'pomade',\n    'spray',\n    'styling',\n    'shampoo'\n  ];\n\n  const bodyWords = [\n    'body',\n    'lotion',\n    'jelly',\n    'wash',\n    'perfume',\n    'mosquito',\n    'cream'\n  ];\n\n  const mentionsHair = hairWords.some(\n    word =>\n      normalizedMessage.includes(word)\n  );\n\n  const mentionsBody = bodyWords.some(\n    word =>\n      normalizedMessage.includes(word)\n  );\n\n\n  if (mentionsHair && !mentionsBody) {\n\n    catalogMode = 'category_browse';\n\n    relevantProducts = products\n      .filter(\n        product =>\n          normalize(product.category) ===\n          'hair'\n      )\n      .slice(0, 8);\n\n  } else if (\n    mentionsBody &&\n    !mentionsHair\n  ) {\n\n    catalogMode = 'category_browse';\n\n    relevantProducts = products\n      .filter(\n        product =>\n          normalize(product.category) ===\n          'body'\n      )\n      .slice(0, 8);\n  }\n}\n\n\n// -------------------------------------------\n// FILTER VARIANTS\n// Do NOT reduce variants for full category lists\n// -------------------------------------------\n\nif (catalogMode !== 'category_list') {\n\n  relevantProducts =\n    relevantProducts.map(product => {\n\n      const variants =\n        product.variants || [];\n\n      let matchedVariants = variants;\n\n\n      // SIZE FILTER\n\n      if (requestedSize) {\n\n        const sizeMatches =\n          variants.filter(variant => {\n\n            if (!variant.size) {\n              return false;\n            }\n\n            const variantSize =\n              normalize(\n                variant.size\n              ).replace(/\\s/g, '');\n\n            return (\n              variantSize ===\n              requestedSize\n            );\n          });\n\n        if (sizeMatches.length > 0) {\n          matchedVariants =\n            sizeMatches;\n        }\n      }\n\n\n      // COLOR FILTER\n\n      if (\n        requestedColors.length > 0\n      ) {\n\n        const colorMatches =\n          matchedVariants.filter(\n            variant =>\n              (variant.colors || [])\n                .some(color =>\n                  requestedColors.includes(\n                    normalize(color)\n                  )\n                )\n          );\n\n        if (colorMatches.length > 0) {\n          matchedVariants =\n            colorMatches;\n        }\n      }\n\n\n      return {\n        ...product,\n        variants: matchedVariants\n      };\n    });\n}\n\n\n// -------------------------------------------\n// FINAL MODE CHECK\n// -------------------------------------------\n\nif (relevantProducts.length === 0) {\n  catalogMode = 'no_match';\n}\n\n\n// -------------------------------------------\n// SIZE CLARIFICATION CHECK\n// -------------------------------------------\n\nif (\n  catalogMode === 'product_match' &&\n  relevantProducts.length === 1 &&\n  !requestedSize\n) {\n\n  const onlyProduct = relevantProducts[0];\n\n  const distinctSizes = [\n    ...new Set(\n      (onlyProduct.variants || [])\n        .map(v => v.size)\n        .filter(Boolean)\n    )\n  ];\n\n  if (distinctSizes.length > 1) {\n    catalogMode = 'needs_size_clarification';\n  }\n}\n\n\n// -------------------------------------------\n// FORMAT PRODUCT FOR AI\n// -------------------------------------------\n\nfunction formatProduct(product) {\n\n  let text = `${product.name}`;\n\n  text +=\n    `\\nCategory: ${product.category}`;\n\n\n  const colors = [\n    ...new Set(\n      (product.variants || [])\n        .flatMap(\n          variant =>\n            variant.colors || []\n        )\n    )\n  ];\n\n  if (colors.length > 0) {\n    text +=\n      `\\nColors: ${colors.join(', ')}`;\n  }\n\n\n  text += `\\nVariants:`;\n\n\n  for (\n    const variant of\n    product.variants || []\n  ) {\n\n    text += '\\n';\n\n    if (variant.size) {\n      text += `${variant.size}: `;\n    }\n\n    if (\n      variant.retail_price_ugx !== null &&\n      variant.retail_price_ugx !== undefined\n    ) {\n\n      text +=\n        `${variant.retail_price_ugx} UGX`;\n\n    } else {\n\n      text += `Price on request`;\n    }\n\n\n    text +=\n      ` | Stock: ${\n        variant.stock_status ||\n        'Unknown'\n      }`;\n\n\n    if (\n      variant.wholesale_price_ugx !== null &&\n      variant.wholesale_price_ugx !== undefined &&\n      variant.wholesale_min_qty !== null &&\n      variant.wholesale_min_qty !== undefined\n    ) {\n\n      text +=\n        ` | Wholesale: ${variant.wholesale_price_ugx} UGX`;\n\n      text +=\n        ` | Minimum: ${variant.wholesale_min_qty}`;\n    }\n  }\n\n  return text;\n}\n\n\n// -------------------------------------------\n// BUILD AI CONTEXT\n// -------------------------------------------\n\nlet catalogText = '';\n\nif (catalogMode === 'needs_size_clarification') {\n\n  const onlyProduct = relevantProducts[0];\n\n  const availableSizes = [\n    ...new Set(\n      (onlyProduct.variants || [])\n        .map(v => v.size)\n        .filter(Boolean)\n    )\n  ];\n\n  catalogText = `${onlyProduct.name}\\nCategory: ${onlyProduct.category}\\nAvailable sizes: ${availableSizes.join(', ')}\\n\\nDo NOT state any price yet. Ask the customer which size they want first, listing only the sizes above (no prices). Once they specify a size, the correct price for that size will be supplied.`;\n\n} else if (catalogMode === 'checkout_confirmation') {\n\n  catalogText = relevantProducts.map(product => product.name).join('\\n');\n} else if (relevantProducts.length > 0) {\n\n  catalogText =\n    relevantProducts\n      .map(formatProduct)\n      .join('\\n\\n');\n\n} else {\n\n  catalogText = `\nNO DIRECT PRODUCT MATCH FOUND.\n\nNo reliable product from the current catalog was selected for this message.\n\nConversation history may be used only to understand what the customer is referring to.\n\nDo not use conversation history as a source of product names, prices, sizes, colors, stock, or other product facts.\n\nIf the intended product is still unclear, ask the customer to clarify.\n\nDo not invent product information.\n`.trim();\n}\n\n\n// -------------------------------------------\n// REMOVE INTERNAL SCORES\n// -------------------------------------------\n\nconst cleanProducts =\n  relevantProducts.map(product => {\n\n    const {\n      _score,\n      ...cleanProduct\n    } = product;\n\n    return cleanProduct;\n  });\n\n\n// -------------------------------------------\n// OUTPUT\n// -------------------------------------------\n\nreturn [\n  {\n    json: {\n      ...$json,\n\n      customer_message:\n        message,\n\n      catalog_mode:\n        catalogMode,\n\n      requested_category:\n        forceCategory,\n\n      requested_size:\n        requestedSize,\n\n      requested_colors:\n        requestedColors,\n\n      matched_products:\n        cleanProducts,\n\n      match_count:\n        cleanProducts.length,\n\n      catalog_text:\n        catalogText\n    }\n  }\n];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -608,
+            -112
+          ],
+          "id": "f6b3238f-9b78-4875-9a90-5d2694e3dc24",
+          "name": "Filter Relevant Products"
+        },
+        {
+          "parameters": {
+            "jsCode": "const raw = $json.catalog_text || '';\nconst blocks = raw.split('\\n\\n').map(b => b.trim()).filter(Boolean);\n\nconst products = [];\n\nfor (const block of blocks) {\n  const lines = block.split('\\n').map(l => l.trim()).filter(Boolean);\n  if (lines.length === 0) continue;\n\n  const name = lines[0];\n  let category = '';\n  let colors = [];\n  const variants = [];\n\n  for (const line of lines.slice(1)) {\n    if (line.startsWith('Category:')) {\n      category = line.replace('Category:', '').trim();\n    } else if (line.startsWith('Colors:')) {\n      colors = line.replace('Colors:', '').split(',').map(c => c.trim()).filter(Boolean);\n    } else if (line.startsWith('Variants:')) {\n      // marker line, skip\n    } else if (line.startsWith('•')) {\n      const variantLine = line.replace(/^•\\s*/, '');\n      const match = variantLine.match(/^(?:(.+?)\\s*—\\s*)?UGX\\s*([\\d,]+)\\s*—\\s*([^|]+?)(?:\\s*\\|\\s*Wholesale:\\s*UGX\\s*([\\d,]+)\\s*each from\\s*([\\d,]+)\\s*units)?$/i);\n      if (match) {\n        const size = match[1] ? match[1].trim() : null;\n        const retail_price_ugx = parseInt(match[2].replace(/,/g, ''), 10);\n        const stock_status = match[3].trim();\n        const wholesale_price_ugx = match[4] ? parseInt(match[4].replace(/,/g, ''), 10) : null;\n        const wholesale_min_qty = match[5] ? parseInt(match[5].replace(/,/g, ''), 10) : null;\n        variants.push({ size, colors, retail_price_ugx, stock_status, wholesale_price_ugx, wholesale_min_qty });\n      }\n    }\n  }\n\n  if (variants.length > 0) {\n    products.push({ name, category, variants });\n  }\n}\n\nreturn [{ json: { ...$json, products } }];"
+          },
+          "id": "c820c104-76ef-481e-8e10-073583120257",
+          "name": "Parse Catalog to Structured Products",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -928,
+            -112
+          ]
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 2
+              },
+              "conditions": [
+                {
+                  "id": "has-checkout-request",
+                  "leftValue": "={{ $json.checkout_request ? 'yes' : 'no' }}",
+                  "rightValue": "yes",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "id": "27151c4d-3ff0-43f4-a9ec-c498a7bbf4bf",
+          "name": "Has Checkout Request?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "position": [
+            944,
+            144
+          ]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "https://ellenacosms.com/integrations/n8n/checkout-sessions",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "X-N8N-Timestamp",
+                  "value": "={{ $json.n8n_timestamp }}"
+                },
+                {
+                  "name": "X-N8N-Signature",
+                  "value": "={{ $json.n8n_signature }}"
+                }
+              ]
+            },
+            "sendBody": true,
+            "contentType": "raw",
+            "rawContentType": "application/json",
+            "body": "={{ $json.checkout_raw_body }}",
+            "options": {}
+          },
+          "id": "1854fa7c-28e9-4ddf-a26c-c8672a8afc93",
+          "name": "Create Website Checkout Session",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.5,
+          "position": [
+            1424,
+            1184
+          ],
+          "onError": "continueRegularOutput"
+        },
+        {
+          "parameters": {
+            "jsCode": "const checkoutUrl = $json.checkout_url || $json.body?.checkout_url || $json.data?.checkout_url;\nconst checkoutRequest = $('Sign Checkout Request').item.json.checkout_request || {};\nconst requestedItems = Array.isArray(checkoutRequest.items) ? checkoutRequest.items : [];\nconst itemNames = requestedItems.map((item) => item.product_name || 'that product').filter(Boolean);\nconst responseMessage = String($json.message || $json.body?.message || $json.errors?.items?.[0] || $json.body?.errors?.items?.[0] || $json.error?.description || $json.error?.message || $json.errorDescription || '').trim();\nconst stockProblem = /no longer has enough stock|out of stock|unavailable/i.test(responseMessage);\nconst productLabel = itemNames.length === 1 ? itemNames[0] : 'one or more selected products';\nconst replyMessage = checkoutUrl\n  ? `Great — here is your secure checkout link: ${checkoutUrl}\n\nPlease complete your delivery and payment details on the website. Your order is not placed until checkout is completed.`\n  : stockProblem\n    ? `Sorry, ${productLabel} is currently out of stock or does not have enough units for this order.\n\nYou can try another product, or send a smaller quantity and I’ll check availability for you.`\n    : 'Sorry, I could not create the checkout link just now. Please try again shortly or ask our team to assist.';\nreturn [{json:{...$json,reply_message:replyMessage}}];"
+          },
+          "id": "b7bece55-a944-4a7e-ab3e-d5f2e8d0bfae",
+          "name": "Build Checkout Link Reply",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            1952,
+            1184
+          ]
+        },
+        {
+          "parameters": {
+            "modelName": "models/gemini-3.1-flash-lite",
+            "options": {
+              "maxOutputTokens": 1024,
+              "temperature": 0.2
+            }
+          },
+          "id": "9167c140-e654-4e51-8d85-90a703955bab",
+          "name": "Gemini Chat Model",
+          "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+          "typeVersion": 1.1,
+          "position": [
+            272,
+            1648
+          ],
+          "credentials": {
+            "googlePalmApi": {
+              "id": "IHH9Irq52d1MEeoH",
+              "name": "Google Gemini(PaLM) Api account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "model": "openai/gpt-oss-120b",
+            "options": {}
+          },
+          "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+          "typeVersion": 1,
+          "position": [
+            -224,
+            1440
+          ],
+          "id": "eea0678a-f966-4a2b-bc0d-96f8b4e6d05d",
+          "name": "Groq Chat Model",
+          "credentials": {
+            "groqApi": {
+              "id": "YJQPjPnogKv4QY1d",
+              "name": "Groq account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "mode": "runOnceForEachItem",
+            "jsCode": "function utf8Bytes(value) {\n  const encoded = encodeURIComponent(String(value));\n  const bytes = [];\n  for (let index = 0; index < encoded.length; index += 1) {\n    if (encoded[index] === '%') {\n      bytes.push(parseInt(encoded.slice(index + 1, index + 3), 16));\n      index += 2;\n    } else {\n      bytes.push(encoded.charCodeAt(index));\n    }\n  }\n  return bytes;\n}\nfunction rightRotate(value, amount) {\n  return (value >>> amount) | (value << (32 - amount));\n}\nfunction sha256(input) {\n  const bytes = Array.from(input);\n  const bitLength = bytes.length * 8;\n  const hash = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const constants = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];\n  bytes.push(0x80);\n  while ((bytes.length % 64) !== 56) bytes.push(0);\n  for (let shift = 7; shift >= 0; shift -= 1) bytes.push(Math.floor(bitLength / (2 ** (shift * 8))) & 0xff);\n  for (let offset = 0; offset < bytes.length; offset += 64) {\n    const words = new Array(64);\n    for (let index = 0; index < 16; index += 1) {\n      const start = offset + (index * 4);\n      words[index] = ((bytes[start] << 24) | (bytes[start + 1] << 16) | (bytes[start + 2] << 8) | bytes[start + 3]) >>> 0;\n    }\n    for (let index = 16; index < 64; index += 1) {\n      const s0 = rightRotate(words[index - 15], 7) ^ rightRotate(words[index - 15], 18) ^ (words[index - 15] >>> 3);\n      const s1 = rightRotate(words[index - 2], 17) ^ rightRotate(words[index - 2], 19) ^ (words[index - 2] >>> 10);\n      words[index] = (words[index - 16] + s0 + words[index - 7] + s1) >>> 0;\n    }\n    let [a,b,c,d,e,f,g,h] = hash;\n    for (let index = 0; index < 64; index += 1) {\n      const sum1 = rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25);\n      const choice = (e & f) ^ ((~e) & g);\n      const temp1 = (h + sum1 + choice + constants[index] + words[index]) >>> 0;\n      const sum0 = rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22);\n      const majority = (a & b) ^ (a & c) ^ (b & c);\n      const temp2 = (sum0 + majority) >>> 0;\n      h=g; g=f; f=e; e=(d+temp1)>>>0; d=c; c=b; b=a; a=(temp1+temp2)>>>0;\n    }\n    hash[0]=(hash[0]+a)>>>0; hash[1]=(hash[1]+b)>>>0; hash[2]=(hash[2]+c)>>>0; hash[3]=(hash[3]+d)>>>0;\n    hash[4]=(hash[4]+e)>>>0; hash[5]=(hash[5]+f)>>>0; hash[6]=(hash[6]+g)>>>0; hash[7]=(hash[7]+h)>>>0;\n  }\n  return hash.flatMap((word) => [(word>>>24)&0xff,(word>>>16)&0xff,(word>>>8)&0xff,word&0xff]);\n}\nfunction hmacSha256(secret, message) {\n  let key = utf8Bytes(secret);\n  if (key.length > 64) key = sha256(key);\n  while (key.length < 64) key.push(0);\n  const outer = key.map((byte) => byte ^ 0x5c);\n  const inner = key.map((byte) => byte ^ 0x36);\n  return sha256(outer.concat(sha256(inner.concat(utf8Bytes(message))))).map((byte) => byte.toString(16).padStart(2, '0')).join('');\n}\nconst secret = $env.N8N_CHECKOUT_SESSION_SECRET;\nif (!secret) throw new Error('N8N_CHECKOUT_SESSION_SECRET is not configured on the n8n server.');\nconst timestamp = Math.floor(Date.now() / 1000).toString();\nconst body = JSON.stringify($json.checkout_request);\nconst signature = 'sha256=' + hmacSha256(secret, timestamp + '.' + body);\nreturn {json:{...$json,checkout_raw_body:body,n8n_timestamp:timestamp,n8n_signature:signature}};"
+          },
+          "id": "0a80d684-3f3a-4a22-bb83-5ba0e2b603b0",
+          "name": "Sign Checkout Request",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            896,
+            1200
+          ]
+        },
+        {
+          "parameters": {
+            "mode": "runOnceForEachItem",
+            "jsCode": "const hasCurrentMatch = Array.isArray($json.matched_products) && $json.matched_products.length > 0;\n\nif (hasCurrentMatch || $json.catalog_mode !== 'no_match') {\n  return { json: $json };\n}\n\nconst products = Array.isArray($json.products) ? $json.products : [];\nconst catalogText = products.map((product) => {\n  const variants = (product.variants || []).map((variant) => {\n    const size = variant.size ? `${variant.size}: ` : '';\n    const retail = variant.retail_price_ugx ?? 'Price on request';\n    const stock = variant.stock_status || 'Unknown';\n    const wholesale = variant.wholesale_price_ugx != null && variant.wholesale_min_qty != null\n      ? ` | Wholesale: ${variant.wholesale_price_ugx} UGX | Minimum: ${variant.wholesale_min_qty}`\n      : '';\n    return `${size}${retail} UGX | Stock: ${stock}${wholesale}`;\n  }).join('\\n');\n\n  return `${product.name}\\nCategory: ${product.category}\\nVariants:\\n${variants}`;\n}).join('\\n\\n');\n\nreturn {\n  json: {\n    ...$json,\n    catalog_mode: 'conversation_follow_up',\n    catalog_text: catalogText,\n    matched_products: products,\n    match_count: products.length,\n  },\n};"
+          },
+          "id": "2f8a0a55-318d-47de-9a96-5b2d2d1bca2d",
+          "name": "Keep Catalog for Order Follow-up",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -432,
+            0
+          ]
+        },
+        {
+          "id": "run-b2b-reply-tracker",
+          "name": "Track matching B2B replies",
+          "type": "n8n-nodes-base.executeWorkflow",
+          "typeVersion": 1.3,
+          "position": [
+            -2272,
+            320
+          ],
+          "parameters": {
+            "mode": "each",
+            "source": "database",
+            "workflowId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "EEqmUcyjr5oEFnjT",
+              "cachedResultName": "Ellena B2B Reply Tracker"
+            },
+            "options": {
+              "waitForSubWorkflow": false
+            }
+          }
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": {
+        "sameAsDraft": true
+      },
+      "meta": {
+        "templateCredsSetupCompleted": true,
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    }
+  ]
+}

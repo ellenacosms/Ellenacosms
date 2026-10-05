@@ -66,10 +66,7 @@ class StoreCart
         $discountAmount = $discount?->amountFor($discountableSubtotal) ?? 0;
         $discountedSubtotal = max(0, $discountableSubtotal - $discountAmount);
         $freeShippingThreshold = StoreSetting::freeShippingThreshold();
-        $standardDeliveryFee = (float) config('checkout.delivery_methods.standard.fee', 12);
-        $shipping = $discountedSubtotal > 0 && $discountedSubtotal < $freeShippingThreshold
-            ? $standardDeliveryFee
-            : 0;
+        $shipping = 0;
 
         return [
             'items' => $items,

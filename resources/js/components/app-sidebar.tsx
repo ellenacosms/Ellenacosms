@@ -1,6 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     BadgePercent,
+    BookOpen,
+    Inbox,
     LayoutGrid,
     Layers3,
     Heart,
@@ -47,7 +49,17 @@ export function AppSidebar() {
               { title: 'Admin overview', href: '/admin', icon: LayoutGrid },
               { title: 'Products', href: '/admin/products', icon: Package },
               { title: 'Rituals', href: '/admin/rituals', icon: Layers3 },
+              {
+                  title: 'Beauty guides',
+                  href: '/admin/beauty-guides',
+                  icon: BookOpen,
+              },
               { title: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+              {
+                  title: 'Contact inbox',
+                  href: '/admin/contact-submissions',
+                  icon: Inbox,
+              },
               { title: 'Customers', href: '/admin/customers', icon: Users },
               {
                   title: 'Discounts',

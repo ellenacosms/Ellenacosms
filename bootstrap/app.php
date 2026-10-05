@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureAdminDomain;
 use App\Http\Middleware\EnsureAdminTwoFactor;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -19,9 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(function (Request $request): string {
+            return $request->is('admin') || $request->is('admin/*')
+                ? route('admin.entry')
+                : route('register');
+        });
+
         $middleware->validateCsrfTokens(except: [
             'integrations/n8n/checkout-sessions',
-            'payments/pesapal/ipn',
+            'payments/dgateway/webhook',
         ]);
 
         $middleware->trustProxies(
@@ -32,8 +39,18 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PROTO,
         );
 
+        $middleware->trustHosts(
+            at: [
+                '^ellenacosms\\.com$',
+                '^www\\.ellenacosms\\.com$',
+                '^admin\\.ellenacosms\\.com$',
+            ],
+            subdomains: false,
+        );
+
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'admin.domain' => EnsureAdminDomain::class,
             'admin.two-factor' => EnsureAdminTwoFactor::class,
             'admin.audit' => RecordAdminActivity::class,
         ]);

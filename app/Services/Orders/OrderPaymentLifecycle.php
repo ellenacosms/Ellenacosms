@@ -51,7 +51,7 @@ class OrderPaymentLifecycle
                 'expired_at' => $paymentStatus === 'expired' ? ($lockedOrder->expired_at ?? now()) : $lockedOrder->expired_at,
                 'status' => $fulfilmentHold
                     ? 'payment_review'
-                    : ($paymentStatus === 'expired' ? 'cancelled' : $lockedOrder->status),
+                    : ($paymentStatus === 'expired' ? 'cancelled' : ($paymentStatus === 'paid' && $previousStatus === 'expired' ? 'pending' : $lockedOrder->status)),
             ])->save();
 
             if ($previousStatus !== $paymentStatus) {

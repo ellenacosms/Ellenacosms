@@ -72,8 +72,8 @@ class RitualBundleTest extends TestCase
             ->where('subtotal', 150)
             ->where('bundle_discount.amount', 15)
             ->where('bundle_discount.rituals.0.name', 'Test Body Ritual')
-            ->where('shipping', 12)
-            ->where('total', 147));
+            ->where('shipping', 0)
+            ->where('total', 135));
 
         $this->patch("/cart/{$this->cleanser->id}", ['quantity' => 0]);
 
@@ -109,7 +109,7 @@ class RitualBundleTest extends TestCase
             'city' => 'Kampala',
             'country' => 'Uganda',
             'notes' => null,
-            'delivery_method' => 'standard',
+            'delivery_method' => 'quote',
             'checkout_token' => $checkoutToken,
             'payment_method' => 'manual_confirmation',
         ])->assertRedirect();
@@ -118,7 +118,7 @@ class RitualBundleTest extends TestCase
 
         $this->assertSame('RITUAL SAVINGS', $order->discount_code);
         $this->assertSame('15.00', $order->discount_amount);
-        $this->assertSame('147.00', $order->total);
+        $this->assertSame('135.00', $order->total);
         $this->assertFalse(session()->has('cart_rituals'));
     }
 

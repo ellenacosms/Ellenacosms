@@ -4,15 +4,21 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $nonce = Str::random(32);
+        $nonce = Vite::useCspNonce();
         $request->attributes->set('csp_nonce', $nonce);
+        $viteDevAssets = app()->isLocal() && is_file(public_path('hot'))
+            ? ' http://127.0.0.1:5173'
+            : '';
+        $viteDevConnection = $viteDevAssets === ''
+            ? ''
+            : "{$viteDevAssets} ws://127.0.0.1:5173";
 
         /** @var Response $response */
         $response = $next($request);
@@ -20,14 +26,16 @@ class SecurityHeaders
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'",
             "base-uri 'self'",
-            "connect-src 'self' https://accounts.google.com",
-            "font-src 'self' data: https://fonts.gstatic.com",
+            "connect-src 'self' https://accounts.google.com https://api.stripe.com https://r.stripe.com https://m.stripe.network{$viteDevConnection}",
+            "font-src 'self' data: https://fonts.gstatic.com{$viteDevAssets}",
             "form-action 'self' https://accounts.google.com",
+            "frame-src https://www.google.com https://maps.google.com https://js.stripe.com https://hooks.stripe.com",
             "frame-ancestors 'none'",
             "img-src 'self' data: https:",
             "object-src 'none'",
-            "script-src 'self' 'nonce-{$nonce}'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "script-src 'self' 'nonce-{$nonce}' https://js.stripe.com{$viteDevAssets}",
+            "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com{$viteDevAssets}",
+            "style-src-attr 'unsafe-inline'",
         ]));
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');

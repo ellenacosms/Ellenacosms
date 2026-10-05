@@ -1,0 +1,2522 @@
+{
+  "repairedLinks": [
+    {
+      "id": 178,
+      "prospect_id": 24,
+      "phone_number": "256701623458",
+      "business_name": "A&G Salon and SPA Uganda",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 179,
+      "prospect_id": 35,
+      "phone_number": "256392002537",
+      "business_name": "AFROS & MO NATURAL HAIR",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 181,
+      "prospect_id": 81,
+      "phone_number": "256701664553",
+      "business_name": "AISHA SALON ENTEBBE MAIN BRANCH",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 182,
+      "prospect_id": 22,
+      "phone_number": "256200911833",
+      "business_name": "ALAIA HAIR & BEAUTY",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 184,
+      "prospect_id": 84,
+      "phone_number": "256759686514",
+      "business_name": "ALVIN & BROTHER'S BUAETY SALOON",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 185,
+      "prospect_id": 66,
+      "phone_number": "256434122660",
+      "business_name": "Al-Nisaa Hotel and Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 186,
+      "prospect_id": 71,
+      "phone_number": "256751539606",
+      "business_name": "Anna beauty salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 187,
+      "prospect_id": 80,
+      "phone_number": "256776240012",
+      "business_name": "Annie's Unisex Salon Entebbe",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 188,
+      "prospect_id": 91,
+      "phone_number": "256754655563",
+      "business_name": "Aurea Spa & Massage",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 189,
+      "prospect_id": 137,
+      "phone_number": "256708000049",
+      "business_name": "BLUNT HAIR STUDIO",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 190,
+      "prospect_id": 52,
+      "phone_number": "256759849842",
+      "business_name": "Barbie’s Glam &Beauty Hub",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 193,
+      "prospect_id": 122,
+      "phone_number": "256700535752",
+      "business_name": "Beauty Affairs Salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 195,
+      "prospect_id": 197,
+      "phone_number": "256709740899",
+      "business_name": "Beauty Corner Ent Ltd",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 196,
+      "prospect_id": 172,
+      "phone_number": "256704261720",
+      "business_name": "Beauty Trends Uganda",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 198,
+      "prospect_id": 85,
+      "phone_number": "256326333001",
+      "business_name": "Bravado Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 199,
+      "prospect_id": 14,
+      "phone_number": "256703742000",
+      "business_name": "Brips Beauty Salon Kampala",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 200,
+      "prospect_id": 110,
+      "phone_number": "256757116874",
+      "business_name": "C&E BEAUTY SALON -kids and adults",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 203,
+      "prospect_id": 119,
+      "phone_number": "256786905758",
+      "business_name": "COX UNISEX SALON",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 204,
+      "prospect_id": 116,
+      "phone_number": "256793636148",
+      "business_name": "CUT & CREATE UNISEX SALON",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 206,
+      "prospect_id": 95,
+      "phone_number": "256702711286",
+      "business_name": "Calabash Spa & Salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 207,
+      "prospect_id": 12,
+      "phone_number": "256775781344",
+      "business_name": "Callisto Hair Salon & Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 208,
+      "prospect_id": 139,
+      "phone_number": "256701453680",
+      "business_name": "Chapter and verse saloon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 210,
+      "prospect_id": 138,
+      "phone_number": "256778104739",
+      "business_name": "Choices Beauty Palour",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 211,
+      "prospect_id": 194,
+      "phone_number": "256704421300",
+      "business_name": "City Beauty Centre Bwaise",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 212,
+      "prospect_id": 76,
+      "phone_number": "256702019010",
+      "business_name": "ClawsUg",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 213,
+      "prospect_id": 26,
+      "phone_number": "256702374024",
+      "business_name": "Coffee City Beauty Parlour and Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 214,
+      "prospect_id": 189,
+      "phone_number": "256392790212",
+      "business_name": "Colline Hotel - Mukono",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 215,
+      "prospect_id": 198,
+      "phone_number": "256756231375",
+      "business_name": "Conquerors' shop",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 216,
+      "prospect_id": 163,
+      "phone_number": "256751392673",
+      "business_name": "Cultural Naturals",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 217,
+      "prospect_id": 28,
+      "phone_number": "256200908947",
+      "business_name": "Dallas Hair Studio",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 218,
+      "prospect_id": 117,
+      "phone_number": "256774264508",
+      "business_name": "Davis and Baker",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 219,
+      "prospect_id": 83,
+      "phone_number": "256705007074",
+      "business_name": "Dazzles salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 220,
+      "prospect_id": 195,
+      "phone_number": "256414258704",
+      "business_name": "Delight Supplies Limited",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 221,
+      "prospect_id": 176,
+      "phone_number": "256786291006",
+      "business_name": "Devine resort and spa mukono",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 222,
+      "prospect_id": 123,
+      "phone_number": "256700754030",
+      "business_name": "Divine Mane",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 223,
+      "prospect_id": 183,
+      "phone_number": "256770674066",
+      "business_name": "Divine Resort & Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 224,
+      "prospect_id": 100,
+      "phone_number": "256708044584",
+      "business_name": "Dr. Sam Nails",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 225,
+      "prospect_id": 191,
+      "phone_number": "256755279035",
+      "business_name": "Dream Beauty Products",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 226,
+      "prospect_id": 93,
+      "phone_number": "256781945510",
+      "business_name": "EXECUTIVE SERENITY SPA AND MOBILE MASSAGE KAMPALA.",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 227,
+      "prospect_id": 70,
+      "phone_number": "256785121010",
+      "business_name": "Elegant Unisex Salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 228,
+      "prospect_id": 53,
+      "phone_number": "256708789458",
+      "business_name": "Elegant nail clinic and make up studio",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 230,
+      "prospect_id": 69,
+      "phone_number": "256703377948",
+      "business_name": "Ella sensational massage spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 231,
+      "prospect_id": 201,
+      "phone_number": "256787841695",
+      "business_name": "Elle Beauty Store",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 232,
+      "prospect_id": 148,
+      "phone_number": "256709074992",
+      "business_name": "Elly Nail Spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 233,
+      "prospect_id": 185,
+      "phone_number": "256752728759",
+      "business_name": "Emmylles Inn & Massage",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 234,
+      "prospect_id": 38,
+      "phone_number": "256751788112",
+      "business_name": "EnviriZaNacho Natural Hair Salon",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 235,
+      "prospect_id": 17,
+      "phone_number": "256782069275",
+      "business_name": "Essence Spa Lounge",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 237,
+      "prospect_id": 141,
+      "phone_number": "256393101757",
+      "business_name": "Etunganun Grooming and Beauty Lounge",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 238,
+      "prospect_id": 60,
+      "phone_number": "256793567424",
+      "business_name": "Extra spa",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 239,
+      "prospect_id": 133,
+      "phone_number": "256705522818",
+      "business_name": "FAM7 NATURALS WAKISO Branch",
+      "execution": "4574",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 241,
+      "prospect_id": 96,
+      "phone_number": "256756070073",
+      "business_name": "Fifi's Wellness Spa and More",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 242,
+      "prospect_id": 109,
+      "phone_number": "256755246360",
+      "business_name": "G,T nails care",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 243,
+      "prospect_id": 160,
+      "phone_number": "256791357798",
+      "business_name": "GLOW BEAUTY SHOP",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 244,
+      "prospect_id": 7,
+      "phone_number": "256776463635",
+      "business_name": "Glam Icon Salon & Spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 245,
+      "prospect_id": 72,
+      "phone_number": "256752345511",
+      "business_name": "Glam Salon & Barber Entebbe",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 247,
+      "prospect_id": 165,
+      "phone_number": "256702424555",
+      "business_name": "Goddess Hub",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 248,
+      "prospect_id": 48,
+      "phone_number": "256740949846",
+      "business_name": "HANDS OF BRAMA MASSAGE CLINIC (MUKONO BRANCH)",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 250,
+      "prospect_id": 113,
+      "phone_number": "256751227446",
+      "business_name": "HK UNISEX SALON .Hair | Nail | Make-Up",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 252,
+      "prospect_id": 39,
+      "phone_number": "256788129315",
+      "business_name": "Hair By Clipperz Salon",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 253,
+      "prospect_id": 121,
+      "phone_number": "256706944555",
+      "business_name": "Hair Salon",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 254,
+      "prospect_id": 58,
+      "phone_number": "256782798645",
+      "business_name": "Harmony Massage Parlour",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 255,
+      "prospect_id": 61,
+      "phone_number": "256788724840",
+      "business_name": "Healing Hands spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 256,
+      "prospect_id": 115,
+      "phone_number": "256703695052",
+      "business_name": "Hera beauty skin& Natural hair clinic",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 259,
+      "prospect_id": 204,
+      "phone_number": "256786029193",
+      "business_name": "J.V beauty spot",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 260,
+      "prospect_id": 187,
+      "phone_number": "256700721722",
+      "business_name": "J.r auto spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 261,
+      "prospect_id": 124,
+      "phone_number": "256705841966",
+      "business_name": "Jemmie Beauty Centre",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 262,
+      "prospect_id": 108,
+      "phone_number": "256750154768",
+      "business_name": "Juliusnails 🇺🇬",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 263,
+      "prospect_id": 112,
+      "phone_number": "256784252004",
+      "business_name": "KASULE NAIL DOCTOR",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 264,
+      "prospect_id": 140,
+      "phone_number": "256767503827",
+      "business_name": "Kabiro Saloon & Beauty Solutions",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 265,
+      "prospect_id": 106,
+      "phone_number": "256780119863",
+      "business_name": "Kiki's Nail Club",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 266,
+      "prospect_id": 104,
+      "phone_number": "256776980926",
+      "business_name": "Klassy nails ug",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 267,
+      "prospect_id": 16,
+      "phone_number": "256740388888",
+      "business_name": "Kora Salon & Beauty Spot",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 270,
+      "prospect_id": 103,
+      "phone_number": "256740408781",
+      "business_name": "LA BRONZE SALON",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 271,
+      "prospect_id": 171,
+      "phone_number": "256742206437",
+      "business_name": "Linda's collection (Cosmetics & Lady's corner",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 272,
+      "prospect_id": 75,
+      "phone_number": "256742177455",
+      "business_name": "Linora beauty studio",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 273,
+      "prospect_id": 42,
+      "phone_number": "256756964656",
+      "business_name": "Livara Family and Natural Hair Salon, Ntinda",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 274,
+      "prospect_id": 167,
+      "phone_number": "256770721069",
+      "business_name": "Lliana beauty shop",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 275,
+      "prospect_id": 199,
+      "phone_number": "256779387648",
+      "business_name": "METHAK BEAUTY SHOP",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 276,
+      "prospect_id": 87,
+      "phone_number": "256708968079",
+      "business_name": "MIAMI WELLNESS SPA",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 277,
+      "prospect_id": 144,
+      "phone_number": "256765927274",
+      "business_name": "MISK SALON",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 278,
+      "prospect_id": 46,
+      "phone_number": "256701752673",
+      "business_name": "MOMENTUM GUEST HOUSE",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 280,
+      "prospect_id": 192,
+      "phone_number": "256700341802",
+      "business_name": "Maama becca cosmetics shop and saloon",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 281,
+      "prospect_id": 97,
+      "phone_number": "256412309000",
+      "business_name": "Maisha Spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 282,
+      "prospect_id": 151,
+      "phone_number": "256702706033",
+      "business_name": "Majje 97 nails",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 283,
+      "prospect_id": 3,
+      "phone_number": "256772001740",
+      "business_name": "Makeup By Destiny is Beauty",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 285,
+      "prospect_id": 8,
+      "phone_number": "256705994642",
+      "business_name": "Makeup by Ayarda",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 286,
+      "prospect_id": 67,
+      "phone_number": "256705744954",
+      "business_name": "Mercyline Spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 287,
+      "prospect_id": 27,
+      "phone_number": "256708329206",
+      "business_name": "Minister's Village Hotel Ntinda Massage Spa Parlor .Relax and feel better.",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 288,
+      "prospect_id": 182,
+      "phone_number": "256707901659",
+      "business_name": "Mobile Massage Queens Mukono",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 289,
+      "prospect_id": 99,
+      "phone_number": "256765336198",
+      "business_name": "Mobility Massage",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 290,
+      "prospect_id": 101,
+      "phone_number": "256745975421",
+      "business_name": "Monalisa Nails and Makeup",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 291,
+      "prospect_id": 188,
+      "phone_number": "256755283836",
+      "business_name": "Mukono Resort Hotel",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 292,
+      "prospect_id": 129,
+      "phone_number": "256779218829",
+      "business_name": "Mutindo Unisex saloon",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 294,
+      "prospect_id": 134,
+      "phone_number": "256714651850",
+      "business_name": "Mystique Beauty Unisex Salon",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 295,
+      "prospect_id": 54,
+      "phone_number": "256763899465",
+      "business_name": "Nail maker",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 297,
+      "prospect_id": 114,
+      "phone_number": "256752464743",
+      "business_name": "Nails by Edrine",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 298,
+      "prospect_id": 19,
+      "phone_number": "256774307530",
+      "business_name": "Ntinda Massage Spa",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 299,
+      "prospect_id": 174,
+      "phone_number": "256750365628",
+      "business_name": "Oil perfumes Entebbe",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 300,
+      "prospect_id": 59,
+      "phone_number": "256708565988",
+      "business_name": "PARADISE POINT SPA JINJA",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 301,
+      "prospect_id": 2,
+      "phone_number": "256751577633",
+      "business_name": "PHIPHI’s MAKEUP PARLOUR",
+      "execution": "4771",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 302,
+      "prospect_id": 162,
+      "phone_number": "256705596898",
+      "business_name": "PHL Naturals",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 303,
+      "prospect_id": 161,
+      "phone_number": "256800122222",
+      "business_name": "Payway POS - Jits beauty shop (Entebbe Airport)",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 304,
+      "prospect_id": 105,
+      "phone_number": "256759143881",
+      "business_name": "Perfect Nails",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 305,
+      "prospect_id": 107,
+      "phone_number": "256754726999",
+      "business_name": "Perfect Nails Ug Ntinda",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 307,
+      "prospect_id": 11,
+      "phone_number": "256393225520",
+      "business_name": "Posh Junction Salon",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 309,
+      "prospect_id": 68,
+      "phone_number": "256782727381",
+      "business_name": "Pure Harmony Mobile Massage And Spa KAMPALA & Jinja",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 310,
+      "prospect_id": 57,
+      "phone_number": "256762296743",
+      "business_name": "Relax, Rewind, Revive Mobile Massage & Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 311,
+      "prospect_id": 184,
+      "phone_number": "256747695594",
+      "business_name": "SHAL all care massage",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 312,
+      "prospect_id": 25,
+      "phone_number": "256779886031",
+      "business_name": "SHY KAMPALA BY MB",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 313,
+      "prospect_id": 89,
+      "phone_number": "256776946181",
+      "business_name": "SPA SKYLAR BUKOTO",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 316,
+      "prospect_id": 118,
+      "phone_number": "256414697093",
+      "business_name": "Salon Expressions",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 318,
+      "prospect_id": 31,
+      "phone_number": "256785499163",
+      "business_name": "Salon Iremia - Hair & Nails",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 319,
+      "prospect_id": 98,
+      "phone_number": "256704904274",
+      "business_name": "Sensual Massage Spa Uganda",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 320,
+      "prospect_id": 5,
+      "phone_number": "256772708151",
+      "business_name": "Serene Beauty",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 322,
+      "prospect_id": 166,
+      "phone_number": "256414598041",
+      "business_name": "Seven Oasis Uganda Ltd",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 323,
+      "prospect_id": 15,
+      "phone_number": "256706187795",
+      "business_name": "Shades of beauty makeup studio",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 324,
+      "prospect_id": 62,
+      "phone_number": "256751344643",
+      "business_name": "Shannah Beauty Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 325,
+      "prospect_id": 73,
+      "phone_number": "256752397878",
+      "business_name": "Soul Beauty Salon and Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 326,
+      "prospect_id": 94,
+      "phone_number": "256758991556",
+      "business_name": "Spa and More",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 327,
+      "prospect_id": 44,
+      "phone_number": "256200906414",
+      "business_name": "Sparkles Salon Garden City",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 328,
+      "prospect_id": 30,
+      "phone_number": "256200906412",
+      "business_name": "Sparkles Salon Lugogo Mall",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 329,
+      "prospect_id": 90,
+      "phone_number": "256786407647",
+      "business_name": "Splendid Body Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 330,
+      "prospect_id": 6,
+      "phone_number": "256706081927",
+      "business_name": "Stuwie's Salon And Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 332,
+      "prospect_id": 9,
+      "phone_number": "256751170931",
+      "business_name": "Sunny Hair Masters Unisex Salon",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 334,
+      "prospect_id": 49,
+      "phone_number": "256781865357",
+      "business_name": "Sunset INN and Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 336,
+      "prospect_id": 86,
+      "phone_number": "256764001922",
+      "business_name": "THE SERENITY SPA & EXECUTIVE MOBILE MASSAGES",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 337,
+      "prospect_id": 50,
+      "phone_number": "256708441429",
+      "business_name": "TIGRES MASSAGE PALOURE",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 339,
+      "prospect_id": 78,
+      "phone_number": "256742116443",
+      "business_name": "TYLER SALON AND BARBER SHOP",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 341,
+      "prospect_id": 64,
+      "phone_number": "256766367348",
+      "business_name": "The Horizon Spa And Massage Palour",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 342,
+      "prospect_id": 65,
+      "phone_number": "256744252004",
+      "business_name": "The Jinja Massage",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 343,
+      "prospect_id": 74,
+      "phone_number": "256773726660",
+      "business_name": "The Makeover Place, Entebbe",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 344,
+      "prospect_id": 142,
+      "phone_number": "256767097795",
+      "business_name": "The Makeover Place, Freedom City",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 345,
+      "prospect_id": 1,
+      "phone_number": "256786350615",
+      "business_name": "The Makeover Place, Kyambogo",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 348,
+      "prospect_id": 4,
+      "phone_number": "256709728691",
+      "business_name": "The Makeover Place, Ntinda",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 349,
+      "prospect_id": 41,
+      "phone_number": "256772054361",
+      "business_name": "The Nail Bar UG",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 352,
+      "prospect_id": 29,
+      "phone_number": "256770773317",
+      "business_name": "The Pod",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 353,
+      "prospect_id": 10,
+      "phone_number": "256758885447",
+      "business_name": "The Sununu Effect Beauty Studio",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 354,
+      "prospect_id": 13,
+      "phone_number": "256741786786",
+      "business_name": "Trendy Salon",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 355,
+      "prospect_id": 40,
+      "phone_number": "256708988907",
+      "business_name": "Trust Hair Salon & Makeup Kampala",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 356,
+      "prospect_id": 55,
+      "phone_number": "256761340864",
+      "business_name": "Urban Hues Spa Jinja City",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 357,
+      "prospect_id": 37,
+      "phone_number": "256776880042",
+      "business_name": "Uzuri Natural Hair salon ntinda",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 358,
+      "prospect_id": 186,
+      "phone_number": "256414606406",
+      "business_name": "Vantage Medical Centre",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 359,
+      "prospect_id": 173,
+      "phone_number": "256414668818",
+      "business_name": "Victoria Mall Entebbe",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 360,
+      "prospect_id": 111,
+      "phone_number": "256753766664",
+      "business_name": "Waves And Nails Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 361,
+      "prospect_id": 43,
+      "phone_number": "256393243252",
+      "business_name": "Wisteria Salon + Spa Bugolobi",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 362,
+      "prospect_id": 63,
+      "phone_number": "256774343671",
+      "business_name": "Xeron Mobile Massage & Spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 363,
+      "prospect_id": 131,
+      "phone_number": "256200923956",
+      "business_name": "Zziwa Hair Studio",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 364,
+      "prospect_id": 56,
+      "phone_number": "256793346409",
+      "business_name": "solo spa",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 365,
+      "prospect_id": 20,
+      "phone_number": "256741765352",
+      "business_name": "spa 51 ntinda",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 366,
+      "prospect_id": 218,
+      "phone_number": "256755720595",
+      "business_name": "HANDS OF BRAMA VIP SPA • KIWATULE",
+      "execution": "4877",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 367,
+      "prospect_id": 219,
+      "phone_number": "256704106282",
+      "business_name": "Hands of Brama Massage and Spa - Bukoto",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 368,
+      "prospect_id": 206,
+      "phone_number": "256754303470",
+      "business_name": "INFINITY BEAUTY SPA - MASAKA, UGANDA",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 369,
+      "prospect_id": 205,
+      "phone_number": "256708785305",
+      "business_name": "Kama kiana spa",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 370,
+      "prospect_id": 208,
+      "phone_number": "256745196979",
+      "business_name": "Leons Mobile Massage & Spa",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 371,
+      "prospect_id": 212,
+      "phone_number": "256704675666",
+      "business_name": "Masaka Diocesan Medical Services -Jms Outlet",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 372,
+      "prospect_id": 211,
+      "phone_number": "256772311603",
+      "business_name": "Prominent Traditional & Spiritual Healer Kabona",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 373,
+      "prospect_id": 209,
+      "phone_number": "256393255451",
+      "business_name": "SOLO HITES HOTEL",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 376,
+      "prospect_id": 207,
+      "phone_number": "256788925447",
+      "business_name": "Supreme Massage Services- Masaka",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 377,
+      "prospect_id": 214,
+      "phone_number": "256747961143",
+      "business_name": "THE MASSAGE COMPANY & SPA | KAMPALA",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 378,
+      "prospect_id": 217,
+      "phone_number": "256708635422",
+      "business_name": "THE OASIS MOBILE MASSAGE & SPA KAMPALA",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 379,
+      "prospect_id": 210,
+      "phone_number": "256757406203",
+      "business_name": "The Vintage Bar and Auto Spa",
+      "execution": "5035",
+      "expected_status": "followed_up"
+    },
+    {
+      "id": 380,
+      "prospect_id": 227,
+      "phone_number": "256788656005",
+      "business_name": "Cj beauty lounge nyendo, masaka, Uganda",
+      "execution": "4571",
+      "expected_status": "sent"
+    },
+    {
+      "id": 382,
+      "prospect_id": 221,
+      "phone_number": "256757072533",
+      "business_name": "Glean Beauty Salon",
+      "execution": "4768",
+      "expected_status": "sent"
+    },
+    {
+      "id": 407,
+      "prospect_id": 254,
+      "phone_number": "256326333000",
+      "business_name": "Bravado Spa",
+      "execution": "5105",
+      "expected_status": "sent"
+    }
+  ],
+  "reconciledProspects": [
+    {
+      "id": 227,
+      "contacted_at": "2026-09-26T10:27:51.859Z"
+    },
+    {
+      "id": 221,
+      "contacted_at": "2026-09-28T07:33:34.200Z"
+    },
+    {
+      "id": 254,
+      "contacted_at": "2026-10-01T07:29:36.276Z"
+    }
+  ],
+  "verification": {
+    "executionId": "5114",
+    "eligibleQueueRow": 380,
+    "eligibleProspect": 227,
+    "passedQueueAndPermissionChecks": true,
+    "noMessagesSent": true,
+    "onlyQueueFieldChanged": "prospect_id"
+  },
+  "workflows": [
+    {
+      "id": "sZbyCPgCTFjETThR",
+      "name": "Ellena B2B WhatsApp Sender",
+      "active": false,
+      "isArchived": false,
+      "versionId": "792ea0e7-ee9f-4837-a255-921dcbc25c42",
+      "activeVersionId": null,
+      "triggerCount": 0,
+      "nodeCount": 11,
+      "createdAt": "2026-08-26T07:38:54.297Z",
+      "updatedAt": "2026-10-01T07:38:39.927Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true,
+        "binaryMode": "separate",
+        "saveExecutionProgress": true,
+        "saveManualExecutions": true,
+        "saveDataErrorExecution": "all"
+      },
+      "tags": [
+        {
+          "id": "RcJsvlMxArxVGHSo",
+          "name": "B2B Outreach"
+        }
+      ],
+      "parentFolderId": null,
+      "description": "Manual approved outreach: deduplicates phone numbers within each campaign, reserves each row, sends one recipient at a time, retries database updates, and retains Meta message IDs. Sending rows require reconciliation after an interrupted send.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Send only after manual final approval": {
+          "main": [
+            [
+              {
+                "node": "Load approved B2B campaign rows",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark B2B campaign row sent": {
+          "main": [
+            [
+              {
+                "node": "Mark original B2B prospect contacted",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load approved B2B campaign rows": {
+          "main": [
+            [
+              {
+                "node": "Load campaign history",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load campaign history": {
+          "main": [
+            [
+              {
+                "node": "Load current prospect permissions",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Load current prospect permissions": {
+          "main": [
+            [
+              {
+                "node": "Choose unique consented recipients",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Choose unique consented recipients": {
+          "main": [
+            [
+              {
+                "node": "Send one recipient at a time",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send one recipient at a time": {
+          "main": [
+            null,
+            [
+              {
+                "node": "Reserve campaign row before sending",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Reserve campaign row before sending": {
+          "main": [
+            [
+              {
+                "node": "Send approved B2B WhatsApp template",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send approved B2B WhatsApp template": {
+          "main": [
+            [
+              {
+                "node": "Prepare accepted campaign updates",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Prepare accepted campaign updates": {
+          "main": [
+            [
+              {
+                "node": "Mark B2B campaign row sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark original B2B prospect contacted": {
+          "main": [
+            [
+              {
+                "node": "Send one recipient at a time",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {},
+          "id": "c029a03e-f26d-4b35-862b-7c9a8d788b30",
+          "name": "Send only after manual final approval",
+          "type": "n8n-nodes-base.manualTrigger",
+          "typeVersion": 1,
+          "position": [
+            -304,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "approved_to_send"
+                },
+                {
+                  "keyName": "phone_number",
+                  "condition": "isNotEmpty"
+                }
+              ]
+            },
+            "returnAll": true,
+            "orderBy": true,
+            "orderByColumn": "business_name",
+            "orderByDirection": "ASC"
+          },
+          "id": "1c22cf39-f787-414d-a2c5-8c4e6496bf73",
+          "name": "Load approved B2B campaign rows",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            -32,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "phoneNumberId": "={{ \"1243298008866780\" }}",
+            "recipientPhoneNumber": "={{ $('Send one recipient at a time').item.json.phone_number }}",
+            "template": "={{ \"b2b_wholesale_intro|en\" }}",
+            "components": {
+              "component": [
+                {
+                  "bodyParameters": {
+                    "parameter": [
+                      {
+                        "text": "={{ $json.template_variable_1 }}"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "id": "5da61638-e7c2-4ea3-b839-16493aa0fb58",
+          "name": "Send approved B2B WhatsApp template",
+          "type": "n8n-nodes-base.whatsApp",
+          "typeVersion": 1.1,
+          "position": [
+            1312,
+            416
+          ],
+          "webhookId": "0d6be224-0225-43b8-aad8-fb2d1a9c9cfd",
+          "retryOnFail": false,
+          "credentials": {
+            "whatsAppApi": {
+              "id": "fo749YJXJIBtpHwi",
+              "name": "WhatsApp account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "={{ $json.queue_status }}",
+                "sent_at": "={{ $json.sent_at }}",
+                "review_note": "={{ $json.review_note }}",
+                "prospect_id": "={{ $json.prospect_id }}"
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "prospect_id",
+                  "displayName": "prospect_id",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "number",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "phone_number",
+                  "displayName": "phone_number",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_name",
+                  "displayName": "template_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_variable_1",
+                  "displayName": "template_variable_1",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website_url",
+                  "displayName": "website_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "consent_status",
+                  "displayName": "consent_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "queue_status",
+                  "displayName": "queue_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "created_at",
+                  "displayName": "created_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_note",
+                  "displayName": "review_note",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "sent_at",
+                  "displayName": "sent_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_cycle",
+                  "displayName": "outreach_cycle",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "304d7caf-ba89-40aa-b12a-80637fa182cd",
+          "name": "Mark B2B campaign row sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            912,
+            -128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "contacted",
+                "last_contacted_at": "={{ $json.sent_at }}",
+                "notes": "={{ $('Prepare accepted campaign updates').item.json.prospect_note }}"
+              },
+              "schema": []
+            },
+            "options": {}
+          },
+          "id": "mark-original-prospect-contacted",
+          "name": "Mark original B2B prospect contacted",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1216,
+            -128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "returnAll": true
+          },
+          "id": "3df3f6d9-8117-483e-bb5b-45ea4bb15aeb",
+          "name": "Load campaign history",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            256,
+            112
+          ],
+          "executeOnce": true
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "returnAll": true
+          },
+          "id": "c026d6bf-20ef-499c-84ef-13fbd56860d3",
+          "name": "Load current prospect permissions",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            544,
+            112
+          ],
+          "executeOnce": true
+        },
+        {
+          "parameters": {
+            "jsCode": "function normalizePhone(v){let p=String(v||'').replace(/\\D/g,'');if(p.startsWith('00'))p=p.slice(2);if(/^0\\d{9}$/.test(p))p='256'+p.slice(1);return p;}\nconst history=$('Load campaign history').all().map(x=>x.json);\nconst prospects=new Map($input.all().map(x=>[x.json.id,x.json]));\nconst key=r=>(r.outreach_cycle||'legacy')+'|'+normalizePhone(r.phone_number);\nconst blocked=new Set(history.filter(r=>['sent','sent_duplicate','followed_up','replied','sending','skipped_duplicate'].includes(r.queue_status)).map(key));\nconst groups=new Map();\nfor(const item of $('Load approved B2B campaign rows').all()){\n const r=item.json,p=prospects.get(r.prospect_id),phone=normalizePhone(r.phone_number);\n if(!p||p.do_not_contact||p.outreach_consent!=='granted'||p.review_status!=='approved'||!/^[1-9]\\d{7,14}$/.test(phone)||blocked.has(key(r)))continue;\n const g=groups.get(key(r))||[];\n g.push({...r,phone_number:phone,prospect_note:p.notes||''});\n groups.set(key(r),g);\n}\nreturn [...groups.values()].map(rows=>({json:{...rows[0],related_rows:rows}}));"
+          },
+          "id": "524684ce-fc64-45d6-8d7e-050a7fd6c903",
+          "name": "Choose unique consented recipients",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            864,
+            112
+          ]
+        },
+        {
+          "parameters": {
+            "options": {}
+          },
+          "id": "8bcd4979-3753-46a8-84dd-fa1881670983",
+          "name": "Send one recipient at a time",
+          "type": "n8n-nodes-base.splitInBatches",
+          "typeVersion": 3,
+          "position": [
+            1472,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "approved_to_send"
+                },
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "sending"
+              },
+              "schema": []
+            },
+            "options": {}
+          },
+          "id": "3649144c-59ae-45ec-94fc-9a2a269331ba",
+          "name": "Reserve campaign row before sending",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1792,
+            128
+          ],
+          "retryOnFail": true,
+          "maxTries": 5,
+          "waitBetweenTries": 5000
+        },
+        {
+          "parameters": {
+            "jsCode": "const response=$input.first().json;\nif(!response.messages?.[0]?.id||response.messages[0].message_status!=='accepted')throw new Error('Meta acceptance not confirmed; leave sending row for manual reconciliation.');\nconst group=$('Send one recipient at a time').item.json;\nconst at=new Date().toISOString(),messageId=response.messages[0].id;\nreturn group.related_rows.map((r,i)=>({json:{id:r.id,prospect_id:r.prospect_id,expected_status:i===0?'sending':'approved_to_send',queue_status:i===0?'sent':'skipped_duplicate',sent_at:at,review_note:(r.review_note||'')+'\\n'+(i===0?'Meta accepted intro':'Duplicate suppressed; intro accepted for campaign row '+group.id)+' at '+at+'; message ID: '+messageId+'. Delivery not confirmed.',prospect_note:(r.prospect_note||'')+'\\nIntro accepted by Meta at '+at+'; message ID: '+messageId+'. Delivery not confirmed.'},pairedItem:{item:0}}));"
+          },
+          "id": "bbb081de-8d45-4b37-9573-1787e2ab836f",
+          "name": "Prepare accepted campaign updates",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            640,
+            -128
+          ]
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": null,
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    },
+    {
+      "id": "LVRpBltRzbWYeUhi",
+      "name": "Ellena B2B WhatsApp Follow-up",
+      "active": false,
+      "isArchived": false,
+      "versionId": "37b12a9e-0677-4ee9-9bae-00e418386d3c",
+      "activeVersionId": null,
+      "triggerCount": 0,
+      "nodeCount": 6,
+      "createdAt": "2026-09-09T07:10:29.057Z",
+      "updatedAt": "2026-10-01T07:38:45.417Z",
+      "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": true,
+        "timezone": "Africa/Kampala",
+        "binaryMode": "separate"
+      },
+      "tags": [],
+      "parentFolderId": null,
+      "description": "Receives selected rows from Ellena B2B Follow-up Queue, rechecks consent and contact permission, sends the existing WhatsApp follow-up template, and records accepted sends in the campaign queue and prospects.",
+      "scopes": [
+        "execution:reveal",
+        "workflow:create",
+        "workflow:delete",
+        "workflow:disableRedaction",
+        "workflow:enableRedaction",
+        "workflow:execute",
+        "workflow:execute-chat",
+        "workflow:export",
+        "workflow:import",
+        "workflow:list",
+        "workflow:move",
+        "workflow:publish",
+        "workflow:read",
+        "workflow:share",
+        "workflow:unpublish",
+        "workflow:unshare",
+        "workflow:update"
+      ],
+      "canExecute": true,
+      "connections": {
+        "Receive Follow-up Queue results": {
+          "main": [
+            [
+              {
+                "node": "Recheck selected queue row",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Recheck selected queue row": {
+          "main": [
+            [
+              {
+                "node": "Check prospect contact permission",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Check prospect contact permission": {
+          "main": [
+            [
+              {
+                "node": "Send approved B2B WhatsApp follow-up",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Send approved B2B WhatsApp follow-up": {
+          "main": [
+            [
+              {
+                "node": "Mark queue follow-up sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Mark queue follow-up sent": {
+          "main": [
+            [
+              {
+                "node": "Mark prospect follow-up sent",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "parameters": {
+            "phoneNumberId": "={{ \"1243298008866780\" }}",
+            "recipientPhoneNumber": "={{ String($(\"Recheck selected queue row\").item.json.phone_number || \"\").replace(/\\D/g, \"\") }}",
+            "template": "={{ \"b2b_wholesale_follow_up|en\" }}",
+            "components": {
+              "component": [
+                {
+                  "bodyParameters": {
+                    "parameter": [
+                      {
+                        "text": "={{ $(\"Recheck selected queue row\").item.json.business_name }}"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "id": "72a0401a-8683-44ab-afea-9aa77f5486f0",
+          "name": "Send approved B2B WhatsApp follow-up",
+          "type": "n8n-nodes-base.whatsApp",
+          "typeVersion": 1.1,
+          "position": [
+            672,
+            96
+          ],
+          "webhookId": "06784130-fc84-40dc-bdc3-4a4c051de0f1",
+          "credentials": {
+            "whatsAppApi": {
+              "id": "fo749YJXJIBtpHwi",
+              "name": "WhatsApp account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $(\"Recheck selected queue row\").item.json.prospect_id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "outreach_status": "followed_up",
+                "last_contacted_at": "={{ $now.toISO() }}",
+                "notes": "={{ ($(\"Check prospect contact permission\").item.json.notes || \"\") + \"\\nWhatsApp follow-up accepted by Meta at \" + $now.toISO() }}"
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_type",
+                  "displayName": "business_type",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "city",
+                  "displayName": "city",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_phone",
+                  "displayName": "public_phone",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "public_email",
+                  "displayName": "public_email",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website",
+                  "displayName": "website",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_name",
+                  "displayName": "source_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "source_url",
+                  "displayName": "source_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "captured_at",
+                  "displayName": "captured_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "wholesale_potential",
+                  "displayName": "wholesale_potential",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_status",
+                  "displayName": "review_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_consent",
+                  "displayName": "outreach_consent",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "outreach_status",
+                  "displayName": "outreach_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "do_not_contact",
+                  "displayName": "do_not_contact",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "boolean",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "last_contacted_at",
+                  "displayName": "last_contacted_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "notes",
+                  "displayName": "notes",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "e2836bcd-a2d9-43ee-a2d5-dbf48a5aaf45",
+          "name": "Mark prospect follow-up sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            1120,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "inputSource": "passthrough"
+          },
+          "id": "e12e92d1-ebcb-4c1c-b980-f11549086d9c",
+          "name": "Receive Follow-up Queue results",
+          "type": "n8n-nodes-base.executeWorkflowTrigger",
+          "typeVersion": 1.2,
+          "position": [
+            0,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.id }}"
+                },
+                {
+                  "keyName": "queue_status",
+                  "keyValue": "sent"
+                },
+                {
+                  "keyName": "consent_status",
+                  "keyValue": "granted"
+                },
+                {
+                  "keyName": "phone_number",
+                  "condition": "isNotEmpty"
+                },
+                {
+                  "keyName": "sent_at",
+                  "condition": "lte",
+                  "keyValue": "={{ $now.minus({ days: 4 }).toISO() }}"
+                }
+              ]
+            },
+            "returnAll": true
+          },
+          "id": "56150821-3632-4cf3-b24c-46d52556b951",
+          "name": "Recheck selected queue row",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            224,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "get",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "dKrd5XwWJXahnBJ8",
+              "cachedResultName": "Ellena B2B Prospects"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $json.prospect_id }}"
+                },
+                {
+                  "keyName": "do_not_contact",
+                  "condition": "isFalse"
+                }
+              ]
+            },
+            "returnAll": true
+          },
+          "id": "63cc0213-8a85-4484-8f8c-2f4da53217da",
+          "name": "Check prospect contact permission",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            448,
+            96
+          ]
+        },
+        {
+          "parameters": {
+            "operation": "update",
+            "dataTableId": {
+              "__rl": true,
+              "mode": "id",
+              "value": "oUYdVAChLp30h0Ah",
+              "cachedResultName": "Ellena WhatsApp Campaign Queue"
+            },
+            "matchType": "allConditions",
+            "filters": {
+              "conditions": [
+                {
+                  "keyValue": "={{ $(\"Recheck selected queue row\").item.json.id }}"
+                }
+              ]
+            },
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {
+                "queue_status": "followed_up",
+                "review_note": "={{ ($(\"Recheck selected queue row\").item.json.review_note || \"\") + \"\\nFollow-up template accepted by Meta at \" + $now.toISO() + \"; message ID: \" + $json.messages[0].id }}",
+                "prospect_id": "={{ $(\"Recheck selected queue row\").item.json.prospect_id }}"
+              },
+              "matchingColumns": [],
+              "schema": [
+                {
+                  "id": "prospect_id",
+                  "displayName": "prospect_id",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "number",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "business_name",
+                  "displayName": "business_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "phone_number",
+                  "displayName": "phone_number",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_name",
+                  "displayName": "template_name",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "template_variable_1",
+                  "displayName": "template_variable_1",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "website_url",
+                  "displayName": "website_url",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "consent_status",
+                  "displayName": "consent_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "queue_status",
+                  "displayName": "queue_status",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "created_at",
+                  "displayName": "created_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "review_note",
+                  "displayName": "review_note",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "string",
+                  "readOnly": false,
+                  "removed": false
+                },
+                {
+                  "id": "sent_at",
+                  "displayName": "sent_at",
+                  "required": false,
+                  "defaultMatch": false,
+                  "display": true,
+                  "type": "dateTime",
+                  "readOnly": false,
+                  "removed": false
+                }
+              ],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": false
+            },
+            "options": {}
+          },
+          "id": "789bd46f-34d8-494d-bff9-22ce8d3ee629",
+          "name": "Mark queue follow-up sent",
+          "type": "n8n-nodes-base.dataTable",
+          "typeVersion": 1.1,
+          "position": [
+            896,
+            96
+          ]
+        }
+      ],
+      "nodeGroups": [],
+      "activeVersion": null,
+      "meta": {
+        "aiBuilderAssisted": true,
+        "builderVariant": "mcp"
+      }
+    }
+  ]
+}

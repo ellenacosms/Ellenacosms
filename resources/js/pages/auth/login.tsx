@@ -29,7 +29,7 @@ export default function Login({ status, canResetPassword }: Props) {
                     </Link>
                     <nav className="hidden items-center gap-6 md:flex">
                         <a
-                            href="mailto:concierge@ellena.com"
+                            href="mailto:ellenacosms@gmail.com"
                             className="text-[10px] font-semibold tracking-[.17em] text-[#444748]/60 uppercase hover:text-black"
                         >
                             Support

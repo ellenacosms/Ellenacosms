@@ -26,6 +26,26 @@ class ProductTransferController extends Controller
         'description',
         'ingredients',
         'usage',
+        'concerns',
+        'price',
+        'compare_price',
+        'stock',
+        'image_urls',
+        'is_featured',
+        'is_active',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    private const REQUIRED_HEADERS = [
+        'sku',
+        'name',
+        'category_slug',
+        'subtitle',
+        'description',
+        'ingredients',
+        'usage',
         'price',
         'compare_price',
         'stock',
@@ -70,6 +90,7 @@ class ProductTransferController extends Controller
                             $this->spreadsheetSafe($product->description),
                             $this->spreadsheetSafe($product->ingredients),
                             $this->spreadsheetSafe($product->usage),
+                            $this->spreadsheetSafe(implode('|', $product->concerns ?? [])),
                             $product->price,
                             $product->compare_price,
                             $product->stock,
@@ -102,6 +123,7 @@ class ProductTransferController extends Controller
                 'Replace this example with your product description.',
                 'Ceramides, squalane, and peptides.',
                 'Apply morning and evening.',
+                'Dryness|Breakage',
                 '95.00',
                 '110.00',
                 '25',
@@ -135,13 +157,19 @@ class ProductTransferController extends Controller
         }
 
         $headers = array_map(
-            fn (mixed $header): string => Str::of((string) $header)->replace("\xEF\xBB\xBF", '')->trim()->lower()->toString(),
+            fn (mixed $header): string => Str::snake(
+                Str::of((string) $header)->replace("\xEF\xBB\xBF", '')->trim()->toString(),
+            ),
             $headers,
         );
+        $bestForHeader = array_search('best_for', $headers, true);
+        if ($bestForHeader !== false && ! in_array('concerns', $headers, true)) {
+            $headers[$bestForHeader] = 'concerns';
+        }
         $catalogFormat = array_diff(self::CATALOG_HEADERS, $headers) === [];
         $missingHeaders = $catalogFormat
             ? []
-            : array_values(array_diff(self::HEADERS, $headers));
+            : array_values(array_diff(self::REQUIRED_HEADERS, $headers));
 
         if ($missingHeaders !== []) {
             fclose($handle);
@@ -208,6 +236,7 @@ class ProductTransferController extends Controller
                 'description' => ['required', 'string'],
                 'ingredients' => ['nullable', 'string'],
                 'usage' => ['nullable', 'string'],
+                'concerns' => ['nullable', 'string'],
                 'price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
                 'compare_price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'gte:price'],
                 'wholesale_price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
@@ -271,6 +300,7 @@ class ProductTransferController extends Controller
                     'description' => $values['description'],
                     'ingredients' => $values['ingredients'] ?: null,
                     'usage' => $values['usage'] ?: null,
+                    'concerns' => $this->parseConcerns($values['concerns'] ?? null),
                     'price' => $values['price'],
                     'compare_price' => $values['compare_price'] ?: null,
                     'wholesale_price' => $values['wholesale_price'] ?? null,
@@ -326,6 +356,21 @@ class ProductTransferController extends Controller
             '0', 'false', 'no', 'n' => 0,
             default => $value,
         };
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    private function parseConcerns(?string $concerns): ?array
+    {
+        $values = collect(preg_split('/[|,]/', (string) $concerns) ?: [])
+            ->map(fn (string $concern) => trim($concern))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        return $values === [] ? null : $values;
     }
 
     /**

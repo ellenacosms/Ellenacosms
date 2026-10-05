@@ -1,18 +1,22 @@
 import { Link } from '@inertiajs/react';
 import {
     ArrowRight,
+    BookOpen,
     ChevronLeft,
     ChevronRight,
+    Droplets,
     FlaskConical,
+    HeartHandshake,
     Leaf,
     PackageCheck,
     Rabbit,
+    Sparkles,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ProductCard from '@/components/store/product-card';
 import SeoHead from '@/components/store/seo-head';
 import StoreImage from '@/components/store/store-image';
-import type { Banner, Category, Product } from '@/types';
+import type { Banner, Category, MerchandisingEdit, Product } from '@/types';
 
 const defaultHero = '/images/campaign/ellena-braids-hero-v2.png';
 const collectionImages = [
@@ -20,8 +24,67 @@ const collectionImages = [
     '/images/campaign/ellena-body-care-dark.png',
     '/images/campaign/ellena-rituals-dark.png',
 ];
+const collectionImageBySlug: Record<string, string> = {
+    'hair-care': '/images/catalog/hair-care-editorial.png',
+    'body-care': '/images/catalog/body-care-editorial.png',
+    'baby-care': '/images/campaign/ellena-family-care-banner.png',
+    fragrance: '/images/catalog/rituals-editorial.png',
+};
+const categoryEditorialBySlug: Record<
+    string,
+    { kicker: string; copy: string }
+> = {
+    'hair-care': {
+        kicker: 'The crown ritual',
+        copy: 'Moisture, strength, and polish for every texture and every style.',
+    },
+    'body-care': {
+        kicker: 'Skin, considered',
+        copy: 'Daily nourishment designed to leave skin soft and beautifully cared for.',
+    },
+    'baby-care': {
+        kicker: 'Gentle beginnings',
+        copy: 'Comforting family essentials for delicate everyday moments.',
+    },
+    fragrance: {
+        kicker: 'Your signature',
+        copy: 'Memorable notes selected to complete the ritual.',
+    },
+};
+const categoryLayout = [
+    'min-h-[500px] sm:col-span-2 lg:col-span-7 lg:row-span-2 lg:min-h-0',
+    'min-h-[340px] lg:col-span-5 lg:min-h-0',
+    'min-h-[320px] lg:col-span-3 lg:min-h-0',
+    'min-h-[320px] lg:col-span-2 lg:min-h-0',
+];
 const categoryHref = (slug: string) =>
     slug === 'rituals' ? '/rituals' : `/shop?category=${slug}`;
+const concernCards = [
+    {
+        title: 'Hydration',
+        copy: 'Bring lasting comfort back to dry hair and skin.',
+        href: '/find-your-ellena',
+        icon: Droplets,
+    },
+    {
+        title: 'Strength & repair',
+        copy: 'Give stressed lengths a more restorative starting point.',
+        href: '/shop?category=hair-care&concern=strength-repair',
+        icon: Sparkles,
+    },
+    {
+        title: 'Everyday care',
+        copy: 'Build a simple routine you will want to return to.',
+        href: '/rituals',
+        icon: HeartHandshake,
+    },
+];
+
+const guidePreviews = [
+    ['Hair care', 'Build a moisture-first hair ritual'],
+    ['Body care', 'Body lotion, oil, or both?'],
+    ['Beauty rituals', 'Make an evening ritual feel restorative'],
+];
 
 export default function Home({
     featured,
@@ -29,15 +92,26 @@ export default function Home({
     categories,
     heroBanner,
     promotionBanners,
+    merchandisingEdits,
 }: {
     featured: Product[];
     latestProducts: Product[];
     categories: Category[];
     heroBanner?: Banner | null;
     promotionBanners: Banner[];
+    merchandisingEdits: MerchandisingEdit[];
 }) {
     const [promotionIndex, setPromotionIndex] = useState(0);
     const [heroLoaded, setHeroLoaded] = useState(false);
+    const [categoryOffset, setCategoryOffset] = useState(0);
+    const [categoryRotationPaused, setCategoryRotationPaused] = useState(false);
+    const featuredCategories = categories.slice(0, 4);
+    const rotatingCategories = featuredCategories.map(
+        (_, index) =>
+            featuredCategories[
+                (index + categoryOffset) % featuredCategories.length
+            ],
+    );
 
     useEffect(() => {
         if (promotionBanners.length < 2) {
@@ -52,6 +126,20 @@ export default function Home({
 
         return () => window.clearInterval(interval);
     }, [promotionBanners.length]);
+
+    useEffect(() => {
+        if (featuredCategories.length < 2 || categoryRotationPaused) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            setCategoryOffset(
+                (current) => (current + 1) % featuredCategories.length,
+            );
+        }, 6000);
+
+        return () => window.clearInterval(interval);
+    }, [featuredCategories.length, categoryRotationPaused]);
 
     return (
         <>
@@ -154,47 +242,179 @@ export default function Home({
                 </div>
             </section>
 
+            <section className="store-container py-14 md:py-20">
+                <div className="grid gap-7 border border-brand-pink bg-white/55 p-6 sm:p-9 lg:grid-cols-[1.05fr_1.95fr] lg:items-center">
+                    <div>
+                        <p className="eyebrow text-gold">Find your Ellena</p>
+                        <h2 className="subsection-heading mt-4">
+                            Care, chosen for your moment.
+                        </h2>
+                        <p className="mt-4 max-w-sm text-sm leading-7 text-stone-600">
+                            Answer two simple questions and discover a more
+                            considered starting point for your ritual.
+                        </p>
+                        <Link
+                            href="/find-your-ellena"
+                            className="button-dark mt-7 inline-flex"
+                        >
+                            Start the finder <ArrowRight size={15} />
+                        </Link>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                        {concernCards.map(
+                            ({ title, copy, href, icon: Icon }) => (
+                                <Link
+                                    key={title}
+                                    href={href}
+                                    className="group border border-brand-pink bg-brand-blush p-5 transition hover:-translate-y-1 hover:border-brand-gold hover:bg-white"
+                                >
+                                    <Icon
+                                        size={18}
+                                        className="text-brand-rose"
+                                    />
+                                    <h3 className="mt-7 font-serif text-2xl">
+                                        {title}
+                                    </h3>
+                                    <p className="mt-3 text-sm leading-6 text-stone-600">
+                                        {copy}
+                                    </p>
+                                    <span className="mt-5 inline-flex items-center gap-2 text-[9px] font-semibold tracking-[.13em] uppercase group-hover:text-brand-rose">
+                                        Explore <ArrowRight size={12} />
+                                    </span>
+                                </Link>
+                            ),
+                        )}
+                    </div>
+                </div>
+            </section>
+
             <section className="store-container store-section">
-                <div className="mb-12 max-w-2xl">
-                    <p className="eyebrow">Shop by ritual</p>
-                    <h2 className="section-heading mt-4">
-                        Care that belongs in your day.
-                    </h2>
-                    <p className="body-copy mt-5 max-w-xl">
-                        Start with the ritual that feels like you. Each edit is
-                        composed to make choosing beautifully simple.
+                <div className="mb-12 grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
+                    <div className="max-w-2xl">
+                        <p className="eyebrow">The Ellena departments</p>
+                        <h2 className="section-heading mt-4">
+                            Begin with your ritual.
+                        </h2>
+                    </div>
+                    <p className="body-copy max-w-md md:text-right">
+                        Four considered worlds of care, composed to make every
+                        discovery feel beautifully simple.
                     </p>
                 </div>
-                <div className="grid gap-5 md:grid-cols-12">
-                    {categories.slice(0, 3).map((category, index) => (
+                <div
+                    className="grid gap-4 sm:grid-cols-2 lg:auto-rows-[300px] lg:grid-cols-12"
+                    onMouseEnter={() => setCategoryRotationPaused(true)}
+                    onMouseLeave={() => setCategoryRotationPaused(false)}
+                    onFocusCapture={() => setCategoryRotationPaused(true)}
+                    onBlurCapture={() => setCategoryRotationPaused(false)}
+                >
+                    {rotatingCategories.map((category, index) => {
+                        const editorial = categoryEditorialBySlug[
+                            category.slug
+                        ] ?? {
+                            kicker: 'The collection',
+                            copy: 'Thoughtful essentials for a beautifully considered routine.',
+                        };
+
+                        return (
+                            <Link
+                                key={`${category.id}-${categoryOffset}`}
+                                href={categoryHref(category.slug)}
+                                className={`group relative isolate animate-in overflow-hidden bg-stone-800 text-white shadow-[0_18px_48px_rgba(45,37,28,.12)] duration-700 zoom-in-95 fade-in ${categoryLayout[index]}`}
+                            >
+                                <StoreImage
+                                    src={
+                                        category.image ??
+                                        collectionImageBySlug[category.slug] ??
+                                        collectionImages[
+                                            index % collectionImages.length
+                                        ]
+                                    }
+                                    alt={`${category.name} collection`}
+                                    loading="lazy"
+                                    decoding="async"
+                                    wrapperClassName="absolute inset-0"
+                                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.045]"
+                                />
+                                <span className="absolute inset-0 z-10 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+                                <span className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-6 lg:p-7">
+                                    <span className="eyebrow text-white/75">
+                                        {editorial.kicker}
+                                    </span>
+                                    <span className="font-serif text-sm text-white/70">
+                                        0{index + 1}
+                                    </span>
+                                </span>
+                                <span className="absolute inset-x-0 bottom-0 z-20 p-6 lg:p-8">
+                                    <span className="eyebrow text-white/65">
+                                        {category.products_count
+                                            ? `${category.products_count} formulas`
+                                            : 'Explore the collection'}
+                                    </span>
+                                    <span
+                                        className={`mt-3 block font-serif leading-[.95] tracking-[-.025em] ${index === 0 ? 'text-5xl sm:text-6xl lg:text-7xl' : index === 3 ? 'text-3xl xl:text-4xl' : 'text-4xl lg:text-5xl'}`}
+                                    >
+                                        {category.name}
+                                    </span>
+                                    <span
+                                        className={`mt-4 max-w-md text-sm leading-6 text-white/75 ${index > 1 ? 'hidden' : 'block'}`}
+                                    >
+                                        {category.description || editorial.copy}
+                                    </span>
+                                    <span className="mt-6 inline-flex items-center gap-3 border-b border-white/70 pb-1.5 text-[10px] font-semibold tracking-[.15em] uppercase transition-all group-hover:gap-5 group-hover:border-brand-gold group-hover:text-brand-gold">
+                                        Shop products <ArrowRight size={12} />
+                                    </span>
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </div>
+            </section>
+
+            <section className="border-y border-brand-pink/70 bg-brand-blush px-5 py-16 md:py-20">
+                <div className="mx-auto max-w-[1280px]">
+                    <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                        <div>
+                            <p className="eyebrow">Shop by concern</p>
+                            <h2 className="section-heading mt-4">
+                                Start with what you need.
+                            </h2>
+                        </div>
                         <Link
-                            key={category.id}
-                            href={categoryHref(category.slug)}
-                            className={`collection-tile ${index === 0 ? 'md:col-span-7 md:row-span-2' : 'aspect-[4/3] md:col-span-5'}`}
+                            href="/find-your-ellena"
+                            className="text-link shrink-0"
                         >
-                            <StoreImage
-                                src={
-                                    category.image ??
-                                    collectionImages[
-                                        index % collectionImages.length
-                                    ]
-                                }
-                                alt={`${category.name} collection`}
-                                loading="lazy"
-                                decoding="async"
-                                className="object-cover"
-                            />
-                            <div>
-                                <p className="eyebrow text-white/70">
-                                    {category.products_count
-                                        ? `${category.products_count} formulas`
-                                        : 'The collection'}
-                                </p>
-                                <h2>{category.name}</h2>
-                                <span>Explore edit</span>
-                            </div>
+                            Need guidance? <ArrowRight size={13} />
                         </Link>
-                    ))}
+                    </div>
+                    <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {[
+                            [
+                                'Hydration',
+                                '/shop?category=hair-care&concern=hydration',
+                            ],
+                            [
+                                'Strength & repair',
+                                '/shop?category=hair-care&concern=strength-repair',
+                            ],
+                            [
+                                'Scalp care',
+                                '/shop?category=hair-care&concern=scalp-care',
+                            ],
+                            [
+                                'Softness',
+                                '/shop?category=hair-care&concern=softness',
+                            ],
+                        ].map(([label, href]) => (
+                            <Link
+                                key={label}
+                                href={href}
+                                className="border border-brand-pink bg-white/60 px-5 py-6 font-serif text-2xl transition hover:border-brand-rose hover:bg-brand-rose hover:text-white"
+                            >
+                                {label}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </section>
 
@@ -314,13 +534,69 @@ export default function Home({
                 </section>
             )}
 
+            {merchandisingEdits.length > 0 && (
+                <section className="store-container pb-20 md:pb-28">
+                    <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                        <div>
+                            <p className="eyebrow">Curated discovery</p>
+                            <h2 className="section-heading mt-4">
+                                See the collection differently.
+                            </h2>
+                        </div>
+                        <Link href="/discover" className="text-link shrink-0">
+                            Enter the discovery room <ArrowRight size={13} />
+                        </Link>
+                    </div>
+                    <div className="grid gap-px overflow-hidden border border-brand-pink bg-brand-pink sm:grid-cols-2 lg:grid-cols-4">
+                        {merchandisingEdits.map((edit, index) => (
+                            <Link
+                                key={edit.slug}
+                                href={edit.href}
+                                className="group relative isolate min-h-80 overflow-hidden bg-stone-900 text-white"
+                            >
+                                <StoreImage
+                                    src={edit.image}
+                                    alt={edit.title}
+                                    className="object-cover transition duration-1000 group-hover:scale-[1.04]"
+                                    wrapperClassName="absolute inset-0"
+                                />
+                                <span className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/20 to-black/5" />
+                                <span className="absolute inset-x-0 top-0 z-20 flex justify-between p-5">
+                                    <span className="eyebrow text-white/70">
+                                        {edit.eyebrow}
+                                    </span>
+                                    <span className="font-serif text-sm text-white/60">
+                                        0{index + 1}
+                                    </span>
+                                </span>
+                                <span className="absolute inset-x-0 bottom-0 z-20 p-5">
+                                    <span className="block font-serif text-3xl leading-tight">
+                                        {edit.title}
+                                    </span>
+                                    <span className="mt-3 block text-xs leading-5 text-white/70">
+                                        {edit.products_count}{' '}
+                                        {edit.products_count === 1
+                                            ? 'formula'
+                                            : 'formulas'}{' '}
+                                        in this product collection
+                                    </span>
+                                    <span className="mt-5 inline-flex items-center gap-2 text-[9px] font-semibold tracking-[.13em] uppercase group-hover:text-brand-gold">
+                                        Explore <ArrowRight size={11} />
+                                    </span>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             {featured.length > 0 && (
                 <section className="store-container pb-20 md:pb-28">
                     <div className="mb-12 flex items-end justify-between">
                         <div>
-                            <p className="eyebrow">Selected by ELLENA</p>
+                            <p className="eyebrow">Most loved</p>
                             <h2 className="section-heading mt-3">
-                                Featured products
+                                Bestsellers
                             </h2>
                             <p className="mt-4 max-w-lg text-sm leading-7 text-stone-600">
                                 Signature formulas chosen for exceptional
@@ -328,10 +604,10 @@ export default function Home({
                             </p>
                         </div>
                         <Link
-                            href="/shop"
+                            href="/shop?edit=available-now"
                             className="text-link hidden md:inline-flex"
                         >
-                            View all <ArrowRight size={15} />
+                            Shop bestsellers <ArrowRight size={15} />
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
@@ -357,7 +633,7 @@ export default function Home({
                                 </p>
                             </div>
                             <Link
-                                href="/shop"
+                                href="/shop?edit=new-noteworthy"
                                 className="text-link hidden md:inline-flex"
                             >
                                 Shop new arrivals <ArrowRight size={15} />
@@ -372,7 +648,7 @@ export default function Home({
                             ))}
                         </div>
                         <Link
-                            href="/shop"
+                            href="/shop?edit=new-noteworthy"
                             className="button-dark mt-12 md:hidden"
                         >
                             Shop new arrivals
@@ -381,6 +657,38 @@ export default function Home({
                 </section>
             )}
 
+            <section className="store-container store-section">
+                <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                    <div>
+                        <p className="eyebrow">The Ellena beauty guide</p>
+                        <h2 className="section-heading mt-4">
+                            Better rituals begin with useful guidance.
+                        </h2>
+                    </div>
+                    <Link href="/beauty-guide" className="text-link shrink-0">
+                        Visit the guide <ArrowRight size={13} />
+                    </Link>
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                    {guidePreviews.map(([category, title]) => (
+                        <Link
+                            key={title}
+                            href="/beauty-guide"
+                            className="group border border-brand-pink bg-white/55 p-6 transition hover:-translate-y-1 hover:border-brand-gold"
+                        >
+                            <BookOpen size={18} className="text-brand-rose" />
+                            <p className="eyebrow text-gold mt-7">{category}</p>
+                            <h3 className="mt-4 font-serif text-3xl leading-tight">
+                                {title}
+                            </h3>
+                            <span className="mt-7 inline-flex items-center gap-2 text-[10px] font-semibold tracking-[.12em] uppercase group-hover:text-brand-rose">
+                                Read guide <ArrowRight size={13} />
+                            </span>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
             <section
                 id="ritual"
                 className="grid bg-brand-rose text-white lg:grid-cols-2"
@@ -388,22 +696,22 @@ export default function Home({
                 <div className="flex items-center px-6 py-20 md:px-20 lg:py-32">
                     <div className="max-w-lg">
                         <p className="eyebrow text-brand-gold">
-                            Personal consultation
+                            Guided discovery
                         </p>
                         <h2 className="section-heading mt-5">
-                            Find your
+                            Find the ritual
                             <br />
-                            signature glow
+                            made for you
                         </h2>
                         <p className="mt-7 leading-8 font-light text-white/70">
-                            Build a considered regimen around your hair and body
-                            needs, preferred textures, and daily rhythm.
+                            A few thoughtful answers can guide you toward the
+                            care that suits your needs and daily rhythm.
                         </p>
                         <Link
-                            href="/rituals"
+                            href="/find-your-ellena"
                             className="mt-10 inline-flex items-center gap-3 border-b border-brand-gold pb-2 text-xs font-semibold tracking-widest uppercase hover:text-brand-gold"
                         >
-                            Begin the ritual <ArrowRight size={15} />
+                            Find your Ellena <ArrowRight size={15} />
                         </Link>
                     </div>
                 </div>

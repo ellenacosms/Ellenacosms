@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Order;
+use App\Models\StoreSetting;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -71,6 +72,12 @@ class SendOrderEventWebhook implements ShouldBeUnique, ShouldQueue
                 'status' => $order->status,
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->payment_method,
+                // Opaque UUID used only for the WhatsApp dynamic URL:
+                // https://ellenacosms.com/pay/{payment_resume_token}
+                'payment_resume_token' => in_array($order->payment_method, ['dgateway', 'manual_confirmation'], true)
+                    && $order->payment_status === 'pending'
+                    ? $order->checkout_token
+                    : null,
                 'customer' => [
                     'name' => $order->customer_name,
                     'email' => $order->email,
@@ -81,7 +88,7 @@ class SendOrderEventWebhook implements ShouldBeUnique, ShouldQueue
                 ],
                 'delivery_method' => $order->delivery_method,
                 'estimated_delivery_date' => $order->estimated_delivery_date?->toDateString(),
-                'currency' => config('services.pesapal.currency', 'UGX'),
+                'currency' => $order->currency ?: StoreSetting::currency(),
                 'subtotal' => (float) $order->subtotal,
                 'discount_amount' => (float) $order->discount_amount,
                 'shipping' => (float) $order->shipping,

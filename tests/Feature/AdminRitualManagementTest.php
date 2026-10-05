@@ -47,7 +47,7 @@ class AdminRitualManagementTest extends TestCase
 
     public function test_only_administrators_can_open_the_ritual_manager(): void
     {
-        $this->get('/admin/rituals')->assertRedirect('/login');
+        $this->get('/admin/rituals')->assertRedirect(route('admin.entry'));
 
         $this->actingAs(User::factory()->create())
             ->get('/admin/rituals')

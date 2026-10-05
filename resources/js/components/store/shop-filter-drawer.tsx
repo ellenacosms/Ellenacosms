@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
-import type { Category } from '@/types';
+import type { Category, MerchandisingEdit } from '@/types';
 
 export type Concern = {
     slug: string;
@@ -15,6 +15,7 @@ export type ShopFilters = {
     category?: string;
     search?: string;
     concern?: string;
+    edit?: string;
     sort?: string;
 };
 
@@ -49,6 +50,7 @@ export default function ShopFilterDrawer({
     open,
     onOpenChange,
     categories,
+    edits,
     concerns,
     filters,
     total,
@@ -56,6 +58,7 @@ export default function ShopFilterDrawer({
     open: boolean;
     onOpenChange: (open: boolean) => void;
     categories: Category[];
+    edits: MerchandisingEdit[];
     concerns: Concern[];
     filters: ShopFilters;
     total: number;
@@ -65,6 +68,7 @@ export default function ShopFilterDrawer({
         filters.category,
         filters.concern,
         filters.search,
+        filters.edit,
     ].filter(Boolean).length;
 
     const navigate = (updates: FilterUpdates) => {
@@ -97,7 +101,7 @@ export default function ShopFilterDrawer({
                     <header className="flex items-center justify-between border-b border-black/10 px-6 py-6">
                         <div>
                             <Dialog.Title className="font-serif text-3xl tracking-[-.03em]">
-                                Refine the edit
+                                Refine products
                             </Dialog.Title>
                             <Dialog.Description className="mt-1 text-xs text-stone-500">
                                 {activeFilterCount > 0
@@ -141,7 +145,37 @@ export default function ShopFilterDrawer({
 
                         <fieldset>
                             <legend className="eyebrow text-stone-500">
-                                Collection
+                                Curated edits
+                            </legend>
+                            <div className="mt-4 grid gap-2">
+                                {edits.map((edit) => (
+                                    <button
+                                        key={edit.slug}
+                                        type="button"
+                                        onClick={() =>
+                                            navigate({
+                                                edit:
+                                                    filters.edit === edit.slug
+                                                        ? null
+                                                        : edit.slug,
+                                                category: null,
+                                                concern: null,
+                                            })
+                                        }
+                                        className={`flex items-center justify-between border px-4 py-4 text-left text-sm transition ${filters.edit === edit.slug ? 'border-brand-rose bg-brand-rose text-white' : 'border-brand-pink bg-white/55 hover:border-brand-gold'}`}
+                                    >
+                                        <span>{edit.title}</span>
+                                        <span className="text-[10px] opacity-60">
+                                            {edit.products_count}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend className="eyebrow text-stone-500">
+                                Department
                             </legend>
                             <div className="mt-4 grid gap-2">
                                 <button
@@ -150,6 +184,7 @@ export default function ShopFilterDrawer({
                                         navigate({
                                             category: null,
                                             concern: null,
+                                            edit: null,
                                         })
                                     }
                                     className={`flex items-center justify-between border px-4 py-4 text-left text-sm transition ${!filters.category ? 'border-brand-rose bg-brand-rose text-white' : 'border-brand-pink bg-white/55 hover:border-brand-gold'}`}
@@ -164,6 +199,7 @@ export default function ShopFilterDrawer({
                                             navigate({
                                                 category: category.slug,
                                                 concern: null,
+                                                edit: null,
                                             })
                                         }
                                         className={`flex items-center justify-between border px-4 py-4 text-left text-sm transition ${filters.category === category.slug ? 'border-brand-rose bg-brand-rose text-white' : 'border-brand-pink bg-white/55 hover:border-brand-gold'}`}
@@ -250,6 +286,7 @@ export default function ShopFilterDrawer({
                                         category: null,
                                         concern: null,
                                         search: null,
+                                        edit: null,
                                     })
                                 }
                                 className="mt-4 w-full text-center text-[10px] font-semibold tracking-[.14em] uppercase underline underline-offset-4"

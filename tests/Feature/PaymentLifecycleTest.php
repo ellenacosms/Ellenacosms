@@ -8,6 +8,7 @@ use App\Mail\OrderPaymentConfirmed;
 use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Order;
+use App\Models\PaymentAttempt;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\Orders\OrderPaymentLifecycle;
@@ -21,6 +22,20 @@ use Tests\TestCase;
 class PaymentLifecycleTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_late_payment_restores_expired_order_and_reserved_inventory(): void
+    {
+        Queue::fake();
+        [$order, $product, $discount] = $this->reservedOrder();
+        $lifecycle = app(OrderPaymentLifecycle::class);
+        $lifecycle->expire($order);
+        $this->assertSame(5, $product->fresh()->stock);
+        $lifecycle->apply($order->fresh(), 'paid', [], 'webhook');
+        $this->assertSame('paid', $order->fresh()->payment_status);
+        $this->assertSame('pending', $order->fresh()->status);
+        $this->assertSame(3, $product->fresh()->stock);
+        $this->assertSame(1, $discount->fresh()->times_used);
+    }
 
     public function test_failed_payment_releases_stock_and_discount_once(): void
     {
@@ -70,7 +85,7 @@ class PaymentLifecycleTest extends TestCase
             'payment_merchant_reference' => null,
         ]);
 
-        $this->artisan('pesapal:reconcile')->assertSuccessful();
+        $this->artisan('payments:reconcile')->assertSuccessful();
 
         $order->refresh();
         $this->assertSame('expired', $order->payment_status);
@@ -91,7 +106,7 @@ class PaymentLifecycleTest extends TestCase
         $this->assertSame(1, $discount->fresh()->times_used);
         $this->assertNull($reactivated->payment_reference);
 
-        $this->artisan('pesapal:reconcile')->assertSuccessful();
+        $this->artisan('payments:reconcile')->assertSuccessful();
 
         $this->assertSame('expired', $reactivated->fresh()->payment_status);
         $this->assertSame(5, $product->fresh()->stock);
@@ -131,30 +146,14 @@ class PaymentLifecycleTest extends TestCase
         Queue::assertPushed(SendOrderPaymentConfirmation::class, 1);
     }
 
-    public function test_admin_can_verify_pesapal_status_without_editing_it(): void
+    public function test_admin_can_verify_dgateway_status_without_editing_it(): void
     {
         Queue::fake();
         [$order] = $this->reservedOrder();
         $admin = User::factory()->withTwoFactor()->create(['is_admin' => true]);
-        config([
-            'services.pesapal.environment' => 'sandbox',
-            'services.pesapal.consumer_key' => 'sandbox-key',
-            'services.pesapal.consumer_secret' => 'sandbox-secret',
-            'services.pesapal.ipn_id' => (string) Str::uuid(),
-            'services.pesapal.currency' => 'UGX',
-            'services.pesapal.ca_bundle' => null,
-        ]);
-        Http::fake([
-            '*/api/Auth/RequestToken' => Http::response(['token' => 'sandbox-token']),
-            '*/api/Transactions/GetTransactionStatus*' => Http::response([
-                'payment_status_description' => 'COMPLETED',
-                'merchant_reference' => $order->payment_merchant_reference,
-                'amount' => 90,
-                'currency' => 'UGX',
-                'confirmation_code' => 'PSP-ADMIN',
-                'description' => 'Payment completed',
-            ]),
-        ]);
+        config(['services.dgateway.api_key' => 'dgw_test_example', 'services.dgateway.ca_bundle' => null]);
+        PaymentAttempt::create(['order_id' => $order->id, 'request_id' => (string) Str::uuid(), 'reference' => $order->payment_reference, 'provider' => 'iotec', 'amount' => 90, 'currency' => 'UGX', 'status' => 'pending']);
+        Http::fake(['*/v1/webhooks/verify' => Http::response(['data' => ['reference' => $order->payment_reference, 'status' => 'completed', 'amount' => 90, 'currency' => 'UGX']])]);
 
         $this->actingAs($admin)
             ->post(route('admin.orders.payment.refresh', $order))
@@ -207,8 +206,8 @@ class PaymentLifecycleTest extends TestCase
             'address' => '1 Test Street',
             'city' => 'Kampala',
             'country' => 'Uganda',
-            'payment_method' => 'pesapal',
-            'payment_provider' => 'pesapal',
+            'payment_method' => 'dgateway',
+            'payment_provider' => 'dgateway',
             'payment_status' => 'pending',
             'payment_reference' => (string) Str::uuid(),
             'payment_merchant_reference' => 'ELN-TEST-'.Str::upper(Str::random(6)),

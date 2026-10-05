@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\ContactSubmission;
 use App\Models\Discount;
 use App\Models\Product;
 use App\Models\Review;
@@ -48,6 +49,13 @@ class CommerceAdminModulesTest extends TestCase
     public function test_admin_can_open_every_commerce_module(): void
     {
         $customer = User::factory()->create();
+        $submission = ContactSubmission::create([
+            'name' => 'Amina Customer',
+            'email' => 'amina@example.com',
+            'topic' => 'wholesale',
+            'preferred_contact_method' => 'email',
+            'message' => 'Wholesale enquiry for the Ellena team.',
+        ]);
 
         $pages = [
             '/admin/products' => 'admin/products/index',
@@ -60,6 +68,8 @@ class CommerceAdminModulesTest extends TestCase
             '/admin/discounts' => 'admin/discounts',
             '/admin/banners' => 'admin/banners',
             '/admin/reviews' => 'admin/reviews',
+            '/admin/contact-submissions' => 'admin/contact-submissions',
+            "/admin/contact-submissions/{$submission->id}" => 'admin/contact-submission-show',
             '/admin/newsletter' => 'admin/newsletter-subscribers',
             '/admin/settings' => 'admin/settings',
         ];
@@ -97,6 +107,29 @@ class CommerceAdminModulesTest extends TestCase
         foreach ($product->images as $image) {
             Storage::disk('public')->assertExists(str($image)->after('/storage/')->toString());
         }
+    }
+
+    public function test_admin_can_edit_a_category_and_hide_it_from_the_storefront(): void
+    {
+        $category = Category::where('slug', 'skin-care')->firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->from('/admin/categories')
+            ->put("/admin/categories/{$category->id}", [
+                'name' => 'Daily Skin Care',
+                'description' => 'Everyday care for healthy-looking skin.',
+                'image' => '/images/campaign/daily-skin-care.jpg',
+                'is_active' => false,
+            ])
+            ->assertRedirect('/admin/categories');
+
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'name' => 'Daily Skin Care',
+            'slug' => 'daily-skin-care',
+            'image' => '/images/campaign/daily-skin-care.jpg',
+            'is_active' => false,
+        ]);
     }
 
     public function test_admin_can_export_products_as_csv(): void
@@ -142,6 +175,26 @@ class CommerceAdminModulesTest extends TestCase
         ]);
         $bulkProduct = Product::where('name', 'Bulk Cream')->firstOrFail();
         $this->assertMatchesRegularExpression('/^EL-SKI-[A-Z0-9]{8}$/', $bulkProduct->sku);
+    }
+
+    public function test_admin_import_maps_best_for_to_product_concerns(): void
+    {
+        $csv = implode("\n", [
+            'sku,name,category_slug,subtitle,description,ingredients,usage,best for,price,compare_price,stock,image_urls,is_featured,is_active',
+            'SERUM-001,Updated Test Serum,skin-care,,Updated description,,,Dryness,89.00,,15,,1,1',
+        ]);
+
+        $this->actingAs($this->admin)
+            ->post('/admin/products/import', [
+                'file' => UploadedFile::fake()->createWithContent('products.csv', $csv),
+            ])
+            ->assertRedirect('/admin/products')
+            ->assertSessionHas('import_result.updated', 1);
+
+        $this->assertSame(
+            ['Dryness'],
+            Product::where('sku', 'SERUM-001')->firstOrFail()->concerns,
+        );
     }
 
     public function test_admin_can_upload_and_manage_an_ad_banner(): void

@@ -8,6 +8,7 @@ type StoreImageProps = ImgHTMLAttributes<HTMLImageElement> & {
 export default function StoreImage({
     className = '',
     wrapperClassName = '',
+    alt = '',
     onLoad,
     loading = 'lazy',
     decoding = 'async',
@@ -22,6 +23,7 @@ export default function StoreImage({
             <span className="store-image__placeholder" aria-hidden="true" />
             <img
                 {...props}
+                alt={alt}
                 className={className}
                 loading={loading}
                 decoding={decoding}

@@ -61,6 +61,7 @@ const groups = [
         label: 'Sales',
         links: [
             { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
+            { href: '/admin/delivery', label: 'Delivery areas', icon: Package },
             { href: '/admin/customers', label: 'Customers', icon: Users },
         ],
     },

@@ -22,7 +22,7 @@ export default function WishlistButton({
 
     const toggle = () => {
         if (!auth.user) {
-            router.visit('/login');
+            window.dispatchEvent(new Event('ellena:open-registration'));
 
             return;
         }

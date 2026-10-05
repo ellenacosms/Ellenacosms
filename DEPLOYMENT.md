@@ -11,16 +11,36 @@ Run this before uploading or releasing:
 
 ```bash
 npm ci
-npm run deploy:assets
+npm run build:ssr
 composer install --no-dev --optimize-autoloader
 php artisan migrate --force
 php artisan storage:link
 php artisan optimize
 ```
 
+Before releasing, verify that `public/hot` is absent. This file is only for
+the local Vite server and must never be uploaded to production:
+
+```bash
+test ! -f public/hot
+```
+
 Do not run `npm run build` after a release has started serving traffic unless
 the whole `public/build` directory is replaced atomically. The manifest and
 hashed assets must always come from the same build.
+
+## Inertia server-side rendering
+
+The SEO page metadata is server-rendered. After each `npm run build:ssr`, run
+the generated renderer as a persistent process on the application server:
+
+```bash
+node /home/CPANEL_USER/ellena/bootstrap/ssr/ssr.js
+```
+
+Keep this process alive with the host's Node application manager or another
+process supervisor. Laravel sends SSR requests to `127.0.0.1:13714`; if the
+renderer is unavailable, it safely serves the normal client-rendered page.
 
 ## Document root
 
@@ -82,6 +102,7 @@ application environment file (normally outside `public_html`):
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://ellenacosms.com
+GOOGLE_SITE_VERIFICATION=the-value-from-google-search-console
 ```
 
 If the application is intentionally hosted below a path such as
@@ -103,12 +124,30 @@ Set the following URLs after the domain and certificate are active:
 ```dotenv
 APP_URL=https://ellenacosms.com
 GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
-PESAPAL_CALLBACK_URL="${APP_URL}/payments/pesapal/callback"
-PESAPAL_IPN_URL="${APP_URL}/payments/pesapal/ipn"
-PESAPAL_CANCELLATION_URL="${APP_URL}/dashboard#orders"
+DGATEWAY_API_URL=https://dgatewayapi.desispay.com
+DGATEWAY_API_KEY=
+DGATEWAY_WEBHOOK_URL="${APP_URL}/payments/dgateway/webhook"
 ```
 
-On InterServer/Linux, leave `GOOGLE_CA_BUNDLE`, `PESAPAL_CA_BUNDLE`, and
+## Search Console and Merchant Center
+
+After deployment, verify the domain in Google Search Console with the
+`GOOGLE_SITE_VERIFICATION` value above, then submit:
+
+```text
+https://ellenacosms.com/sitemap.xml
+```
+
+For Google Merchant Center, create a scheduled feed using:
+
+```text
+https://ellenacosms.com/merchant-feed.xml
+```
+
+Review the imported products in Merchant Center before enabling listings;
+shipping costs and business-policy settings are configured in that account.
+
+On InterServer/Linux, leave `GOOGLE_CA_BUNDLE`, `DGATEWAY_CA_BUNDLE`, and
 `N8N_CA_BUNDLE` blank unless the PHP system certificate store is unavailable.
 Never copy a `C:/laragon/...` certificate path to the server.
 
@@ -160,7 +199,7 @@ Before opening the store, run one controlled live transaction on the public
 domain and verify each item below:
 
 1. Guest checkout creates an order and reserves stock.
-2. Pesapal opens from the permanent HTTPS domain.
+2. D-Gateway test payments verify from the permanent HTTPS domain, including delivery. See [delivery and payment setup](docs/dgateway-delivery-setup.md).
 3. Successful payment updates the order to `paid`, sends confirmation, and
    triggers the n8n order event.
 4. Failed and expired payments restore stock exactly once.

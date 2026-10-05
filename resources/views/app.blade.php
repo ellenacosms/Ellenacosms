@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        @if (filled(config('services.search_console.verification')))
+            <meta name="google-site-verification" content="{{ config('services.search_console.verification') }}">
+        @endif
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script nonce="{{ request()->attributes->get('csp_nonce') }}">
@@ -21,7 +24,7 @@
         </script>
 
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
-        <style>
+        <style nonce="{{ request()->attributes->get('csp_nonce') }}">
             html {
                 background-color: oklch(1 0 0);
             }

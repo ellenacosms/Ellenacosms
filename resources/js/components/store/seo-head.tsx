@@ -7,6 +7,7 @@ type SeoHeadProps = {
     description: string;
     canonicalPath?: string;
     image?: string;
+    imageAlt?: string;
     type?: 'website' | 'product';
     noIndex?: boolean;
     structuredData?: StructuredData;
@@ -42,7 +43,8 @@ export default function SeoHead({
     title,
     description,
     canonicalPath = '/',
-    image = '/brand-logo.png',
+    image,
+    imageAlt = 'Ellena Beauty products in Uganda',
     type = 'website',
     noIndex = false,
     structuredData,
@@ -57,10 +59,58 @@ export default function SeoHead({
         '@type': 'Organization',
         name: seo.siteName,
         url: seo.baseUrl,
-        logo: seo.defaultImage,
+        logo: absoluteUrl(seo.baseUrl, '/brand-logo.png'),
+        email: 'ellenacosms@gmail.com',
+        telephone: '+256730247868',
+    };
+    const localBusiness = {
+        '@context': 'https://schema.org',
+        '@type': 'Store',
+        name: seo.siteName,
+        url: seo.baseUrl,
+        image: absoluteUrl(seo.baseUrl, seo.defaultImage),
+        email: 'ellenacosms@gmail.com',
+        telephone: '+256730247868',
+        priceRange: 'UGX',
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'Galiraaya Commercial Plaza, Level 2, Room 342',
+            addressLocality: 'Kampala',
+            addressCountry: 'UG',
+        },
+        geo: {
+            '@type': 'GeoCoordinates',
+            latitude: 0.3139613,
+            longitude: 32.5737784,
+        },
+        hasMap: 'https://www.google.com/maps?q=0.3139613,32.5737784',
+        areaServed: { '@type': 'Country', name: 'Uganda' },
+        contactPoint: {
+            '@type': 'ContactPoint',
+            telephone: '+256730247868',
+            contactType: 'customer service',
+            email: 'ellenacosms@gmail.com',
+            availableLanguage: 'en',
+        },
+    };
+    const website = {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: seo.siteName,
+        url: seo.baseUrl,
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: {
+                '@type': 'EntryPoint',
+                urlTemplate: `${seo.baseUrl.replace(/\/$/, '')}/shop?search={search_term_string}`,
+            },
+            'query-input': 'required name=search_term_string',
+        },
     };
     const data = [
         organization,
+        localBusiness,
+        website,
         ...(structuredData
             ? Array.isArray(structuredData)
                 ? structuredData
@@ -79,10 +129,12 @@ export default function SeoHead({
             <meta property="og:description" content={description} />
             <meta property="og:url" content={canonicalUrl} />
             <meta property="og:image" content={imageUrl} />
+            <meta property="og:image:alt" content={imageAlt} />
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={imageUrl} />
+            <meta name="twitter:image:alt" content={imageAlt} />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{

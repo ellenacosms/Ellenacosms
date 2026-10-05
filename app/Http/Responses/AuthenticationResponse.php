@@ -4,6 +4,7 @@ namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse;
@@ -21,6 +22,15 @@ class AuthenticationResponse implements LoginResponse, RegisterResponse
 
         $intended = $request->session()->pull('url.intended');
         $user = $request->user();
+
+        if ($user?->is_admin && app()->isProduction()
+            && $request->getHost() !== config('app.admin_domain')) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            abort(404);
+        }
 
         if ($user?->is_admin) {
             return redirect($this->safeIntendedUrl($intended) ?? route('admin.dashboard'));

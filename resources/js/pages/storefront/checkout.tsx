@@ -3,7 +3,6 @@ import {
     ArrowLeft,
     Check,
     ChevronDown,
-    Clock3,
     Headphones,
     LoaderCircle,
     LockKeyhole,
@@ -13,7 +12,8 @@ import {
     Truck,
     X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import DeliveryCostWarning from '@/components/store/delivery-cost-warning';
 import StoreImage from '@/components/store/store-image';
 import { money } from '@/lib/money';
 import type { BundleDiscount, CartDiscount, CartItem } from '@/types';
@@ -24,13 +24,16 @@ type DeliveryOption = {
     id: string;
     label: string;
     description: string;
-    fee: number;
+    fee: number | null;
+    country: string;
+    district: string;
+    area: string;
     estimate: string;
-    estimatedDeliveryDate: string;
+    estimatedDeliveryDate: string | null;
 };
 
 type PaymentOption = {
-    id: 'pesapal' | 'manual_confirmation';
+    id: 'dgateway' | 'manual_confirmation' | 'pay_at_shop';
     label: string;
     description: string;
     enabled: boolean;
@@ -88,7 +91,7 @@ export default function Checkout({
 }) {
     const [stage, setStage] = useState<CheckoutStage>('delivery');
     const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
-    const [pesapalPrepared, setPesapalPrepared] = useState(false);
+    const [acceptedDeliveryCost, setAcceptedDeliveryCost] = useState('');
     const form = useForm<CheckoutFormData>(
         `checkout:${customer?.email ?? 'guest'}`,
         {
@@ -99,7 +102,7 @@ export default function Checkout({
             city: '',
             country: '',
             notes: '',
-            delivery_method: deliveryOptions[0]?.id ?? 'standard',
+            delivery_method: 'quote',
             checkout_token: checkoutToken,
             payment_method: defaultPaymentMethod,
         },
@@ -108,60 +111,41 @@ export default function Checkout({
         () =>
             deliveryOptions.find(
                 (option) => option.id === form.data.delivery_method,
-            ) ?? deliveryOptions[0],
+            ),
         [deliveryOptions, form.data.delivery_method],
     );
     const payableTotal = Math.max(
         0,
         total - shipping + (selectedDelivery?.fee ?? shipping),
     );
+    const merchandiseTotal = Math.max(0, total - shipping);
+    const deliveryCostsMore =
+        selectedDelivery?.fee != null &&
+        Math.round(selectedDelivery.fee * 100) >
+            Math.round(merchandiseTotal * 100);
+    const deliveryCostKey = `${selectedDelivery?.id}:${selectedDelivery?.fee}:${merchandiseTotal}`;
+    const deliveryCostAccepted = acceptedDeliveryCost === deliveryCostKey;
 
-    useEffect(() => {
-        if (
-            stage !== 'review' ||
-            form.data.payment_method !== 'pesapal' ||
-            pesapalPrepared
-        ) {
-            return;
+    const reviewDeliveryCost = () => {
+        if (!deliveryCostsMore || deliveryCostAccepted) {
+            return true;
         }
 
-        const csrfToken = document
-            .querySelector<HTMLMetaElement>('meta[name="csrf-token"]')
-            ?.getAttribute('content');
+        setMobileSummaryOpen(false);
+        document.getElementById('delivery-cost-warning')?.focus();
 
-        if (!csrfToken) {
-            return;
-        }
-
-        const controller = new AbortController();
-
-        const preparePesapal = async () => {
-            try {
-                const response = await fetch('/payments/pesapal/prepare', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        Accept: 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    signal: controller.signal,
-                });
-
-                if (response.ok && !controller.signal.aborted) {
-                    setPesapalPrepared(true);
-                }
-            } catch {
-                return;
-            }
-        };
-
-        void preparePesapal();
-
-        return () => controller.abort();
-    }, [form.data.payment_method, pesapalPrepared, stage]);
+        return false;
+    };
 
     const validateField = (field: CheckoutField): string | null => {
         const value = form.data[field].trim();
+
+        if (
+            form.data.delivery_method === 'pickup' &&
+            ['address', 'city', 'country'].includes(field)
+        ) {
+            return null;
+        }
 
         if (field === 'customer_name' && value.length < 2) {
             return 'Enter the full name for this delivery.';
@@ -179,8 +163,8 @@ export default function Checkout({
             return `Enter your ${field}.`;
         }
 
-        if (field === 'phone' && value && value.length < 7) {
-            return 'Enter a valid phone number or leave this field empty.';
+        if (field === 'phone' && value.length < 7) {
+            return 'Enter a valid phone number for delivery updates.';
         }
 
         if (field === 'notes' && value.length > 1000) {
@@ -229,8 +213,15 @@ export default function Checkout({
     };
 
     const continueToReview = () => {
-        if (!validateDelivery()) {
+        if (!validateDelivery() || !reviewDeliveryCost()) {
             return;
+        }
+
+        if (
+            form.data.delivery_method === 'pickup' &&
+            form.data.payment_method === 'manual_confirmation'
+        ) {
+            form.setData('payment_method', 'pay_at_shop');
         }
 
         setStage('review');
@@ -241,6 +232,10 @@ export default function Checkout({
         event.preventDefault();
 
         if (stage !== 'review' || form.processing) {
+            return;
+        }
+
+        if (!reviewDeliveryCost()) {
             return;
         }
 
@@ -310,7 +305,23 @@ export default function Checkout({
                                 updateField={updateField}
                                 validateOnBlur={validateOnBlur}
                                 onDeliveryChange={(value) => {
-                                    form.setData('delivery_method', value);
+                                    const option = deliveryOptions.find(
+                                        (item) => item.id === value,
+                                    );
+                                    form.setData((data) => ({
+                                        ...data,
+                                        delivery_method: value,
+                                        payment_method:
+                                            value === 'pickup'
+                                                ? 'pay_at_shop'
+                                                : data.payment_method ===
+                                                    'pay_at_shop'
+                                                  ? defaultPaymentMethod
+                                                  : data.payment_method,
+                                        city: option?.district || data.city,
+                                        country:
+                                            option?.country || data.country,
+                                    }));
                                     form.clearErrors('delivery_method');
                                 }}
                             />
@@ -318,14 +329,48 @@ export default function Checkout({
                             <ReviewStep
                                 form={form.data}
                                 delivery={selectedDelivery}
-                                paymentOptions={paymentOptions}
+                                paymentOptions={paymentOptions.filter(
+                                    (option) =>
+                                        form.data.delivery_method === 'pickup'
+                                            ? option.id !==
+                                              'manual_confirmation'
+                                            : option.id !== 'pay_at_shop',
+                                )}
                                 paymentError={form.errors.payment_method}
-                                pesapalPrepared={pesapalPrepared}
                                 onPaymentChange={(value) => {
                                     form.setData('payment_method', value);
                                     form.clearErrors('payment_method');
                                 }}
                                 onEdit={() => setStage('delivery')}
+                            />
+                        )}
+
+                        {deliveryCostsMore && (
+                            <DeliveryCostWarning
+                                merchandiseTotal={merchandiseTotal}
+                                deliveryFee={selectedDelivery!.fee!}
+                                acknowledged={deliveryCostAccepted}
+                                onContinue={() =>
+                                    setAcceptedDeliveryCost(deliveryCostKey)
+                                }
+                                onPickup={
+                                    deliveryOptions.some(
+                                        (option) => option.id === 'pickup',
+                                    )
+                                        ? () => {
+                                              form.setData((data) => ({
+                                                  ...data,
+                                                  delivery_method: 'pickup',
+                                                  payment_method: 'pay_at_shop',
+                                              }));
+                                              form.clearErrors(
+                                                  'delivery_method',
+                                              );
+                                              setAcceptedDeliveryCost('');
+                                              setStage('delivery');
+                                          }
+                                        : undefined
+                                }
                             />
                         )}
 
@@ -352,7 +397,7 @@ export default function Checkout({
                                     )}
                                     {form.processing
                                         ? 'Securing your order…'
-                                        : `${form.data.payment_method === 'pesapal' ? 'Continue to secure payment' : 'Place order'} · ${money(payableTotal)}`}
+                                        : `${selectedDelivery?.fee == null ? 'Request delivery quote' : form.data.payment_method === 'dgateway' ? 'Continue to secure payment' : form.data.payment_method === 'pay_at_shop' ? 'Reserve for pickup' : 'Place order'} · ${money(payableTotal)}`}
                                 </button>
                                 <p className="mt-4 flex items-center justify-center gap-2 text-center text-[10px] leading-5 text-stone-500">
                                     <LockKeyhole size={13} /> Protected against
@@ -365,7 +410,7 @@ export default function Checkout({
                     <OrderSummary
                         items={items}
                         subtotal={subtotal}
-                        deliveryFee={selectedDelivery?.fee ?? shipping}
+                        deliveryFee={selectedDelivery?.fee ?? null}
                         discount={discount}
                         bundleDiscount={bundleDiscount}
                         total={payableTotal}
@@ -380,7 +425,7 @@ export default function Checkout({
                 onToggle={() => setMobileSummaryOpen((open) => !open)}
                 items={items}
                 subtotal={subtotal}
-                deliveryFee={selectedDelivery?.fee ?? shipping}
+                deliveryFee={selectedDelivery?.fee ?? null}
                 discount={discount}
                 bundleDiscount={bundleDiscount}
                 total={payableTotal}
@@ -484,6 +529,39 @@ function DeliveryStep({
 }) {
     return (
         <>
+            <fieldset className="mb-8">
+                <legend className="subsection-heading">
+                    Delivery or shop pickup
+                </legend>
+                <label className="mt-5 block text-sm">
+                    Choose how to receive your order
+                    <select
+                        className="mt-2 w-full border border-black/20 bg-white p-4"
+                        value={form.data.delivery_method}
+                        onChange={(e) => onDeliveryChange(e.target.value)}
+                    >
+                        {deliveryOptions.map((option) => (
+                            <option key={option.id} value={option.id}>
+                                {option.label}{' '}
+                                {option.country ? `(${option.country})` : ''}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <p className="mt-3 text-sm">
+                    {selectedDelivery?.fee == null
+                        ? 'Delivery fee to be confirmed. Place your order to receive a quote before paying.'
+                        : `Delivery: ${money(selectedDelivery.fee)} · ${selectedDelivery.estimate}`}
+                </p>
+                <p className="mt-2 text-sm text-stone-500">
+                    {selectedDelivery?.description}
+                </p>
+                {form.errors.delivery_method && (
+                    <p role="alert" className="text-red-700">
+                        {form.errors.delivery_method}
+                    </p>
+                )}
+            </fieldset>
             <section>
                 <div className="flex items-center justify-between gap-4">
                     <h2 className="subsection-heading">Delivery details</h2>
@@ -516,44 +594,52 @@ function DeliveryStep({
                     />
                     <Field
                         id="checkout-phone"
-                        label="Phone (optional)"
+                        label="Phone *"
                         type="tel"
                         value={form.data.phone}
                         error={form.errors.phone}
                         autoComplete="tel"
-                        required={false}
+                        required
                         onBlur={() => validateOnBlur('phone')}
                         onChange={(value) => updateField('phone', value)}
                     />
-                    <Field
-                        id="checkout-country"
-                        label="Country *"
-                        value={form.data.country}
-                        error={form.errors.country}
-                        autoComplete="country-name"
-                        onBlur={() => validateOnBlur('country')}
-                        onChange={(value) => updateField('country', value)}
-                    />
-                    <div className="sm:col-span-2">
-                        <Field
-                            id="checkout-address"
-                            label="Street address *"
-                            value={form.data.address}
-                            error={form.errors.address}
-                            autoComplete="street-address"
-                            onBlur={() => validateOnBlur('address')}
-                            onChange={(value) => updateField('address', value)}
-                        />
-                    </div>
-                    <Field
-                        id="checkout-city"
-                        label="City *"
-                        value={form.data.city}
-                        error={form.errors.city}
-                        autoComplete="address-level2"
-                        onBlur={() => validateOnBlur('city')}
-                        onChange={(value) => updateField('city', value)}
-                    />
+                    {form.data.delivery_method !== 'pickup' && (
+                        <>
+                            <Field
+                                id="checkout-country"
+                                label="Country *"
+                                value={form.data.country}
+                                error={form.errors.country}
+                                autoComplete="country-name"
+                                onBlur={() => validateOnBlur('country')}
+                                onChange={(value) =>
+                                    updateField('country', value)
+                                }
+                            />
+                            <div className="sm:col-span-2">
+                                <Field
+                                    id="checkout-address"
+                                    label="Street address *"
+                                    value={form.data.address}
+                                    error={form.errors.address}
+                                    autoComplete="street-address"
+                                    onBlur={() => validateOnBlur('address')}
+                                    onChange={(value) =>
+                                        updateField('address', value)
+                                    }
+                                />
+                            </div>
+                            <Field
+                                id="checkout-city"
+                                label="City *"
+                                value={form.data.city}
+                                error={form.errors.city}
+                                autoComplete="address-level2"
+                                onBlur={() => validateOnBlur('city')}
+                                onChange={(value) => updateField('city', value)}
+                            />
+                        </>
+                    )}
                     <label className="field">
                         <span>Delivery note (optional)</span>
                         <textarea
@@ -583,55 +669,6 @@ function DeliveryStep({
                     </label>
                 </div>
             </section>
-
-            <fieldset className="mt-12">
-                <legend className="subsection-heading">Choose delivery</legend>
-                <div className="mt-6 grid gap-3">
-                    {deliveryOptions.map((option) => {
-                        const selected = selectedDelivery?.id === option.id;
-
-                        return (
-                            <label
-                                key={option.id}
-                                className={`flex cursor-pointer gap-4 border p-5 transition ${selected ? 'border-black bg-white shadow-[0_10px_30px_rgba(45,37,28,.06)]' : 'border-black/10 bg-white/35 hover:border-black/35'}`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="delivery_method"
-                                    value={option.id}
-                                    checked={selected}
-                                    onChange={() => onDeliveryChange(option.id)}
-                                    className="mt-1 h-4 w-4 accent-black"
-                                />
-                                <span className="flex flex-1 flex-col gap-2 sm:flex-row sm:justify-between">
-                                    <span>
-                                        <span className="block text-sm font-semibold">
-                                            {option.label}
-                                        </span>
-                                        <span className="mt-1 block text-xs leading-5 text-stone-500">
-                                            {option.description}
-                                        </span>
-                                        <span className="mt-2 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase">
-                                            <Clock3 size={13} /> Estimated{' '}
-                                            {option.estimate}
-                                        </span>
-                                    </span>
-                                    <span className="text-sm font-semibold">
-                                        {option.fee
-                                            ? money(option.fee)
-                                            : 'Complimentary'}
-                                    </span>
-                                </span>
-                            </label>
-                        );
-                    })}
-                </div>
-                {form.errors.delivery_method && (
-                    <p className="mt-3 text-xs text-red-600" role="alert">
-                        {form.errors.delivery_method}
-                    </p>
-                )}
-            </fieldset>
         </>
     );
 }
@@ -641,7 +678,6 @@ function ReviewStep({
     delivery,
     paymentOptions,
     paymentError,
-    pesapalPrepared,
     onPaymentChange,
     onEdit,
 }: {
@@ -649,7 +685,6 @@ function ReviewStep({
     delivery?: DeliveryOption;
     paymentOptions: PaymentOption[];
     paymentError?: string;
-    pesapalPrepared: boolean;
     onPaymentChange: (value: PaymentOption['id']) => void;
     onEdit: () => void;
 }) {
@@ -660,9 +695,15 @@ function ReviewStep({
                 <p>{form.email}</p>
                 {form.phone && <p>{form.phone}</p>}
                 <p className="mt-3">
-                    {form.address}
-                    <br />
-                    {form.city}, {form.country}
+                    {form.delivery_method === 'pickup' ? (
+                        delivery?.description
+                    ) : (
+                        <>
+                            {form.address}
+                            <br />
+                            {form.city}, {form.country}
+                        </>
+                    )}
                 </p>
                 {form.notes && (
                     <p className="mt-4 border-t border-black/10 pt-4">
@@ -725,24 +766,9 @@ function ReviewStep({
                         {paymentError}
                     </p>
                 )}
-                {form.payment_method === 'pesapal' && (
-                    <p
-                        className={`mt-4 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase ${pesapalPrepared ? 'text-emerald-700' : 'text-stone-500'}`}
-                        aria-live="polite"
-                    >
-                        {pesapalPrepared ? (
-                            <Check size={13} />
-                        ) : (
-                            <LoaderCircle size={13} className="animate-spin" />
-                        )}
-                        {pesapalPrepared
-                            ? 'Secure connection ready'
-                            : 'Preparing secure connection'}
-                    </p>
-                )}
                 <p className="mt-4 text-[10px] leading-5 text-stone-500">
-                    Pesapal securely handles mobile-money and card details;
-                    Ellena never stores them.
+                    D-Gateway securely processes payments. Ellena never stores
+                    your card details or mobile-money PIN.
                 </p>
             </fieldset>
 
@@ -773,7 +799,7 @@ function ReviewCard({
                     onClick={onEdit}
                     className="text-[9px] font-semibold tracking-widest uppercase underline underline-offset-4"
                 >
-                    Edit
+                    Change
                 </button>
             </div>
             <div className="mt-5 text-sm leading-6 text-stone-600">
@@ -809,7 +835,7 @@ function OrderSummary({
 }: {
     items: CartItem[];
     subtotal: number;
-    deliveryFee: number;
+    deliveryFee: number | null;
     discount: CartDiscount | null;
     bundleDiscount: BundleDiscount | null;
     total: number;
@@ -828,10 +854,10 @@ function OrderSummary({
             <div className="mt-6 divide-y divide-black/10">
                 {items.map(({ product, quantity }) => (
                     <div key={product.id} className="flex gap-4 py-4">
-                        <div className="relative h-20 w-16 shrink-0">
+                        <div className="relative h-20 w-16 shrink-0 bg-[#faf9f7]">
                             <StoreImage
                                 src={product.images?.[0]}
-                                className="object-cover"
+                                className="object-contain object-center p-1 mix-blend-multiply"
                                 alt=""
                             />
                             <span className="absolute -top-2 -right-2 grid h-5 w-5 place-items-center rounded-full bg-brand-rose text-[10px] text-white">
@@ -858,7 +884,13 @@ function OrderSummary({
                 <SummaryLine label="Subtotal" value={money(subtotal)} />
                 <SummaryLine
                     label={delivery?.label ?? 'Delivery'}
-                    value={deliveryFee ? money(deliveryFee) : 'Complimentary'}
+                    value={
+                        deliveryFee === null
+                            ? 'To be confirmed'
+                            : deliveryFee
+                              ? money(deliveryFee)
+                              : 'Complimentary'
+                    }
                 />
                 {discount && (
                     <SummaryLine
@@ -875,7 +907,11 @@ function OrderSummary({
                     />
                 )}
                 <div className="flex justify-between border-t border-black/10 pt-4 font-semibold">
-                    <span>Total</span>
+                    <span>
+                        {deliveryFee === null
+                            ? 'Total before delivery'
+                            : 'Total'}
+                    </span>
                     <span>{money(total)}</span>
                 </div>
             </div>
@@ -923,7 +959,7 @@ function MobileOrderSummary({
     onContinue: () => void;
     items: CartItem[];
     subtotal: number;
-    deliveryFee: number;
+    deliveryFee: number | null;
     discount: CartDiscount | null;
     bundleDiscount: BundleDiscount | null;
     total: number;

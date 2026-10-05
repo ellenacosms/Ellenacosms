@@ -17,6 +17,22 @@ class StorefrontCommerceTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_finder_receives_only_active_available_products(): void
+    {
+        $available = $this->product(price: 45, stock: 3);
+        $inactive = $this->product(price: 60, stock: 2);
+        $inactive->update(['is_active' => false]);
+
+        $this->get('/find-your-ellena')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('storefront/finder')
+                ->has('products', 1)
+                ->where('products.0.id', $available->id)
+                ->missing('products.0.wholesale_price'),
+            );
+    }
+
     public function test_shipping_uses_the_store_threshold(): void
     {
         $product = $this->product(price: 100, stock: 5);
@@ -26,7 +42,7 @@ class StorefrontCommerceTest extends TestCase
             ->get('/cart')
             ->assertInertia(fn ($page) => $page
                 ->where('subtotal', 100)
-                ->where('shipping', 12)
+                ->where('shipping', 0)
                 ->where('free_shipping_threshold', 120),
             );
     }
@@ -60,11 +76,11 @@ class StorefrontCommerceTest extends TestCase
         $this->withSession(['checkout_token' => $checkoutToken])->post('/checkout', [
             'customer_name' => 'Test Customer',
             'email' => 'customer@example.com',
-            'phone' => null,
+            'phone' => '256700000000',
             'address' => '1 Test Street',
             'city' => 'Kampala',
             'country' => 'Uganda',
-            'delivery_method' => 'standard',
+            'delivery_method' => 'quote',
             'checkout_token' => $checkoutToken,
             'payment_method' => 'manual_confirmation',
         ])->assertRedirect();
@@ -85,16 +101,16 @@ class StorefrontCommerceTest extends TestCase
             'cart' => [999999 => 1],
             'checkout_token' => $checkoutToken,
         ])->postJson('/checkout', [
-                'customer_name' => 'Test Customer',
-                'email' => 'customer@example.com',
-                'phone' => null,
-                'address' => '1 Test Street',
-                'city' => 'Kampala',
-                'country' => 'Uganda',
-                'delivery_method' => 'standard',
-                'checkout_token' => $checkoutToken,
-                'payment_method' => 'manual_confirmation',
-            ])
+            'customer_name' => 'Test Customer',
+            'email' => 'customer@example.com',
+            'phone' => '256700000000',
+            'address' => '1 Test Street',
+            'city' => 'Kampala',
+            'country' => 'Uganda',
+            'delivery_method' => 'quote',
+            'checkout_token' => $checkoutToken,
+            'payment_method' => 'manual_confirmation',
+        ])
             ->assertUnprocessable();
 
         $this->assertDatabaseCount('orders', 0);
@@ -152,7 +168,7 @@ class StorefrontCommerceTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseCount('categories', 3);
+        $this->assertDatabaseCount('categories', 4);
         $this->assertDatabaseCount('products', 8);
         $this->assertDatabaseCount('banners', 3);
     }

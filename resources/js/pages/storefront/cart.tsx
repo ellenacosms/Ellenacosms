@@ -8,7 +8,6 @@ import type { BundleDiscount, CartDiscount, CartItem } from '@/types';
 export default function Cart({
     items,
     subtotal,
-    shipping,
     total,
     discount,
     bundle_discount: bundleDiscount,
@@ -67,8 +66,8 @@ export default function Cart({
                                     <StoreImage
                                         src={product.images?.[0]}
                                         alt={product.name}
-                                        className="object-cover"
-                                        wrapperClassName="aspect-[4/5] h-full bg-stone-100 shadow-[0_10px_28px_rgba(45,37,28,.07)]"
+                                        className="object-contain object-center p-3 mix-blend-multiply sm:p-5"
+                                        wrapperClassName="aspect-[4/5] h-full bg-[#faf9f7] shadow-[0_10px_28px_rgba(45,37,28,.07)]"
                                     />
                                     <div className="py-2">
                                         <Link
@@ -176,11 +175,7 @@ export default function Cart({
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Delivery</span>
-                                    <span>
-                                        {shipping
-                                            ? money(shipping)
-                                            : 'Complimentary'}
-                                    </span>
+                                    <span>Delivery calculated at checkout</span>
                                 </div>
                                 {bundleDiscount && (
                                     <div className="flex justify-between gap-4 text-emerald-700">

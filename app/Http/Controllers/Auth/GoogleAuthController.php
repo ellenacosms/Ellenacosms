@@ -24,14 +24,15 @@ class GoogleAuthController extends Controller
     public function redirect(Request $request): RedirectResponse
     {
         $this->rememberPopupContext($request);
+        $destination = $this->intendedDestination($request);
 
         if (! $this->isConfigured()) {
-            return to_route('checkout.create')->withErrors([
-                'google' => 'Google sign-in is not configured yet. You can continue as a guest instead.',
+            return redirect()->to($destination)->withErrors([
+                'google' => 'Google sign-in is not configured yet. Please use email registration instead.',
             ]);
         }
 
-        $request->session()->put('url.intended', route('checkout.create'));
+        $request->session()->put('url.intended', $destination);
 
         return $this->googleProvider()->redirect();
     }
@@ -48,10 +49,11 @@ class GoogleAuthController extends Controller
             $emailVerified = filter_var($rawUser['email_verified'] ?? false, FILTER_VALIDATE_BOOL);
 
             if ($email === '' || $googleId === '' || ! $emailVerified) {
-                return $this->authenticationFailure(
-                    $popup,
-                    'Google could not provide a verified email address for this account.',
-                );
+            return $this->authenticationFailure(
+                $request,
+                $popup,
+                'Google could not provide a verified email address for this account.',
+            );
             }
 
             $user = DB::transaction(function () use ($email, $googleId, $googleUser): User {
@@ -105,6 +107,7 @@ class GoogleAuthController extends Controller
             ]);
 
             return $this->authenticationFailure(
+                $request,
                 $popup,
                 'Google sign-in could not be completed. Please try again or use email instead.',
             );
@@ -143,13 +146,26 @@ class GoogleAuthController extends Controller
     }
 
     /** @param array{channel: string, openerOrigin: string}|null $popup */
-    private function authenticationFailure(?array $popup, string $message): RedirectResponse|Response
+    private function authenticationFailure(Request $request, ?array $popup, string $message): RedirectResponse|Response
     {
-        if ($popup) {
-            return $this->popupResponse($popup, 'error', route('checkout.create'), $message);
+        $redirect = $request->session()->get('url.intended', route('checkout.create'));
+
+        if (! is_string($redirect)) {
+            $redirect = route('checkout.create');
         }
 
-        return to_route('checkout.create')->withErrors(['google' => $message]);
+        if ($popup) {
+            return $this->popupResponse($popup, 'error', $redirect, $message);
+        }
+
+        return redirect()->to($redirect)->withErrors(['google' => $message]);
+    }
+
+    private function intendedDestination(Request $request): string
+    {
+        return $request->string('return')->toString() === 'register'
+            ? route('dashboard')
+            : route('checkout.create');
     }
 
     /** @param array{channel: string, openerOrigin: string} $popup */

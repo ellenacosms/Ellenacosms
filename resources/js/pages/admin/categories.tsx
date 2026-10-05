@@ -1,11 +1,45 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
 import type { Category } from '@/types';
 
 export default function Categories({ categories }: { categories: Category[] }) {
-    const form = useForm({ name: '', description: '', image: '' });
+    const [editing, setEditing] = useState<Category | null>(null);
+    const form = useForm({
+        name: '',
+        description: '',
+        image: '',
+        is_active: true,
+    });
+
+    const beginEdit = (category: Category) => {
+        setEditing(category);
+        form.clearErrors();
+        form.setData({
+            name: category.name,
+            description: category.description ?? '',
+            image: category.image ?? '',
+            is_active: category.is_active ?? true,
+        });
+    };
+
+    const cancelEdit = () => {
+        setEditing(null);
+        form.clearErrors();
+        form.reset();
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (editing) {
+            form.put(`/admin/categories/${editing.id}`, {
+                onSuccess: cancelEdit,
+            });
+
+            return;
+        }
+
         form.post('/admin/categories', { onSuccess: () => form.reset() });
     };
 
@@ -21,7 +55,22 @@ export default function Categories({ categories }: { categories: Category[] }) {
             </div>
             <div className="mt-9 grid gap-6 xl:grid-cols-[380px_1fr]">
                 <form onSubmit={submit} className="admin-card h-fit">
-                    <h2 className="admin-section-title">Add category</h2>
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="admin-section-title">
+                            {editing ? 'Edit category' : 'Add category'}
+                        </h2>
+                        {editing && (
+                            <button
+                                type="button"
+                                onClick={cancelEdit}
+                                className="admin-icon"
+                                aria-label="Cancel category edit"
+                                title="Cancel"
+                            >
+                                <X size={16} />
+                            </button>
+                        )}
+                    </div>
                     <div className="mt-6 space-y-5">
                         <label className="admin-field">
                             <span>Name</span>
@@ -44,18 +93,46 @@ export default function Categories({ categories }: { categories: Category[] }) {
                                     form.setData('description', e.target.value)
                                 }
                             />
+                            {form.errors.description && (
+                                <small>{form.errors.description}</small>
+                            )}
                         </label>
                         <label className="admin-field">
-                            <span>Cover image URL</span>
+                            <span>Cover image URL or local path</span>
                             <input
                                 value={form.data.image}
                                 onChange={(e) =>
                                     form.setData('image', e.target.value)
                                 }
                             />
+                            <small className="text-stone-500">
+                                Example: /images/catalog/hair-care-editorial.png
+                            </small>
+                            {form.errors.image && (
+                                <small>{form.errors.image}</small>
+                            )}
                         </label>
-                        <button className="admin-button w-full">
-                            Create category
+                        {editing && (
+                            <label className="flex items-center gap-3 text-sm font-medium text-stone-700">
+                                <input
+                                    type="checkbox"
+                                    checked={form.data.is_active}
+                                    onChange={(e) =>
+                                        form.setData('is_active', e.target.checked)
+                                    }
+                                />
+                                Show this category in the storefront
+                            </label>
+                        )}
+                        <button
+                            disabled={form.processing}
+                            className="admin-button w-full disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {form.processing
+                                ? 'Saving...'
+                                : editing
+                                  ? 'Save category'
+                                  : 'Create category'}
                         </button>
                     </div>
                 </form>
@@ -106,6 +183,16 @@ export default function Categories({ categories }: { categories: Category[] }) {
                                         </td>
                                         <td className="text-right">
                                             <button
+                                                type="button"
+                                                onClick={() => beginEdit(category)}
+                                                className="admin-icon mr-2"
+                                                aria-label={`Edit ${category.name}`}
+                                                title="Edit category"
+                                            >
+                                                <Pencil size={15} />
+                                            </button>
+                                            <button
+                                                type="button"
                                                 onClick={() => {
                                                     if (
                                                         confirm(

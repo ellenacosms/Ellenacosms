@@ -3,11 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\DeliveryZone;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\StoreSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
@@ -21,12 +26,10 @@ class CommerceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['services.dgateway.api_key' => null]);
 
         config([
             'services.google.ca_bundle' => null,
-            'services.pesapal.consumer_key' => null,
-            'services.pesapal.consumer_secret' => null,
-            'services.pesapal.ipn_id' => null,
         ]);
 
         $category = Category::create([
@@ -47,6 +50,52 @@ class CommerceTest extends TestCase
             'is_active' => true,
             'is_featured' => true,
         ]);
+    }
+
+    public function test_pickup_pay_at_shop_records_code_and_staff_can_collect_once(): void
+    {
+        config(['inertia.ssr.enabled' => false]);
+        Queue::fake();
+        Http::preventStrayRequests();
+        StoreSetting::updateOrCreate(['key' => 'pickup_enabled'], ['value' => '1']);
+        StoreSetting::updateOrCreate(['key' => 'pickup_address'], ['value' => 'Shop counter']);
+        $customer = User::factory()->create();
+        $token = (string) Str::uuid();
+        $payload = ['customer_name' => 'Pickup Customer', 'email' => $customer->email, 'phone' => '0700000000', 'delivery_method' => 'pickup', 'payment_method' => 'pay_at_shop', 'checkout_token' => $token];
+        $this->actingAs($customer)->withSession(['cart' => [$this->product->id => 1], 'checkout_token' => $token])->post('/checkout', $payload)->assertSessionHasNoErrors()->assertRedirect();
+        $order = Order::firstOrFail();
+        $this->assertNotEmpty($order->number);
+        $this->assertSame('pending', $order->payment_status);
+        $this->assertSame('0.00', $order->shipping);
+        $this->assertSame('Shop counter', $order->address);
+        $this->assertNull($order->payment_provider);
+        $this->assertSame(4, $this->product->fresh()->stock);
+        $this->post('/checkout', $payload)->assertSessionHasNoErrors();
+        $this->assertDatabaseCount('orders', 1);
+        $this->assertDatabaseCount('payment_attempts', 0);
+        $this->post(route('admin.orders.collect-pickup', $order))->assertRedirect();
+        $this->assertSame('pending', $order->fresh()->payment_status);
+        $admin = User::factory()->withTwoFactor()->create(['is_admin' => true]);
+        $this->actingAs($admin)->get(route('admin.orders.index', ['code' => strtolower($order->number)]))->assertOk()->assertInertia(fn ($page) => $page->has('orders.data', 1)->where('orders.data.0.number', $order->number));
+        $this->post(route('admin.orders.collect-pickup', $order))->assertSessionHasNoErrors();
+        $this->post(route('admin.orders.collect-pickup', $order))->assertSessionHasNoErrors();
+        $this->assertSame('paid', $order->fresh()->payment_status);
+        $this->assertSame('delivered', $order->fresh()->status);
+        $this->assertSame(1, $order->paymentEvents()->where('source', 'shop_pickup')->count());
+        $this->assertSame(4, $this->product->fresh()->stock);
+        Http::assertNothingSent();
+    }
+
+    public function test_pay_at_shop_requires_enabled_pickup(): void
+    {
+        Queue::fake();
+        $customer = User::factory()->create();
+        $token = (string) Str::uuid();
+        $payload = ['customer_name' => 'Pickup Customer', 'email' => $customer->email, 'phone' => '0700000000', 'address' => 'Test street', 'city' => 'Kampala', 'country' => 'Uganda', 'delivery_method' => 'quote', 'payment_method' => 'pay_at_shop', 'checkout_token' => $token];
+        $this->actingAs($customer)->withSession(['cart' => [$this->product->id => 1], 'checkout_token' => $token])->post('/checkout', $payload)->assertSessionHasErrors('payment_method');
+        $this->post('/checkout', [...$payload, 'delivery_method' => 'pickup'])->assertSessionHasErrors('delivery_method');
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertSame(5, $this->product->fresh()->stock);
     }
 
     public function test_storefront_and_product_are_available(): void
@@ -176,9 +225,9 @@ class CommerceTest extends TestCase
         $this->get('/checkout')->assertOk()->assertInertia(fn ($page) => $page
             ->component('storefront/checkout')
             ->has('checkoutToken')
-            ->has('deliveryOptions', 2)
-            ->where('deliveryOptions.0.id', 'standard')
-            ->where('paymentOptions.0.id', 'pesapal')
+            ->has('deliveryOptions', 1)
+            ->where('deliveryOptions.0.id', 'quote')
+            ->where('paymentOptions.0.id', 'dgateway')
             ->where('paymentOptions.0.enabled', false)
             ->where('defaultPaymentMethod', 'manual_confirmation')
         );
@@ -193,7 +242,7 @@ class CommerceTest extends TestCase
             'city' => 'Nairobi',
             'country' => 'Kenya',
             'notes' => '',
-            'delivery_method' => 'standard',
+            'delivery_method' => 'quote',
             'checkout_token' => $checkoutToken,
             'payment_method' => 'manual_confirmation',
         ];
@@ -205,8 +254,9 @@ class CommerceTest extends TestCase
         $this->assertSame('200.00', $order->total);
         $this->assertSame($customer->id, $order->user_id);
         $this->assertSame($customer->email, $order->email);
-        $this->assertSame('standard', $order->delivery_method);
-        $this->assertNotNull($order->estimated_delivery_date);
+        $this->assertSame('quote', $order->delivery_method);
+        $this->assertNull($order->estimated_delivery_date);
+        $this->assertSame('awaiting_quote', $order->delivery_fee_status);
         $this->assertSame(3, $this->product->fresh()->stock);
         $this->get(route('checkout.success', $order))->assertOk();
 
@@ -215,8 +265,9 @@ class CommerceTest extends TestCase
         $this->assertSame(3, $this->product->fresh()->stock);
     }
 
-    public function test_express_delivery_is_priced_and_saved_server_side(): void
+    public function test_area_delivery_is_priced_and_saved_server_side(): void
     {
+        $zone = DeliveryZone::create(['country' => 'Uganda', 'district' => 'Kampala', 'area' => 'Central', 'fee' => 25, 'is_active' => true]);
         $customer = User::factory()->create();
 
         $this->actingAs($customer)
@@ -226,19 +277,19 @@ class CommerceTest extends TestCase
         $response = $this->post('/checkout', [
             'customer_name' => 'Express Customer',
             'email' => 'ignored@example.com',
-            'phone' => '',
+            'phone' => '256700000000',
             'address' => '22 Express Lane',
             'city' => 'Kampala',
             'country' => 'Uganda',
             'notes' => '',
-            'delivery_method' => 'express',
+            'delivery_method' => 'zone_'.$zone->id,
             'checkout_token' => session('checkout_token'),
             'payment_method' => 'manual_confirmation',
         ]);
 
         $order = Order::firstOrFail();
         $response->assertRedirect(route('checkout.success', $order));
-        $this->assertSame('express', $order->delivery_method);
+        $this->assertSame('zone_'.$zone->id, $order->delivery_method);
         $this->assertSame('25.00', $order->shipping);
         $this->assertSame('125.00', $order->total);
         $this->assertSame($customer->email, $order->email);
@@ -260,7 +311,7 @@ class CommerceTest extends TestCase
             'address' => '1 Guest Street',
             'city' => 'Nairobi',
             'country' => 'Kenya',
-            'delivery_method' => 'standard',
+            'delivery_method' => 'quote',
             'checkout_token' => session('checkout_token'),
             'payment_method' => 'manual_confirmation',
         ]);
@@ -299,6 +350,22 @@ class CommerceTest extends TestCase
             ->component('storefront/checkout')
             ->where('customer.email', 'google@example.com')
         );
+    }
+
+    public function test_google_auth_from_registration_redirects_to_the_customer_dashboard(): void
+    {
+        Socialite::fake('google', SocialiteUser::fake([
+            'id' => 'google-registration-123',
+            'name' => 'Registered With Google',
+            'email' => 'registered-google@example.com',
+            'email_verified' => true,
+        ]));
+
+        $this->withSession(['url.intended' => route('dashboard')])
+            ->get(route('auth.google.callback'))
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertAuthenticated();
     }
 
     public function test_google_auth_popup_notifies_the_verified_opener(): void
@@ -359,9 +426,10 @@ class CommerceTest extends TestCase
         $this->actingAs($admin)->get('/admin')->assertOk()->assertInertia(fn ($page) => $page->component('admin/dashboard'));
     }
 
-    public function test_private_admin_entry_redirects_to_the_admin_dashboard_route(): void
+    public function test_private_admin_entry_redirects_to_the_admin_subdomain(): void
     {
-        $this->get('/ellenacosms/govern')->assertRedirect('/admin');
+        $this->get('/ellenacosms/govern')
+            ->assertRedirect(config('app.admin_url'));
     }
 
     public function test_admin_login_redirects_to_the_admin_dashboard(): void
@@ -387,7 +455,7 @@ class CommerceTest extends TestCase
 
     public function test_customer_registration_never_redirects_to_the_admin_dashboard(): void
     {
-        $this->get('/admin')->assertRedirect('/login');
+        $this->get('/admin')->assertRedirect(route('admin.entry'));
 
         $response = $this->post('/register', [
             'name' => 'New Customer',
@@ -407,7 +475,7 @@ class CommerceTest extends TestCase
             'password' => 'password',
         ]);
 
-        $this->get('/admin')->assertRedirect('/login');
+        $this->get('/admin')->assertRedirect(route('admin.entry'));
         $this->post('/login', [
             'email' => $customer->email,
             'password' => 'password',

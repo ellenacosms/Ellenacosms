@@ -44,27 +44,17 @@ return [
         'ca_bundle' => env('GOOGLE_CA_BUNDLE'),
     ],
 
-    'pesapal' => [
-        'environment' => env('PESAPAL_ENVIRONMENT', 'sandbox'),
-        'consumer_key' => env('PESAPAL_CONSUMER_KEY'),
-        'consumer_secret' => env('PESAPAL_CONSUMER_SECRET'),
-        'ipn_id' => env('PESAPAL_IPN_ID'),
-        'currency' => env('PESAPAL_CURRENCY', 'UGX'),
-        'callback_url' => env(
-            'PESAPAL_CALLBACK_URL',
-            rtrim((string) env('APP_URL'), '/').'/payments/pesapal/callback',
-        ),
-        'ipn_url' => env(
-            'PESAPAL_IPN_URL',
-            rtrim((string) env('APP_URL'), '/').'/payments/pesapal/ipn',
-        ),
-        'cancellation_url' => env(
-            'PESAPAL_CANCELLATION_URL',
-            rtrim((string) env('APP_URL'), '/').'/dashboard#orders',
-        ),
-        'ca_bundle' => env('PESAPAL_CA_BUNDLE') ?: env('GOOGLE_CA_BUNDLE'),
-        'cache_store' => env('PESAPAL_CACHE_STORE'),
-        'token_cache_seconds' => (int) env('PESAPAL_TOKEN_CACHE_SECONDS', 240),
+    'search_console' => [
+        'verification' => env('GOOGLE_SITE_VERIFICATION'),
+    ],
+
+    'dgateway' => [
+        'api_url' => env('DGATEWAY_API_URL', 'https://dgatewayapi.desispay.com'),
+        'api_key' => env('DGATEWAY_API_KEY') ?: env('D_GATEWAY_API_KEY'),
+        'webhook_url' => env('DGATEWAY_WEBHOOK_URL', rtrim((string) env('APP_URL'), '/').'/payments/dgateway/webhook'),
+        'mobile_provider' => env('DGATEWAY_MOBILE_PROVIDER', 'iotec'),
+        'cards_enabled' => (bool) env('DGATEWAY_CARDS_ENABLED', false),
+        'ca_bundle' => env('DGATEWAY_CA_BUNDLE') ?: env('GOOGLE_CA_BUNDLE'),
     ],
 
     'n8n' => [
@@ -74,7 +64,7 @@ return [
             'trim',
             explode(',', (string) env('N8N_ORDER_WEBHOOK_HOSTS', '')),
         ))),
-        'ca_bundle' => env('N8N_CA_BUNDLE') ?: env('PESAPAL_CA_BUNDLE') ?: env('GOOGLE_CA_BUNDLE'),
+        'ca_bundle' => env('N8N_CA_BUNDLE') ?: env('GOOGLE_CA_BUNDLE'),
         'checkout_session_secret' => env('N8N_CHECKOUT_SESSION_SECRET'),
         'checkout_session_minutes' => (int) env('N8N_CHECKOUT_SESSION_MINUTES', 30),
         'checkout_max_age_seconds' => (int) env('N8N_CHECKOUT_MAX_AGE_SECONDS', 300),

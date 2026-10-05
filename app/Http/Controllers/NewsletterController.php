@@ -25,20 +25,38 @@ class NewsletterController extends Controller
         $data = $request->validate([
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
             'consent' => ['accepted'],
+            'whatsapp_phone' => ['nullable', 'required_if:whatsapp_marketing_consent,true', 'string', 'max:32', 'regex:/^[0-9+()\\s-]{8,32}$/'],
+            'whatsapp_marketing_consent' => ['boolean'],
             'source' => ['nullable', 'string', 'in:footer,popup,checkout'],
             'website' => ['nullable', 'string', 'max:0'],
         ]);
         $email = Str::lower(trim($data['email']));
         $subscriber = NewsletterSubscriber::where('email', $email)->first();
+        $whatsappOptedIn = $request->boolean('whatsapp_marketing_consent');
+        $whatsappPhone = $whatsappOptedIn
+            ? $this->normaliseWhatsAppPhone((string) $data['whatsapp_phone'])
+            : null;
 
         if ($subscriber?->status === NewsletterSubscriber::STATUS_CONFIRMED) {
-            return back()->with('success', 'You are already on the Ellena private list.');
+            if ($whatsappOptedIn) {
+                $subscriber->update([
+                    'whatsapp_phone' => $whatsappPhone,
+                    'whatsapp_marketing_opted_in_at' => now(),
+                    'whatsapp_marketing_opted_out_at' => null,
+                    'whatsapp_marketing_opt_in_source' => $data['source'] ?? 'footer',
+                ]);
+            }
+
+            return back()->with('success', $whatsappOptedIn
+                ? 'You are already on the private list and are now opted in to WhatsApp updates.'
+                : 'You are already on the Ellena private list.');
         }
 
         $token = Str::random(64);
         $subscriber ??= new NewsletterSubscriber;
         $subscriber->fill([
             'email' => $email,
+            'whatsapp_phone' => $whatsappOptedIn ? $whatsappPhone : $subscriber->whatsapp_phone,
             'status' => NewsletterSubscriber::STATUS_PENDING,
             'source' => $data['source'] ?? 'footer',
             'confirmation_token_hash' => hash('sha256', $token),
@@ -46,6 +64,9 @@ class NewsletterController extends Controller
             'consent_at' => now(),
             'confirmed_at' => null,
             'unsubscribed_at' => null,
+            'whatsapp_marketing_opted_in_at' => $whatsappOptedIn ? now() : $subscriber->whatsapp_marketing_opted_in_at,
+            'whatsapp_marketing_opted_out_at' => $whatsappOptedIn ? null : $subscriber->whatsapp_marketing_opted_out_at,
+            'whatsapp_marketing_opt_in_source' => $whatsappOptedIn ? ($data['source'] ?? 'footer') : $subscriber->whatsapp_marketing_opt_in_source,
             'mailchimp_synced_at' => null,
             'mailchimp_sync_error' => null,
         ])->save();
@@ -117,5 +138,12 @@ class NewsletterController extends Controller
         [$name, $domain] = explode('@', $email, 2);
 
         return Str::mask($name, '*', min(2, strlen($name)), max(strlen($name) - 2, 1)).'@'.$domain;
+    }
+
+    private function normaliseWhatsAppPhone(string $phone): string
+    {
+        $phone = preg_replace('/\\D+/', '', $phone) ?? '';
+
+        return str_starts_with($phone, '0') ? '256'.substr($phone, 1) : $phone;
     }
 }

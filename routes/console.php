@@ -8,7 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('pesapal:reconcile --limit=50')
+Schedule::command('payments:reconcile --limit=50')
     ->everyTwoMinutes()
     ->withoutOverlapping(10)
     ->onOneServer();

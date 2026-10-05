@@ -1,5 +1,6 @@
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import {
+    ArrowRight,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
@@ -21,7 +22,16 @@ import SeoHead from '@/components/store/seo-head';
 import StoreImage from '@/components/store/store-image';
 import WishlistButton from '@/components/store/wishlist-button';
 import { money } from '@/lib/money';
-import type { Product as ProductType, Review } from '@/types';
+import type { Product as ProductType, Review, Ritual } from '@/types';
+
+type LinkedGuide = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string;
+};
+
+type LinkedRitual = Pick<Ritual, 'id' | 'name' | 'slug' | 'description'>;
 
 export default function Product({
     product,
@@ -29,12 +39,20 @@ export default function Product({
     reviews,
     canReview,
     recentlyViewed,
+    recommendationContext,
+    variants,
+    linkedGuides,
+    linkedRituals,
 }: {
     product: ProductType;
     related: ProductType[];
     reviews: Review[];
     canReview: boolean;
     recentlyViewed: ProductType[];
+    recommendationContext: string;
+    variants: ProductType[];
+    linkedGuides: LinkedGuide[];
+    linkedRituals: LinkedRitual[];
 }) {
     const [quantity, setQuantity] = useState(1);
     const [imageIndex, setImageIndex] = useState(0);
@@ -45,9 +63,6 @@ export default function Product({
         storeSettings: Record<string, string>;
     }>().props;
     const lowStockThreshold = Number(storeSettings.low_stock_threshold ?? 10);
-    const freeShippingThreshold = Number(
-        storeSettings.free_shipping_threshold ?? 150,
-    );
     const add = () =>
         router.post(
             `/cart/${product.id}`,
@@ -80,18 +95,26 @@ export default function Product({
             .map((ingredient) => ingredient.trim())
             .filter(Boolean)
             .slice(0, 4) ?? [];
-    const reviewAverage = reviews.length
-        ? reviews.reduce((total, review) => total + review.rating, 0) /
-          reviews.length
-        : 0;
+    const reviewCount = Number(product.reviews_count ?? reviews.length);
+    const reviewAverage = Number(
+        product.reviews_avg_rating ??
+            (reviews.length
+                ? reviews.reduce((total, review) => total + review.rating, 0) /
+                  reviews.length
+                : 0),
+    );
     const featuredReview = reviews[0];
     const categoryKeyword = product.category?.name
         ? `${product.category.name} Uganda`
         : 'Beauty Products Uganda';
-    const seoTitle = `${product.name} | ${categoryKeyword}`;
+    const productVariant = product.subtitle || product.size || product.color;
+    const seoTitle = `${product.name}${productVariant ? ` ${productVariant}` : ''} | ${categoryKeyword}`;
     const seoDescription = [
-        `Buy ${product.name} online in Uganda from Ellena Beauty.`,
-        product.subtitle || product.description,
+        `Buy ${product.name}${productVariant ? ` (${productVariant})` : ''} online in Uganda from Ellena Beauty.`,
+        product.description,
+        concerns.length
+            ? `Best for ${concerns.slice(0, 2).join(' and ')}.`
+            : '',
     ]
         .join(' ')
         .replace(/\s+/g, ' ')
@@ -104,6 +127,7 @@ export default function Product({
                 description={seoDescription}
                 canonicalPath={`/products/${product.slug}`}
                 image={product.images?.[0]}
+                imageAlt={product.name}
                 type="product"
                 structuredData={[
                     {
@@ -112,6 +136,7 @@ export default function Product({
                         name: product.name,
                         description: seoDescription,
                         sku: product.sku,
+                        category: product.category?.name,
                         image: product.images,
                         brand: { '@type': 'Brand', name: 'Ellena Beauty' },
                         offers: {
@@ -124,6 +149,15 @@ export default function Product({
                                     : 'https://schema.org/OutOfStock',
                             url: `/products/${product.slug}`,
                         },
+                        ...(reviewCount > 0 && reviewAverage > 0
+                            ? {
+                                  aggregateRating: {
+                                      '@type': 'AggregateRating',
+                                      ratingValue: reviewAverage.toFixed(1),
+                                      reviewCount,
+                                  },
+                              }
+                            : {}),
                     },
                     {
                         '@context': 'https://schema.org',
@@ -163,7 +197,7 @@ export default function Product({
             />
             <section className="mx-auto grid max-w-[1440px] gap-12 px-5 pt-36 pb-36 md:grid-cols-12 md:px-10 md:pb-28 lg:gap-16 lg:px-20">
                 <div className="md:col-span-7">
-                    <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 md:aspect-[5/4]">
+                    <div className="relative aspect-[4/5] bg-[#faf9f7] md:aspect-[5/4]">
                         {images.map((image, index) => (
                             <div
                                 key={image + index}
@@ -173,7 +207,7 @@ export default function Product({
                                     <StoreImage
                                         src={image}
                                         alt={`${product.name} view ${index + 1}`}
-                                        className="object-cover"
+                                        className="object-contain object-center p-8 mix-blend-multiply md:p-12"
                                     />
                                 ) : (
                                     <span className="grid h-full place-items-center font-serif text-5xl text-stone-400">
@@ -221,7 +255,7 @@ export default function Product({
                                     key={image + index}
                                     type="button"
                                     onClick={() => setImageIndex(index)}
-                                    className={`h-20 w-16 shrink-0 overflow-hidden border-2 bg-stone-100 transition ${index === imageIndex ? 'border-black' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                    className={`h-20 w-16 shrink-0 border-2 bg-[#faf9f7] transition ${index === imageIndex ? 'border-black' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                     aria-label={`View product image ${index + 1}`}
                                     aria-current={index === imageIndex}
                                 >
@@ -229,7 +263,7 @@ export default function Product({
                                         <StoreImage
                                             src={image}
                                             alt=""
-                                            className="object-cover"
+                                            className="object-contain object-center p-1 mix-blend-multiply"
                                         />
                                     )}
                                 </button>
@@ -305,6 +339,37 @@ export default function Product({
                                             {concern}
                                         </span>
                                     ))}
+                                </div>
+                            </div>
+                        )}
+                        {variants.length > 0 && (
+                            <div className="mt-7 border-t border-black/10 pt-6">
+                                <p className="eyebrow text-stone-500">
+                                    Choose your option
+                                </p>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {[product, ...variants]
+                                        .sort(
+                                            (first, second) =>
+                                                Number(first.price) -
+                                                Number(second.price),
+                                        )
+                                        .map((variant) => (
+                                            <Link
+                                                key={variant.id}
+                                                href={`/products/${variant.slug}`}
+                                                className={`min-w-24 border px-4 py-3 text-center transition ${variant.id === product.id ? 'border-brand-rose bg-brand-rose text-white' : 'border-black/15 bg-white/50 hover:border-brand-gold'}`}
+                                            >
+                                                <span className="block text-[10px] font-semibold tracking-[.1em] uppercase">
+                                                    {variant.size ||
+                                                        variant.color ||
+                                                        'Standard'}
+                                                </span>
+                                                <span className="mt-1 block text-[10px] opacity-70">
+                                                    {money(variant.price)}
+                                                </span>
+                                            </Link>
+                                        ))}
                                 </div>
                             </div>
                         )}
@@ -393,7 +458,7 @@ export default function Product({
                                 ['How to use', product.usage],
                                 [
                                     'Delivery & returns',
-                                    `Complimentary delivery on orders over ${money(freeShippingThreshold)}. Returns accepted within 30 days in original condition.`,
+                                    'Delivery is priced by area at checkout, or quoted before payment. Returns accepted within 30 days in original condition.',
                                 ],
                             ].map(([label, content]) => (
                                 <details
@@ -450,7 +515,7 @@ export default function Product({
                                 Ingredients with intention.
                             </h2>
                             <p className="mt-5 max-w-lg text-sm leading-7 text-stone-600">
-                                A focused edit of ingredients selected to
+                                A focused product selection of ingredients to
                                 support this formula’s core ritual benefits.
                             </p>
                             <div className="mt-9 grid gap-3 sm:grid-cols-2">
@@ -491,6 +556,64 @@ export default function Product({
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </section>
+            )}
+            {(linkedGuides.length > 0 || linkedRituals.length > 0) && (
+                <section className="bg-ivory border-b border-brand-pink/70">
+                    <div className="store-container store-section grid gap-10 lg:grid-cols-2">
+                        {linkedGuides.length > 0 && (
+                            <div>
+                                <p className="eyebrow text-gold">
+                                    Learn with Ellena
+                                </p>
+                                <h2 className="section-heading mt-4">
+                                    Guidance for your ritual.
+                                </h2>
+                                <div className="mt-7 space-y-4">
+                                    {linkedGuides.map((guide) => (
+                                        <Link
+                                            key={guide.id}
+                                            href={`/beauty-guide/${guide.slug}`}
+                                            className="group block border-b border-black/10 pb-4"
+                                        >
+                                            <h3 className="font-serif text-2xl group-hover:text-brand-rose">
+                                                {guide.title}
+                                            </h3>
+                                            <p className="mt-2 text-sm leading-6 text-stone-600">
+                                                {guide.excerpt}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {linkedRituals.length > 0 && (
+                            <div>
+                                <p className="eyebrow text-gold">
+                                    Complete the routine
+                                </p>
+                                <h2 className="section-heading mt-4">
+                                    Explore a full ritual.
+                                </h2>
+                                <div className="mt-7 space-y-4">
+                                    {linkedRituals.map((ritual) => (
+                                        <Link
+                                            key={ritual.id}
+                                            href="/rituals"
+                                            className="group block border-b border-black/10 pb-4"
+                                        >
+                                            <h3 className="font-serif text-2xl group-hover:text-brand-rose">
+                                                {ritual.name}
+                                            </h3>
+                                            <p className="mt-2 text-sm leading-6 text-stone-600">
+                                                {ritual.description}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </section>
             )}
@@ -625,8 +748,21 @@ export default function Product({
             </section>
             {related.length > 0 && (
                 <section className="store-container pb-20 md:pb-28">
-                    <p className="eyebrow">Complete the ritual</p>
-                    <h2 className="section-heading mt-4">Refine the ritual</h2>
+                    <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                        <div>
+                            <p className="eyebrow">Pairs well with</p>
+                            <h2 className="section-heading mt-4">
+                                Complete the ritual.
+                            </h2>
+                            <p className="mt-4 max-w-xl text-sm leading-7 text-stone-600">
+                                {recommendationContext}
+                            </p>
+                        </div>
+                        <Link href="/rituals" className="text-link shrink-0">
+                            Explore complete rituals
+                            <ArrowRight size={12} />
+                        </Link>
+                    </div>
                     <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
                         {related.map((item) => (
                             <ProductCard key={item.id} product={item} />
@@ -637,7 +773,7 @@ export default function Product({
             {recentlyViewed.length > 0 && (
                 <section className="border-t border-brand-pink/70 bg-brand-blush">
                     <div className="store-container store-section">
-                        <p className="eyebrow">Return to your edit</p>
+                        <p className="eyebrow">Return to your products</p>
                         <h2 className="section-heading mt-4">
                             Recently viewed
                         </h2>

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\StoreSetting;
 use App\Services\StoreCart;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -49,9 +50,15 @@ class HandleInertiaRequests extends Middleware
             'seo' => fn () => [
                 'siteName' => config('app.name', 'Ellena Beauty'),
                 'baseUrl' => rtrim((string) config('app.url'), '/'),
-                'defaultImage' => asset('brand-logo.png'),
+                'defaultImage' => asset('images/social/ellena-beauty-share-products.png'),
             ],
             'storeSettings' => fn () => StoreSetting::frontendValues(),
+            'customerRegistration' => fn () => [
+                'passwordRules' => Password::defaults()->toPasswordRulesString(),
+                'googleEnabled' => filled(config('services.google.client_id'))
+                    && filled(config('services.google.client_secret'))
+                    && filled(config('services.google.redirect')),
+            ],
             'storeCategories' => fn () => Category::query()
                 ->where('is_active', true)
                 ->orderBy('name')
