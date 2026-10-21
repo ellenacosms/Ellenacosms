@@ -38,3 +38,8 @@ yarn-error.log
 /tmp/
 /ellena
 /Ellenacosms/
+/.kilo/
+/upload-logs/
+/*-upload.log
+/upload-application.log
+/public/build.zip

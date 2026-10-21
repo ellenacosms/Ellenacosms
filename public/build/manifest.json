@@ -639,7 +639,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-hmV-iLMo.js",
+    "file": "assets/app-mwihnhvD.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -735,6 +735,7 @@
       "resources/js/pages/storefront/information.tsx",
       "resources/js/pages/storefront/newsletter-status.tsx",
       "resources/js/pages/storefront/order-success.tsx",
+      "resources/js/pages/storefront/payments-paused.tsx",
       "resources/js/pages/storefront/product.tsx",
       "resources/js/pages/storefront/rituals.tsx",
       "resources/js/pages/storefront/shop.tsx",
@@ -1415,7 +1416,7 @@
     ]
   },
   "resources/js/pages/storefront/order-success.tsx": {
-    "file": "assets/order-success-DAnK3brS.js",
+    "file": "assets/order-success-BgR1HYpf.js",
     "name": "order-success",
     "src": "resources/js/pages/storefront/order-success.tsx",
     "isDynamicEntry": true,
@@ -1424,6 +1425,15 @@
       "_jsx-runtime-BEHRti1a.js",
       "_money-DPDjAEs6.js",
       "_delivery-cost-warning-Ck072oao.js"
+    ]
+  },
+  "resources/js/pages/storefront/payments-paused.tsx": {
+    "file": "assets/payments-paused-B7iebJFz.js",
+    "name": "payments-paused",
+    "src": "resources/js/pages/storefront/payments-paused.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_jsx-runtime-BEHRti1a.js"
     ]
   },
   "resources/js/pages/storefront/product.tsx": {

@@ -1,5 +1,46 @@
 # ELLENA production deployment
 
+## Current release — October 20, 2026
+
+The new release is live at `https://ellenacosms.com`. Checkout displays
+“Visit shop to complete purchase” and `CHECKOUT_PAYMENTS_PAUSED=true` is set in
+production. Public checkout and the admin sign-in page were verified.
+
+The completed journal, fresh file/database backups and retained original code
+are in `/home2/ellenaco/ellena-live-release-20261020`. Activation used
+`/home2/ellenaco/ellena-controls-20261019/cpanel-release-v2.php`.
+It completed with `deployed`; maintenance was removed and cron restored.
+Do not rerun the completed release or restore its database over later activity.
+
+## Recovery procedure
+
+Use the fail-closed release coordinator in `scripts/deployment/run.php` with a
+reviewed host-operation plan. See `scripts/deployment/README.md` for operation
+contracts and the host rehearsal requirements. Do not use the earlier ad hoc
+activation script: rollback must restore and verify both files and database
+under maintenance before reopening. The isolated cPanel MySQL and file restore
+rehearsals passed on October 19, 2026. HTTP maintenance controls passed on
+October 20 for the shop, www and admin domains. Production activation then used
+`scripts/deployment/cpanel-release.php` to drain writers, create fresh backups,
+install files and verify health before reopening. This script is fixed to the
+October 20 release; future deployments need new reviewed inputs and state.
+
+## Temporary payment pause
+
+Payments are paused by default. Keep `CHECKOUT_PAYMENTS_PAUSED=true` in the
+production environment for the shop-only notice. Checkout submissions and new
+gateway collections are blocked; existing payment verification still works.
+Deploy the PHP changes and rebuilt `public/build` assets together, then run
+`php artisan config:cache` so the setting takes effect. Restart long-running
+application workers and the SSR renderer if used.
+
+To resume checkout later, set `CHECKOUT_PAYMENTS_PAUSED=false` and rebuild the
+configuration cache. This does not cancel payments already sent to the provider.
+
+Do not upload local `.agents`, `.kilo`, `.git`, `.vscode`, `node_modules`, `tmp`,
+logs, database copies, or nested checkouts (`ellena`, `Ellenacosms`). Preserve
+the live `.env`, customer uploads, and database when deploying.
+
 ## Required release build
 
 The deployed release must contain both:
@@ -13,10 +54,11 @@ Run this before uploading or releasing:
 npm ci
 npm run build:ssr
 composer install --no-dev --optimize-autoloader
-php artisan migrate --force
-php artisan storage:link
-php artisan optimize
 ```
+
+Run migrations and cache rebuilding only through the reviewed release plan
+after maintenance is verified, background writers are paused and drained, and
+fresh backups are verified. Preserve the existing production storage links.
 
 Before releasing, verify that `public/hot` is absent. This file is only for
 the local Vite server and must never be uploaded to production:
@@ -195,8 +237,12 @@ If your cPanel plan supports a persistent application process, use
 
 ## Payment and integration acceptance test
 
-Before opening the store, run one controlled live transaction on the public
-domain and verify each item below:
+For this temporary payment-pause release, verify that checkout displays
+“Visit shop to complete purchase” and that new payment collection requests are
+blocked. Do not initiate a live payment as a deployment test.
+
+When payments are deliberately re-enabled, verify each item below using the
+payment provider's test environment before accepting live orders:
 
 1. Guest checkout creates an order and reserves stock.
 2. D-Gateway test payments verify from the permanent HTTPS domain, including delivery. See [delivery and payment setup](docs/dgateway-delivery-setup.md).

@@ -18,12 +18,16 @@ class DGatewayPaymentService
 
     public function ready(): bool
     {
-        return $this->client->ready();
+        return ! config('checkout.payments_paused') && $this->client->ready();
     }
 
     /** @return array<string, mixed> */
     public function start(Order $order, string $phone, string $method): array
     {
+        if (config('checkout.payments_paused')) {
+            $this->reject('Visit shop to complete purchase. Online payments are temporarily unavailable.');
+        }
+
         if (! $this->ready()) {
             $this->reject('Online payments are not configured yet.');
         }

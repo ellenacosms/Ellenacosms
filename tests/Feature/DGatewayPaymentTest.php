@@ -22,6 +22,7 @@ class DGatewayPaymentTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['inertia.ssr.enabled' => false]);
         Queue::fake();
         Http::preventStrayRequests();
         config(['services.dgateway.api_key' => 'dgw_test_example', 'services.dgateway.ca_bundle' => null]);
@@ -36,6 +37,36 @@ class DGatewayPaymentTest extends TestCase
         $this->assertDatabaseCount('payment_attempts', 1);
         Http::assertSent(fn ($request) => str_ends_with($request->url(), '/collect') && (float) $request['amount'] === 125.0 && $request['currency'] === 'UGX');
         Http::assertSentCount(2);
+    }
+
+    public function test_paused_checkout_preserves_cart_and_does_not_create_orders(): void
+    {
+        config(['checkout.payments_paused' => true]);
+        $this->withSession(['cart' => []])->get(route('checkout.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('storefront/payments-paused'));
+        $this->get(route('checkout.access'))->assertRedirect(route('checkout.create'));
+        $this->post(route('checkout.store'), [])->assertRedirect(route('checkout.create'))
+            ->assertSessionHas('cart', []);
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertDatabaseCount('payment_attempts', 0);
+        Http::assertNothingSent();
+    }
+
+    public function test_pause_blocks_mobile_and_card_requests_for_existing_orders(): void
+    {
+        config(['checkout.payments_paused' => true]);
+        $order = $this->order();
+        foreach (['mobile', 'card'] as $method) {
+            $this->actingAs($order->user)->postJson(route('payments.dgateway.start', $order), [
+                'phone' => '0111777771', 'method' => $method, 'expected_total' => 125,
+            ])->assertUnprocessable()->assertJsonValidationErrors('payment');
+        }
+        $this->get(route('checkout.success', $order))->assertOk()
+            ->assertInertia(fn ($page) => $page->component('storefront/order-success')
+                ->where('paymentsPaused', true)->where('gatewayReady', false));
+        $this->assertDatabaseCount('payment_attempts', 0);
+        Http::assertNothingSent();
     }
 
     public function test_unpriced_delivery_and_stale_totals_cannot_be_paid(): void
@@ -53,6 +84,7 @@ class DGatewayPaymentTest extends TestCase
         $order = $this->order();
         $this->fakePayment();
         app(DGatewayPaymentService::class)->start($order, '0111777771', 'mobile');
+        config(['checkout.payments_paused' => true]);
         $this->fakePayment('completed');
         foreach ([1, 2] as $_) {
             $this->postJson(route('payments.dgateway.webhook'), ['reference' => 'txn_example', 'status' => 'failed', 'amount' => 1])->assertOk();

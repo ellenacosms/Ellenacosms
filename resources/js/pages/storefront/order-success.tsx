@@ -7,10 +7,12 @@ export default function OrderSuccess({
     order,
     gatewayReady,
     cardsEnabled,
+    paymentsPaused,
 }: {
     order: Order;
     gatewayReady: boolean;
     cardsEnabled: boolean;
+    paymentsPaused: boolean;
 }) {
     const payAtShop = order.payment_method === 'pay_at_shop';
     const pickup = order.delivery_method === 'pickup';
@@ -28,20 +30,24 @@ export default function OrderSuccess({
                 <h1 className="display-heading mt-5">
                     {paid
                         ? 'Thank you for shopping with us.'
-                        : payAtShop
-                          ? 'Your pickup order is recorded.'
-                          : quoteRequired
-                            ? 'We will confirm your delivery fee.'
-                            : 'Your order is ready for payment.'}
+                        : paymentsPaused
+                          ? 'Visit shop to complete purchase'
+                          : payAtShop
+                            ? 'Your pickup order is recorded.'
+                            : quoteRequired
+                              ? 'We will confirm your delivery fee.'
+                              : 'Your order is ready for payment.'}
                 </h1>
                 <p className="mt-5 text-sm leading-7 text-stone-600">
                     {paid
                         ? 'Your payment is confirmed. We will keep you updated on your order.'
-                        : payAtShop
-                          ? 'Bring your order code to the shop and pay when collecting your items. No online payment is needed.'
-                          : quoteRequired
-                            ? 'Your order has been received. We will email a delivery quote and payment link. Nothing has been charged.'
-                            : 'Review your delivery details and total below before paying.'}
+                        : paymentsPaused
+                          ? 'Online payments are temporarily unavailable. Contact the shop with your order number to complete your purchase. If you already submitted a payment, contact us to confirm its status before paying again.'
+                          : payAtShop
+                            ? 'Bring your order code to the shop and pay when collecting your items. No online payment is needed.'
+                            : quoteRequired
+                              ? 'Your order has been received. We will email a delivery quote and payment link. Nothing has been charged.'
+                              : 'Review your delivery details and total below before paying.'}
                 </p>
                 {pickup && (
                     <div className="surface-card mt-8 space-y-3 p-6">
@@ -124,6 +130,7 @@ export default function OrderSuccess({
                     </p>
                 </div>
                 {!paid &&
+                    !paymentsPaused &&
                     !payAtShop &&
                     !quoteRequired &&
                     !legacy &&
@@ -135,6 +142,7 @@ export default function OrderSuccess({
                         />
                     )}
                 {!paid &&
+                    !paymentsPaused &&
                     !payAtShop &&
                     !quoteRequired &&
                     (!gatewayReady || legacy) && (

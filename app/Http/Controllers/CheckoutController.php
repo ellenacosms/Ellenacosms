@@ -32,6 +32,10 @@ class CheckoutController extends Controller
 
     public function access(Request $request): HttpResponse|RedirectResponse
     {
+        if (config('checkout.payments_paused')) {
+            return to_route('checkout.create');
+        }
+
         $details = $this->cart->details($request);
 
         if (count($details['items']) === 0) {
@@ -68,6 +72,10 @@ class CheckoutController extends Controller
 
     public function create(Request $request): Response|RedirectResponse
     {
+        if (config('checkout.payments_paused')) {
+            return Inertia::render('storefront/payments-paused');
+        }
+
         $details = $this->cart->details($request);
 
         if (count($details['items']) === 0) {
@@ -94,6 +102,10 @@ class CheckoutController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (config('checkout.payments_paused')) {
+            return to_route('checkout.create');
+        }
+
         $user = $request->user();
 
         $validated = $request->validate([
@@ -270,6 +282,7 @@ class CheckoutController extends Controller
         return Inertia::render('storefront/order-success', [
             'order' => $order->load('items'),
             'gatewayReady' => $this->payments->ready(),
+            'paymentsPaused' => (bool) config('checkout.payments_paused'),
             'cardsEnabled' => (bool) config('services.dgateway.cards_enabled'),
         ]);
     }
